@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommandController;
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,8 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::name("login.redirect")->get("/auth/twitch/redirect", [LoginController::class, "redirect"]);
+Route::name("login.callback")->get("/auth/twitch/callback", [LoginController::class, "callback"]);
 
 Route::resource("commands", CommandController::class);

@@ -15,6 +15,16 @@ return new class extends Migration
     {
         Schema::create('commands', function (Blueprint $table) {
             $table->id();
+
+            $table->string("command");
+            $table->text("response")->nullable();
+
+            $table->boolean("is_active");
+            $table->integer("cooldown")->default(0)->comment("Cooldown until the same user can use the command again.");
+            $table->integer("global_cooldown")->default(0)->comment("Cooldown until any user can use the same command again.");
+
+            $table->string("type")->comment("The type of command this is. Is it a normal command, or a punishable command, or a special?");
+
             $table->timestamps();
         });
     }

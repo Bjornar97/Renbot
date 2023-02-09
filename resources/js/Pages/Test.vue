@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AppLayout from "@/Layouts/AppLayout.vue";
+import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 
 defineOptions({
-    layout: AppLayout,
+    layout: ModeratorLayout,
 });
 </script>
 
