@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,7 +16,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::name("login.redirect")->get("/auth/twitch/redirect", [LoginController::class, "redirect"]);
-Route::name("login.callback")->get("/auth/twitch/callback", [LoginController::class, "callback"]);
+Route::middleware("guest")->group(function () {
+    Route::name("welcome")->get("/", [WelcomeController::class, "welcome"]);
 
-Route::resource("commands", CommandController::class);
+    Route::name("login.redirect")->get("/auth/twitch/redirect", [LoginController::class, "redirect"]);
+    Route::name("login.callback")->get("/auth/twitch/callback", [LoginController::class, "callback"]);
+});
+
+Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
+
+Route::middleware("auth:sanctum")->group(function () {
+    Route::resource("commands", CommandController::class);
+});

@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Command;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class CommandPolicy
 {
@@ -18,7 +19,9 @@ class CommandPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->can("moderate")
+            ? Response::allow()
+            : Response::deny("You must be a moderator to access this");
     }
 
     /**
@@ -30,7 +33,9 @@ class CommandPolicy
      */
     public function view(User $user, Command $command)
     {
-        //
+        return $user->can("moderate")
+            ? Response::allow()
+            : Response::deny("You must be a moderator to access this");
     }
 
     /**
@@ -41,7 +46,9 @@ class CommandPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->can("moderate")
+            ? Response::allow()
+            : Response::deny("You must be a moderator to access this");
     }
 
     /**
@@ -53,7 +60,9 @@ class CommandPolicy
      */
     public function update(User $user, Command $command)
     {
-        //
+        return $user->can("moderate")
+            ? Response::allow()
+            : Response::deny("You must be a moderator to access this");
     }
 
     /**
@@ -65,7 +74,9 @@ class CommandPolicy
      */
     public function delete(User $user, Command $command)
     {
-        //
+        return $user->can("moderate")
+            ? Response::allow()
+            : Response::deny("You must be a moderator to access this");
     }
 
     /**
@@ -77,7 +88,9 @@ class CommandPolicy
      */
     public function restore(User $user, Command $command)
     {
-        //
+        return $user->can("moderate")
+            ? Response::allow()
+            : Response::deny("You must be a moderator to access this");
     }
 
     /**
@@ -89,6 +102,8 @@ class CommandPolicy
      */
     public function forceDelete(User $user, Command $command)
     {
-        //
+        return $user->can("moderate")
+            ? Response::allow()
+            : Response::deny("You must be a moderator to access this");
     }
 }

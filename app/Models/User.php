@@ -18,19 +18,26 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'username',
+        'avatar',
+        'type',
+        'twitch_id',
+        'twitch_access_token',
+        'twitch_refresh_token',
+        'twitch_access_token_expires_at',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be visible for serialization.
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
+    protected $visible = [
+        'id',
+        'username',
+        'avatar',
+        'type',
+        'twitch_id',
     ];
 
     /**
@@ -39,6 +46,7 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'disabled_at' => 'datetime',
+        'twitch_access_token_expires_at' => 'datetime',
     ];
 }

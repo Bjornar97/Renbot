@@ -1,9 +1,32 @@
 <script setup lang="ts">
+import Messages from "@/Components/Shared/Messages.vue";
+import { router } from "@inertiajs/core";
+import { usePage } from "@inertiajs/vue3";
+import {
+    mdiArrowDecisionAuto,
+    mdiHeartPulse,
+    mdiMessageReplyText,
+    mdiScaleBalance,
+    mdiTargetAccount,
+} from "@mdi/js";
 import route from "ziggy-js";
+import { computed } from "vue";
+
+const logout = () => {
+    router.post(route("logout"));
+};
+
+const page = usePage();
+
+const user = computed(() => {
+    return (page.props as any)?.user;
+});
 </script>
 
 <template>
     <VLayout>
+        <Messages></Messages>
+
         <VAppBar>
             <VAppBarTitle>
                 <div class="d-flex items-center">
@@ -15,14 +38,49 @@ import route from "ziggy-js";
                     Renbot - Moderators
                 </div>
             </VAppBarTitle>
+
+            <VSpacer></VSpacer>
+
+            <VChip pill class="mr-4">
+                <VAvatar start>
+                    <VImg :src="user.avatar" alt="Avatar" />
+                </VAvatar>
+
+                {{ user.username }}
+            </VChip>
+
+            <VBtn color="primary-lighten-2" @click="logout">Logout</VBtn>
         </VAppBar>
 
         <VNavigationDrawer>
-            <VList>
+            <VList color="primary-lighten-2">
+                <VListSubheader>Bot</VListSubheader>
                 <VListItem
-                    title="Commands"
+                    title="Health"
+                    :prepend-icon="mdiHeartPulse"
+                ></VListItem>
+
+                <VListSubheader>Commands</VListSubheader>
+                <VListItem
+                    title="Regular commands"
                     :active="route().current('commands.index')"
                     :href="route('commands.index')"
+                    :prepend-icon="mdiMessageReplyText"
+                ></VListItem>
+                <VListItem
+                    title="Punishable commands"
+                    :prepend-icon="mdiTargetAccount"
+                ></VListItem>
+
+                <VListItem
+                    title="Special commands"
+                    :prepend-icon="mdiArrowDecisionAuto"
+                ></VListItem>
+
+                <VListSubheader>Information</VListSubheader>
+                <VListItem
+                    title="Rules"
+                    :prepend-icon="mdiScaleBalance"
                 ></VListItem>
             </VList>
         </VNavigationDrawer>

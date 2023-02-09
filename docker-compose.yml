@@ -22,7 +22,6 @@ services:
         networks:
             - sail
         depends_on:
-            - mysql
             - redis
             - meilisearch
             - mailpit
@@ -117,8 +116,6 @@ networks:
     sail:
         driver: bridge
 volumes:
-    sail-mysql:
-        driver: local
     sail-redis:
         driver: local
     sail-meilisearch:

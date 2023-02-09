@@ -1,13 +1,14 @@
 import "vuetify/styles"; // Global CSS has to be imported
 import { createVuetify, type ThemeDefinition } from "vuetify";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
+import { mdiInformation } from "@mdi/js";
 
 const renbotTheme: ThemeDefinition = {
     dark: true,
     colors: {
-        primary: "#07796a",
-        "primary-darken-1": "#055e53",
-        "primary-darken-2": "#064840",
+        primary: "#8a0025",
+        "primary-lighten-1": "#b52a4f",
+        "primary-lighten-2": "#e04770",
         secondary: "#f36d29",
         "secondary-darken-1": "#d75e20",
     },
@@ -38,7 +39,7 @@ export const vuetify = createVuetify({
         defaultSet: "mdi",
         aliases: {
             ...aliases,
-            // primary: mdiInformation,
+            primary: mdiInformation,
         },
         sets: {
             mdi,

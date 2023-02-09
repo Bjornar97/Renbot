@@ -9,6 +9,11 @@ use Inertia\Inertia;
 
 class CommandController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Command::class);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +21,9 @@ class CommandController extends Controller
      */
     public function index()
     {
-        return Inertia::render("Test");
+        return Inertia::render("Commands/Index", [
+            'commands' => Command::all(),
+        ]);
     }
 
     /**
@@ -26,7 +33,7 @@ class CommandController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render("Commands/Create");
     }
 
     /**
@@ -37,7 +44,16 @@ class CommandController extends Controller
      */
     public function store(StoreCommandRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        $command = Command::make($data);
+
+        $command->type = "regular";
+        $command->save();
+
+        return redirect()
+            ->route("commands.index")
+            ->with("success", "The new command {$command->command} was saved");
     }
 
     /**
@@ -59,7 +75,9 @@ class CommandController extends Controller
      */
     public function edit(Command $command)
     {
-        //
+        return Inertia::render("Commands/Edit", [
+            'command' => $command,
+        ]);
     }
 
     /**
@@ -71,7 +89,11 @@ class CommandController extends Controller
      */
     public function update(UpdateCommandRequest $request, Command $command)
     {
-        //
+        $data = $request->validated();
+
+        $command->update($data);
+
+        return  redirect()->back()->with("success", "Successfully updated command");
     }
 
     /**

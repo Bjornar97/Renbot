@@ -13,7 +13,7 @@ class StoreCommandRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,12 @@ class StoreCommandRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'command' => ['required', 'string', 'unique:commands,command'],
+            'response' => ['required', 'string'],
+            'enabled' => ['boolean'],
+            'cooldown' => ['numeric', 'nullable'],
+            'global_cooldown' => ['numeric', 'nullable'],
+            'usable_by' => ['string'],
         ];
     }
 }

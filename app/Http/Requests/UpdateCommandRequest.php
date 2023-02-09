@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Command;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCommandRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class UpdateCommandRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +25,15 @@ class UpdateCommandRequest extends FormRequest
      */
     public function rules()
     {
+        $command = $this->route("command");
+
         return [
-            //
+            'command' => ['string', Rule::unique(Command::class, "command")->ignore($command->id)],
+            'response' => ['string'],
+            'enabled' => ['boolean'],
+            'cooldown' => ['numeric', 'nullable'],
+            'global_cooldown' => ['numeric', 'nullable'],
+            'usable_by' => ['string'],
         ];
     }
 }
