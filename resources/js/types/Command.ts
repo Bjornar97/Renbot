@@ -7,4 +7,7 @@ export interface Command {
     global_cooldown: number;
     type: "regular" | "punishable" | "special";
     usable_by: "moderators" | "subscribers" | "everyone";
+
+    created_at: string;
+    updated_at: string;
 }

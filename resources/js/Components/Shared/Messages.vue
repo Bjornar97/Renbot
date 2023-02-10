@@ -104,6 +104,7 @@ watch(
         <VAlert
             class="mb-2"
             type="error"
+            color="red-darken-4"
             v-if="flash?.error && flash?.error.length > 0"
         >
             <p v-if="typeof flash?.error === 'string'">{{ flash?.error }}</p>

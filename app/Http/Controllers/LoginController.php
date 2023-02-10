@@ -99,7 +99,7 @@ class LoginController extends Controller
         if ($user->disabled_at) {
             return redirect()
                 ->route("welcome")
-                ->with("error", "Your user is unfortunately deactivated, contact Bjornar97 if this is a mistake");
+                ->with("error", "Your account is unfortunately deactivated, contact Bjornar97 if this is a mistake");
         }
 
         Auth::login($user);

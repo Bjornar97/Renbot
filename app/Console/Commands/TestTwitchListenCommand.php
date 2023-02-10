@@ -7,6 +7,8 @@ use GhostZero\Tmi\Client;
 use GhostZero\Tmi\ClientOptions;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use romanzipp\Twitch\Enums\GrantType;
 use romanzipp\Twitch\Twitch;
 
@@ -53,33 +55,42 @@ class TestTwitchListenCommand extends Command
      */
     public function handle()
     {
-        $this->setupTwitch();
-
-        $oauthToken = config("services.twitch.oauth_token");
-
-        $client = new Client(new ClientOptions([
-            'options' => ['debug' => true],
-            'connection' => [
-                'secure' => true,
-                'reconnect' => true,
-                'rejoin' => true,
-            ],
-            'identity' => [
-                'username' => 'RenTheBot',
-                'password' => $oauthToken,
-            ],
-            'channels' => ['rendogtv'],
-        ]));
-
-        $client->on(MessageEvent::class, function (MessageEvent $e) use ($client) {
-            if ($e->self) return;
-
-            if (strtolower($e->message) === '!hello') {
-                $this->timeout($this->getUserId("Alltidyoksa"), 10, "Testing testing, it is only 10 seconds");
-            }
+        Redis::subscribe("test", function ($message) {
+            dd($message);
         });
 
-        $client->connect();
+        sleep(1);
+
+        Redis::publish("test", "gutenmorgen");
+
+
+        // $this->setupTwitch();
+
+        // $oauthToken = config("services.twitch.oauth_token");
+
+        // $client = new Client(new ClientOptions([
+        //     'options' => ['debug' => true],
+        //     'connection' => [
+        //         'secure' => true,
+        //         'reconnect' => true,
+        //         'rejoin' => true,
+        //     ],
+        //     'identity' => [
+        //         'username' => 'RenTheBot',
+        //         'password' => $oauthToken,
+        //     ],
+        //     'channels' => ['rendogtv'],
+        // ]));
+
+        // $client->on(MessageEvent::class, function (MessageEvent $e) use ($client) {
+        //     if ($e->self) return;
+
+        //     if (strtolower($e->message) === '!hello') {
+        //         $this->timeout($this->getUserId("Alltidyoksa"), 10, "Testing testing, it is only 10 seconds");
+        //     }
+        // });
+
+        // $client->connect();
 
 
         return Command::SUCCESS;

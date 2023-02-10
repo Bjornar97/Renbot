@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,4 +23,20 @@ class Command extends Model
     public $casts = [
         'enabled' => 'boolean',
     ];
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('enabled', true);
+    }
+
+    public function getSubscriberCanUseAttribute()
+    {
+        return $this->usable_by === "subscriber"
+            || $this->usable_by === "everyone";
+    }
+
+    public function getEveryoneCanUseAttribute()
+    {
+        return $this->usable_by === "everyone";
+    }
 }

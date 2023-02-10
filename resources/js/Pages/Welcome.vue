@@ -19,9 +19,10 @@ const login = (role: string) => {
 
 <template>
     <VApp>
-        <Messages></Messages>
         <div class="app">
             <div class="welcome">
+                <Messages class="mb-8"></Messages>
+
                 <h1 class="text-md-h1">Welcome to RenBot</h1>
 
                 <p class="mt-8">Who are you?</p>

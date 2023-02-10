@@ -24,71 +24,75 @@ const user = computed(() => {
 </script>
 
 <template>
-    <VLayout>
-        <Messages></Messages>
+    <VApp>
+        <VLayout>
+            <Messages></Messages>
 
-        <VAppBar>
-            <VAppBarTitle>
-                <div class="d-flex items-center">
-                    <img
-                        class="mr-2 moderator-icon"
-                        src="../../images/icons/moderator.png"
-                        alt="Moderator Icon"
-                    />
-                    Renbot - Moderators
-                </div>
-            </VAppBarTitle>
+            <VAppBar>
+                <VAppBarTitle>
+                    <div class="d-flex items-center">
+                        <img
+                            class="mr-2 moderator-icon"
+                            src="../../images/icons/moderator.png"
+                            alt="Moderator Icon"
+                        />
+                        Renbot - Moderators
+                    </div>
+                </VAppBarTitle>
 
-            <VSpacer></VSpacer>
+                <VSpacer></VSpacer>
 
-            <VChip pill class="mr-4">
-                <VAvatar start>
-                    <VImg :src="user.avatar" alt="Avatar" />
-                </VAvatar>
+                <VChip pill class="mr-4">
+                    <VAvatar start>
+                        <VImg :src="user.avatar" alt="Avatar" />
+                    </VAvatar>
 
-                {{ user.username }}
-            </VChip>
+                    {{ user.username }}
+                </VChip>
 
-            <VBtn color="primary-lighten-2" @click="logout">Logout</VBtn>
-        </VAppBar>
+                <VBtn color="primary-lighten-2" @click="logout">Logout</VBtn>
+            </VAppBar>
 
-        <VNavigationDrawer>
-            <VList color="primary-lighten-2">
-                <VListSubheader>Bot</VListSubheader>
-                <VListItem
-                    title="Health"
-                    :prepend-icon="mdiHeartPulse"
-                ></VListItem>
+            <VNavigationDrawer>
+                <VList color="primary-lighten-2">
+                    <VListSubheader>Bot</VListSubheader>
+                    <VListItem
+                        title="Health"
+                        :prepend-icon="mdiHeartPulse"
+                    ></VListItem>
 
-                <VListSubheader>Commands</VListSubheader>
-                <VListItem
-                    title="Regular commands"
-                    :active="route().current('commands.index')"
-                    :href="route('commands.index')"
-                    :prepend-icon="mdiMessageReplyText"
-                ></VListItem>
-                <VListItem
-                    title="Punishable commands"
-                    :prepend-icon="mdiTargetAccount"
-                ></VListItem>
+                    <VListSubheader>Commands</VListSubheader>
+                    <VListItem
+                        title="Regular commands"
+                        :active="route().current('commands.index')"
+                        :href="route('commands.index')"
+                        :prepend-icon="mdiMessageReplyText"
+                    ></VListItem>
+                    <VListItem
+                        title="Punishable commands"
+                        :prepend-icon="mdiTargetAccount"
+                    ></VListItem>
 
-                <VListItem
-                    title="Special commands"
-                    :prepend-icon="mdiArrowDecisionAuto"
-                ></VListItem>
+                    <VListItem
+                        title="Special commands"
+                        :prepend-icon="mdiArrowDecisionAuto"
+                    ></VListItem>
 
-                <VListSubheader>Information</VListSubheader>
-                <VListItem
-                    title="Rules"
-                    :prepend-icon="mdiScaleBalance"
-                ></VListItem>
-            </VList>
-        </VNavigationDrawer>
+                    <VListSubheader>Information</VListSubheader>
+                    <VListItem
+                        title="Rules"
+                        :prepend-icon="mdiScaleBalance"
+                        :active="route().current('rules.index')"
+                        :href="route('rules.index')"
+                    ></VListItem>
+                </VList>
+            </VNavigationDrawer>
 
-        <VMain>
-            <slot></slot>
-        </VMain>
-    </VLayout>
+            <VMain>
+                <slot></slot>
+            </VMain>
+        </VLayout>
+    </VApp>
 </template>
 
 <style>
