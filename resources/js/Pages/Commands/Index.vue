@@ -41,6 +41,7 @@ const newCommand = () => {
                         <th>Command</th>
                         <th>Response</th>
                         <th>Enabled</th>
+                        <th></th>
                     </tr>
                 </thead>
 

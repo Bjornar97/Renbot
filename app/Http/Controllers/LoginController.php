@@ -135,7 +135,7 @@ class LoginController extends Controller
             $type = "moderator";
         }
 
-        if ($user->name === "rendogtv") {
+        if (strtolower($user->name) === "bjornar97") {
             $type = "rendog";
         }
 

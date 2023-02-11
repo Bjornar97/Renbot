@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RendogController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,8 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
 
     Route::name("rules.order.update")->put("/moderators/rules/order/update", [RuleController::class, "updateOrder"]);
     Route::resource("moderators/rules", RuleController::class);
+
+    Route::name("rendog.thankyou")->get("/rendog/thankyou", [RendogController::class, "thankyou"]);
 });
 
 Route::name("rules")->get("/rules", [RuleController::class, "display"]);

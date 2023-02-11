@@ -29,6 +29,21 @@ class Command extends Model
         return $query->where('enabled', true);
     }
 
+    public function scopeRegular(Builder $query): Builder
+    {
+        return $query->where("type", "regular");
+    }
+
+    public function scopePunishable(Builder $query): Builder
+    {
+        return $query->where("type", "punishable");
+    }
+
+    public function scopeSpecial(Builder $query): Builder
+    {
+        return $query->where("type", "special");
+    }
+
     public function getSubscriberCanUseAttribute()
     {
         return $this->usable_by === "subscriber"

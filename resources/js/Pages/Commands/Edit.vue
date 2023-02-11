@@ -22,11 +22,7 @@ const form = useForm("CreateCommand", {
 });
 
 const submit = () => {
-    form.put(route("commands.update", { command: props.command.id }), {
-        onSuccess: () => {
-            history.back();
-        },
-    });
+    form.put(route("commands.update", { command: props.command.id }));
 };
 
 const cancel = () => {

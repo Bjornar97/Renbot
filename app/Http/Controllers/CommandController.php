@@ -93,7 +93,7 @@ class CommandController extends Controller
 
         $command->update($data);
 
-        return  redirect()->back()->with("success", "Successfully updated command");
+        return  redirect()->route("commands.index")->with("success", "Successfully updated command");
     }
 
     /**
@@ -104,6 +104,8 @@ class CommandController extends Controller
      */
     public function destroy(Command $command)
     {
-        //
+        $command->delete();
+
+        return back()->with("success", "Successfully deleted command");
     }
 }

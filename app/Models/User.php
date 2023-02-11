@@ -3,10 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
+use Throwable;
 
 class User extends Authenticatable
 {
@@ -49,4 +54,38 @@ class User extends Authenticatable
         'disabled_at' => 'datetime',
         'twitch_access_token_expires_at' => 'datetime',
     ];
+
+    public function twitchAccessToken(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if (now()->addSeconds(30)->isAfter($this->twitch_access_token_expipres_at)) {
+                    $value = $this->renewAccessToken();
+                }
+
+                return $value;
+            }
+        );
+    }
+
+    public function renewAccessToken()
+    {
+        try {
+            $response = Http::post("https://id.twitch.tv/oauth2/token", [
+                'client_id' => config("services.twitch.client_id"),
+                'client_secret' => config("services.twitch.client_secret"),
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $this->twitch_refresh_token,
+            ]);
+
+            $token = $response->json("access_token");
+
+            $this->twitch_access_token = $token;
+
+            return $token;
+        } catch (Throwable $th) {
+            Log::error($th->getMessage());
+            return null;
+        }
+    }
 }

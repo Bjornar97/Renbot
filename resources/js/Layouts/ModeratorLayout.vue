@@ -5,12 +5,14 @@ import { usePage } from "@inertiajs/vue3";
 import {
     mdiArrowDecisionAuto,
     mdiHeartPulse,
+    mdiMenu,
     mdiMessageReplyText,
     mdiScaleBalance,
     mdiTargetAccount,
 } from "@mdi/js";
 import route from "ziggy-js";
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 
 const logout = () => {
     router.post(route("logout"));
@@ -21,6 +23,10 @@ const page = usePage();
 const user = computed(() => {
     return (page.props as any)?.user;
 });
+
+const { smAndUp } = useDisplay();
+
+const showMenu = ref(false);
 </script>
 
 <template>
@@ -30,19 +36,26 @@ const user = computed(() => {
 
             <VAppBar>
                 <VAppBarTitle>
-                    <div class="d-flex items-center">
+                    <div class="d-flex align-center">
+                        <VBtn
+                            v-if="!smAndUp"
+                            variant="text"
+                            :icon="mdiMenu"
+                            @click="showMenu = !showMenu"
+                        ></VBtn>
+
                         <img
                             class="mr-2 moderator-icon"
                             src="../../images/icons/moderator.png"
                             alt="Moderator Icon"
                         />
-                        Renbot - Moderators
+                        <p>Renbot - Moderators</p>
                     </div>
                 </VAppBarTitle>
 
-                <VSpacer></VSpacer>
+                <VSpacer v-if="smAndUp"></VSpacer>
 
-                <VChip pill class="mr-4">
+                <VChip pill class="mr-4" v-if="smAndUp">
                     <VAvatar start>
                         <VImg :src="user.avatar" alt="Avatar" />
                     </VAvatar>
@@ -53,7 +66,7 @@ const user = computed(() => {
                 <VBtn color="primary-lighten-2" @click="logout">Logout</VBtn>
             </VAppBar>
 
-            <VNavigationDrawer>
+            <VNavigationDrawer :model-value="showMenu || smAndUp">
                 <VList color="primary-lighten-2">
                     <VListSubheader>Bot</VListSubheader>
                     <VListItem

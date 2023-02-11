@@ -38,5 +38,10 @@ return [
         'oauth_token' => env("TWITCH_OAUTH_TOKEN"),
 
         'access_token' => env("RENBOT_ACCESS_TOKEN"),
+
+        'channel' => env("BOT_CHANNEL", "rendogtv"),
+        'channel_id' => env("CHANNEL_ID"),
+        'username' => env("BOT_USERNAME", "RenTheBot"),
+        'bot_id' => env("BOT_ID"),
     ],
 ];
