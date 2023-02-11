@@ -27,6 +27,10 @@ const user = computed(() => {
 const { smAndUp } = useDisplay();
 
 const showMenu = ref(false);
+
+const goTo = (routeName: string) => {
+    router.get(route(routeName));
+};
 </script>
 
 <template>
@@ -78,7 +82,7 @@ const showMenu = ref(false);
                     <VListItem
                         title="Regular commands"
                         :active="route().current('commands.index')"
-                        :href="route('commands.index')"
+                        @click="goTo('commands.index')"
                         :prepend-icon="mdiMessageReplyText"
                     ></VListItem>
                     <VListItem
@@ -96,7 +100,7 @@ const showMenu = ref(false);
                         title="Rules"
                         :prepend-icon="mdiScaleBalance"
                         :active="route().current('rules.index')"
-                        :href="route('rules.index')"
+                        @click="goTo('rules.index')"
                     ></VListItem>
                 </VList>
             </VNavigationDrawer>
