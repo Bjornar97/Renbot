@@ -24,12 +24,12 @@ class StoreCommandRequest extends FormRequest
     public function rules()
     {
         return [
-            'command' => ['required', 'string', 'unique:commands,command'],
+            'command' => ['required', 'string', 'alpha_num', 'unique:commands,command'],
             'response' => ['required', 'string'],
             'enabled' => ['boolean'],
             'cooldown' => ['numeric', 'nullable'],
             'global_cooldown' => ['numeric', 'nullable'],
-            'usable_by' => ['string'],
+            'usable_by' => ['required', 'string'],
         ];
     }
 }

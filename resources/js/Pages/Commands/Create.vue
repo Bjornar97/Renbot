@@ -96,6 +96,10 @@ const cancel = () => {
                             </VBtn>
                         </VBtnToggle>
 
+                        <p class="text-red mb-6" v-if="form.errors.usable_by">
+                            {{ form.errors.usable_by }}
+                        </p>
+
                         <VTextField
                             class="mb-4"
                             v-if="form.usable_by !== 'moderators'"

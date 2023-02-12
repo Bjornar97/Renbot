@@ -28,7 +28,7 @@ class UpdateCommandRequest extends FormRequest
         $command = $this->route("command");
 
         return [
-            'command' => ['string', Rule::unique(Command::class, "command")->ignore($command->id)],
+            'command' => ['string', 'alpha_num', Rule::unique(Command::class, "command")->ignore($command->id)],
             'response' => ['string'],
             'enabled' => ['boolean'],
             'cooldown' => ['numeric', 'nullable'],

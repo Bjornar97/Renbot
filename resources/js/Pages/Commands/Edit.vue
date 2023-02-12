@@ -36,7 +36,7 @@ const cancel = () => {
         <VForm>
             <div>
                 <header class="header">
-                    <h1 class="mb-4">Create new command</h1>
+                    <h1 class="mb-4">Edit command !{{ command.command }}</h1>
 
                     <VSwitch
                         color="red"
