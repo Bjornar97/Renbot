@@ -11,6 +11,7 @@ defineOptions({
 
 const props = defineProps<{
     command: Command;
+    actions: { action: string; title: string }[];
 }>();
 
 const form = useForm("CreateCommand", {
@@ -23,6 +24,7 @@ const form = useForm("CreateCommand", {
     severity: props.command.severity,
     type: props.command.type,
     punish_reason: props.command.punish_reason,
+    action: props.command.action,
 });
 
 const submit = () => {
@@ -34,7 +36,7 @@ const submit = () => {
             }
 
             if (form.type === "special") {
-                // TODO
+                router.get(route("special-commands.index"));
                 return;
             }
 
@@ -176,6 +178,20 @@ const severityColor = computed(() => {
                         :error-messages="form.errors.punish_reason"
                         label="Punish reason"
                     ></VTextField>
+                </div>
+
+                <div v-if="form.type === 'special'">
+                    <VAutocomplete
+                        v-model="form.action"
+                        class="mb-4"
+                        :items="actions"
+                        item-title="title"
+                        item-value="action"
+                        label="Action"
+                        hint="The action to run when this command is excecuted"
+                        persistent-hint
+                        :error-messages="form.errors.action"
+                    ></VAutocomplete>
                 </div>
 
                 <div class="buttons">

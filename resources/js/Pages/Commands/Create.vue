@@ -10,7 +10,7 @@ defineOptions({
 
 const props = defineProps<{
     type: "regular" | "punishable" | "special";
-    actions: { [key: string]: string }[];
+    actions: { action: string; title: string }[];
 }>();
 
 console.log(props.actions);

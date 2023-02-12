@@ -78,7 +78,7 @@ class CommandController extends Controller
     {
         return Inertia::render("Commands/Edit", [
             'command' => $command,
-            'actions' => SpecialCommandService::$functions,
+            'actions' => array_values(SpecialCommandService::$functions),
         ]);
     }
 
