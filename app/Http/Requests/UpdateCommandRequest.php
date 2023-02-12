@@ -28,12 +28,16 @@ class UpdateCommandRequest extends FormRequest
         $command = $this->route("command");
 
         return [
-            'command' => ['string', 'alpha_num', Rule::unique(Command::class, "command")->ignore($command->id)],
-            'response' => ['string'],
+            'command' => ['string', 'alpha_num', 'max:50', Rule::unique(Command::class, "command")->ignore($command->id)],
+            'response' => ['string', 'max:500'],
             'enabled' => ['boolean'],
             'cooldown' => ['numeric', 'nullable'],
             'global_cooldown' => ['numeric', 'nullable'],
             'usable_by' => ['string'],
+            'type' => ['string', 'in:regular,punishable,special'],
+            'severity' => ['integer', 'min:1', 'max:10'],
+            'punish_reason' => ['nullable', 'string', 'max:500'],
+            'action' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

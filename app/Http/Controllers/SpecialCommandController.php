@@ -3,18 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommandRequest;
-use App\Http\Requests\UpdateCommandRequest;
 use App\Models\Command;
 use App\Services\SpecialCommandService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class CommandController extends Controller
+class SpecialCommandController extends Controller
 {
-    public function __construct()
-    {
-        $this->authorizeResource(Command::class);
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -23,8 +18,8 @@ class CommandController extends Controller
     public function index()
     {
         return Inertia::render("Commands/Index", [
-            'commands' => Command::regular()->orderBy('command')->get(),
-            'type' => 'regular',
+            'commands' => Command::special()->orderBy('command')->get(),
+            'type' => 'special',
         ]);
     }
 
@@ -36,25 +31,25 @@ class CommandController extends Controller
     public function create()
     {
         return Inertia::render("Commands/Create", [
-            'type' => 'regular',
+            'type' => 'special',
+            'actions' => array_values(SpecialCommandService::$functions),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreCommandRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreCommandRequest $request)
     {
+
         $data = $request->validated();
 
-        $command = Command::create($data);
+        Command::create($data);
 
-        return redirect()
-            ->route("commands.index")
-            ->with("success", "The new command {$command->command} was saved");
+        return redirect()->route("special-commands.index")->with("success", "The punishable command was successfully created!");
     }
 
     /**
@@ -76,26 +71,19 @@ class CommandController extends Controller
      */
     public function edit(Command $command)
     {
-        return Inertia::render("Commands/Edit", [
-            'command' => $command,
-            'actions' => SpecialCommandService::$functions,
-        ]);
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateCommandRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Command  $command
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCommandRequest $request, Command $command)
+    public function update(Request $request, Command $command)
     {
-        $data = $request->validated();
-
-        $command->update($data);
-
-        return back()->with("success", "Successfully updated command");
+        //
     }
 
     /**
@@ -106,8 +94,6 @@ class CommandController extends Controller
      */
     public function destroy(Command $command)
     {
-        $command->delete();
-
-        return back()->with("success", "Successfully deleted command");
+        //
     }
 }

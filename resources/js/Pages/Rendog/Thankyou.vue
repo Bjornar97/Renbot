@@ -22,7 +22,7 @@ defineOptions({
     </div>
 </template>
 
-<style>
+<style scoped>
 .page {
     display: grid;
     place-content: center;

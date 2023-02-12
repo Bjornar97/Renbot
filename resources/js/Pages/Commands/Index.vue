@@ -11,9 +11,18 @@ defineOptions({
 
 const props = defineProps<{
     commands: Command[];
+    type: "regular" | "punishable" | "special";
 }>();
 
 const newCommand = () => {
+    if (props.type === "punishable") {
+        router.get(route("punishable-commands.create"));
+        return;
+    } else if (props.type === "special") {
+        router.get(route("special-commands.create"));
+        return;
+    }
+
     router.get(route("commands.create"));
 };
 </script>
@@ -22,7 +31,10 @@ const newCommand = () => {
     <div class="page">
         <header class="header">
             <div class="mb-2 mb-md-0">
-                <h1 class="mb-2">Regular Commands</h1>
+                <h1 class="mb-2">
+                    {{ type.charAt(0).toUpperCase()
+                    }}{{ type.slice(1) }} commands
+                </h1>
                 <p>Commands with a simple response</p>
             </div>
 
@@ -40,6 +52,7 @@ const newCommand = () => {
                         <th></th>
                         <th>Command</th>
                         <th>Response</th>
+                        <th v-if="type === 'punishable'">Severity</th>
                         <th>Enabled</th>
                         <th></th>
                     </tr>
@@ -50,6 +63,7 @@ const newCommand = () => {
                         v-for="command in commands"
                         :command="command"
                         :key="command.id"
+                        :type="type"
                     ></CommandRow>
                 </tbody>
             </VTable>

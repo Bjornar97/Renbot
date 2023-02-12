@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use App\Services\CommandService;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\ClientOptions;
@@ -36,7 +37,7 @@ class BotCommand extends Command
      */
     public function handle()
     {
-        $oauthToken = config("services.twitch.oauth_token");
+        $oauthToken = "oauth:{$this->getAccessToken()}";
         $this->channel = config("services.twitch.channel");
         $this->botUsername = config("services.twitch.username");
 
@@ -63,12 +64,19 @@ class BotCommand extends Command
         return Command::SUCCESS;
     }
 
+    private function getAccessToken()
+    {
+        $renbot = User::where('username', "RenTheBot")->first();
+
+        return $renbot->twitch_access_token;
+    }
+
     public function onMessage(MessageEvent $message)
     {
         if ($message->self) return;
 
         try {
-            $response = CommandService::message($message)->getResponse();
+            $response = CommandService::message($message, $this->client)->getResponse();
 
             $this->client->say($this->channel, $response);
         } catch (Throwable $th) {

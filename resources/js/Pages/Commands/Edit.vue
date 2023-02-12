@@ -3,6 +3,7 @@ import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import type { Command } from "@/types/Command";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiAlphaEBox, mdiCancel, mdiContentSave } from "@mdi/js";
+import { computed } from "vue";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -19,16 +20,46 @@ const form = useForm("CreateCommand", {
     cooldown: props.command.cooldown,
     global_cooldown: props.command.global_cooldown,
     usable_by: props.command.usable_by,
+    severity: props.command.severity,
+    type: props.command.type,
+    punish_reason: props.command.punish_reason,
 });
 
 const submit = () => {
-    form.put(route("commands.update", { command: props.command.id }));
+    form.put(route("commands.update", { command: props.command.id }), {
+        onSuccess: () => {
+            if (form.type === "punishable") {
+                router.get(route("punishable-commands.index"));
+                return;
+            }
+
+            if (form.type === "special") {
+                // TODO
+                return;
+            }
+
+            router.get(route("commands.index"));
+        },
+    });
 };
 
 const cancel = () => {
     form.reset();
     router.get(route("commands.index"));
 };
+
+const severityColor = computed(() => {
+    let color = "success";
+    if (form.severity > 4) {
+        color = "warning";
+    }
+
+    if (form.severity > 7) {
+        color = "error";
+    }
+
+    return color;
+});
 </script>
 
 <template>
@@ -36,7 +67,9 @@ const cancel = () => {
         <VForm>
             <div>
                 <header class="header">
-                    <h1 class="mb-4">Edit command !{{ command.command }}</h1>
+                    <h1 class="mb-4">
+                        Edit {{ command.type }} command !{{ command.command }}
+                    </h1>
 
                     <VSwitch
                         color="red"
@@ -70,6 +103,7 @@ const cancel = () => {
                             v-model="form.usable_by"
                             divided
                             class="mb-8"
+                            :disabled="form.type === 'punishable'"
                         >
                             <VBtn color="#01AD02" value="moderators">
                                 <template #prepend>
@@ -122,6 +156,28 @@ const cancel = () => {
                     </div>
                 </div>
 
+                <div v-if="form.type === 'punishable'">
+                    <VSlider
+                        class="mb-8"
+                        v-model="form.severity"
+                        :color="severityColor"
+                        :show-ticks="true"
+                        :step="1"
+                        min="1"
+                        max="10"
+                        label="Punish severity"
+                        :error-messages="form.errors.severity"
+                        messages="How hard should the chatter be punished. 1 will timeout 10 seconds first time, 5 will timeout 120 seconds first time, 10 will insta-ban."
+                        thumb-label="always"
+                    ></VSlider>
+
+                    <VTextField
+                        v-model="form.punish_reason"
+                        :error-messages="form.errors.punish_reason"
+                        label="Punish reason"
+                    ></VTextField>
+                </div>
+
                 <div class="buttons">
                     <VBtn
                         color="green"
@@ -140,7 +196,7 @@ const cancel = () => {
     </div>
 </template>
 
-<style>
+<style scoped>
 .row {
     display: grid;
 }

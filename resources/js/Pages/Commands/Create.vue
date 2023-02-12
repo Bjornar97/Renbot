@@ -2,10 +2,18 @@
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiAlphaEBox, mdiCancel, mdiContentSave } from "@mdi/js";
+import { computed } from "vue";
 
 defineOptions({
     layout: ModeratorLayout,
 });
+
+const props = defineProps<{
+    type: "regular" | "punishable" | "special";
+    actions: { [key: string]: string }[];
+}>();
+
+console.log(props.actions);
 
 const form = useForm("CreateCommand", {
     command: "",
@@ -14,16 +22,54 @@ const form = useForm("CreateCommand", {
     cooldown: 0,
     global_cooldown: 0,
     usable_by: "moderators",
+    type: props.type,
+    severity: 5,
+    punish_reason: "",
+    action: null,
 });
 
 const submit = () => {
+    if (props.type === "punishable") {
+        form.post(route("punishable-commands.store"));
+        return;
+    }
+
+    if (props.type === "special") {
+        form.post(route("special-commands.store"));
+        return;
+    }
+
     form.post(route("commands.store"));
 };
 
 const cancel = () => {
     form.reset();
+
+    if (props.type === "punishable") {
+        router.get(route("punishable-commands.index"));
+        return;
+    }
+
+    if (props.type === "special") {
+        router.get(route("special-commands.index"));
+        return;
+    }
+
     router.get(route("commands.index"));
 };
+
+const severityColor = computed(() => {
+    let color = "success";
+    if (form.severity > 4) {
+        color = "warning";
+    }
+
+    if (form.severity > 7) {
+        color = "error";
+    }
+
+    return color;
+});
 </script>
 
 <template>
@@ -31,7 +77,7 @@ const cancel = () => {
         <VForm>
             <div>
                 <header class="header">
-                    <h1 class="mb-4">Create new command</h1>
+                    <h1 class="mb-4">Create new {{ form.type }} command</h1>
 
                     <VSwitch
                         color="red"
@@ -58,6 +104,11 @@ const cancel = () => {
                             label="Response"
                             :error-messages="form.errors.response"
                             class="mb-4"
+                            :hint="
+                                form.type === 'special'
+                                    ? 'The response might get overriden by the action'
+                                    : ''
+                            "
                         ></VTextarea>
                     </div>
 
@@ -66,6 +117,7 @@ const cancel = () => {
                             v-model="form.usable_by"
                             divided
                             class="mb-4"
+                            :disabled="form.type === 'punishable'"
                         >
                             <VBtn color="#01AD02" value="moderators">
                                 <template #prepend>
@@ -122,6 +174,42 @@ const cancel = () => {
                     </div>
                 </div>
 
+                <div v-if="form.type === 'punishable'">
+                    <VSlider
+                        class="mb-8"
+                        v-model="form.severity"
+                        :color="severityColor"
+                        :show-ticks="true"
+                        :step="1"
+                        min="1"
+                        max="10"
+                        label="Punish severity"
+                        :error-messages="form.errors.severity"
+                        messages="How hard should the chatter be punished. 1 will timeout 10 seconds first time, 5 will timeout 120 seconds first time, 10 will insta-ban."
+                        thumb-label="always"
+                    ></VSlider>
+
+                    <VTextField
+                        v-model="form.punish_reason"
+                        :error-messages="form.errors.punish_reason"
+                        label="Punish reason"
+                    ></VTextField>
+                </div>
+
+                <div v-if="form.type === 'special'">
+                    <VAutocomplete
+                        v-model="form.action"
+                        class="mb-4"
+                        :items="actions"
+                        item-title="title"
+                        item-value="action"
+                        label="Action"
+                        hint="The action to run when this command is excecuted"
+                        persistent-hint
+                        :error-messages="form.errors.action"
+                    ></VAutocomplete>
+                </div>
+
                 <div class="buttons">
                     <VBtn
                         color="green"
@@ -140,7 +228,7 @@ const cancel = () => {
     </div>
 </template>
 
-<style>
+<style scoped>
 .row {
     display: grid;
 }

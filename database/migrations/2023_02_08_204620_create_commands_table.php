@@ -26,6 +26,12 @@ return new class extends Migration
 
             $table->string("type")->comment("The type of command this is. Is it a normal command, or a punishable command, or a special?");
 
+            $table->tinyInteger("severity")->nullable()->comment("How hard a chatter should be punished. Only applicable to punishable commands.");
+            $table->text("punish_reason")->nullable();
+
+            $table->string("action")->nullable()->comment("This is the action to run. Only applies to special commands");
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

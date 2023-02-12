@@ -80,7 +80,9 @@ class User extends Authenticatable
 
             $token = $response->json("access_token");
 
+            $this->twitch_access_token_expires_at = now()->addSeconds($response->json("expires_in"));
             $this->twitch_access_token = $token;
+            $this->save();
 
             return $token;
         } catch (Throwable $th) {

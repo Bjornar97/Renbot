@@ -78,7 +78,7 @@ const newRule = () => {
     </div>
 </template>
 
-<style>
+<style scoped>
 .page {
     padding: 1rem;
 }
@@ -104,10 +104,11 @@ const newRule = () => {
 #draggable {
     display: contents;
 }
+</style>
 
+<style>
 #draggable td {
     padding: 16px 16px;
-    /* height: calc(var(--v-table-row-height, 52px) + 0px); */
 }
 #draggable tr:hover {
     background: rgba(var(--v-border-color), var(--v-hover-opacity));

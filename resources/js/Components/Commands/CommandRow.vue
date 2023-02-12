@@ -6,6 +6,7 @@ import { computed, ref } from "vue";
 
 const props = defineProps<{
     command: Command;
+    type: "regular" | "punishable" | "special";
 }>();
 
 const enabled = computed({
@@ -40,6 +41,19 @@ const deleteCommand = () => {
         },
     });
 };
+
+const severityColor = computed(() => {
+    let color = "success";
+    if (props.command.severity > 4) {
+        color = "warning";
+    }
+
+    if (props.command.severity > 7) {
+        color = "error";
+    }
+
+    return color;
+});
 </script>
 
 <template>
@@ -62,6 +76,12 @@ const deleteCommand = () => {
         <td>!{{ command.command }}</td>
 
         <td class="response">{{ command.response }}</td>
+
+        <td v-if="type === 'punishable'">
+            <VChip :color="severityColor" size="x-large" class="text-h6">{{
+                command.severity
+            }}</VChip>
+        </td>
 
         <td @click.stop>
             <VSwitch

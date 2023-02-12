@@ -54,7 +54,7 @@ const cancel = () => {
     </div>
 </template>
 
-<style>
+<style scoped>
 .row {
     display: grid;
 }

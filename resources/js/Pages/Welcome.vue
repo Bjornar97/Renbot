@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Messages from "@/Components/Shared/Messages.vue";
+import { router } from "@inertiajs/core";
 import { mdiAccount } from "@mdi/js";
 import { ref } from "vue";
 
@@ -14,6 +15,10 @@ const login = (role: string) => {
     window.location.href = route("login.redirect", {
         role,
     });
+};
+
+const goToRules = () => {
+    router.get(route("rules"));
 };
 </script>
 
@@ -35,7 +40,7 @@ const login = (role: string) => {
                         size="large"
                         :disabled="loading"
                         :loading="loading && loadingRole === 'viewer'"
-                        @click="login('viewer')"
+                        @click="goToRules"
                     >
                         Regular viewer</VBtn
                     >
@@ -82,7 +87,7 @@ const login = (role: string) => {
     </VApp>
 </template>
 
-<style>
+<style scoped>
 .app {
     display: grid;
     place-content: center;

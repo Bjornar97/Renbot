@@ -35,9 +35,6 @@ return [
         'client_id' => env('TWITCH_CLIENT_ID'),
         'client_secret' => env('TWITCH_CLIENT_SECRET'),
         'redirect' => env('TWITCH_REDIRECT_URI'),
-        'oauth_token' => env("TWITCH_OAUTH_TOKEN"),
-
-        'access_token' => env("RENBOT_ACCESS_TOKEN"),
 
         'channel' => env("BOT_CHANNEL", "rendogtv"),
         'channel_id' => env("CHANNEL_ID"),

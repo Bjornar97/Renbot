@@ -40,7 +40,7 @@ const props = defineProps<{
     </VApp>
 </template>
 
-<style>
+<style scoped>
 .page {
     max-width: 90ch;
     margin: auto;

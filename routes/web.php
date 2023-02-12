@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PunishableCommandController;
 use App\Http\Controllers\RendogController;
 use App\Http\Controllers\RuleController;
+use App\Http\Controllers\SpecialCommandController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,8 @@ Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::resource("moderators/commands", CommandController::class);
+    Route::resource("moderators/punishable-commands", PunishableCommandController::class);
+    Route::resource("moderators/special-commands", SpecialCommandController::class);
 
     Route::name("rules.order.update")->put("/moderators/rules/order/update", [RuleController::class, "updateOrder"]);
     Route::resource("moderators/rules", RuleController::class);

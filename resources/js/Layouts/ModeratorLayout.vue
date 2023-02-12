@@ -87,11 +87,15 @@ const goTo = (routeName: string) => {
                     ></VListItem>
                     <VListItem
                         title="Punishable commands"
+                        :active="route().current('punishable-commands.index')"
+                        @click="goTo('punishable-commands.index')"
                         :prepend-icon="mdiTargetAccount"
                     ></VListItem>
 
                     <VListItem
                         title="Special commands"
+                        :active="route().current('special-commands.index')"
+                        @click="goTo('special-commands.index')"
                         :prepend-icon="mdiArrowDecisionAuto"
                     ></VListItem>
 
