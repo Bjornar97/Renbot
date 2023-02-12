@@ -16,4 +16,17 @@
     @inertia
 </body>
 
+<script>
+    if (navigator && navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+
+        navigator.serviceWorker.getRegistration('/').then(function(registration) {
+            if (registration) {
+                registration.update();
+                registration.unregister();
+            }
+        });
+
+    }
+</script>
+
 </html>
