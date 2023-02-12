@@ -7,6 +7,8 @@ use App\Http\Controllers\RendogController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\SpecialCommandController;
 use App\Http\Controllers\WelcomeController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,9 +22,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware("guest")->group(function () {
-    Route::name("welcome")->get("/", [WelcomeController::class, "welcome"]);
+Route::name("welcome")->get("/", [WelcomeController::class, "welcome"]);
 
+Route::middleware("guest")->group(function () {
     Route::name("login.redirect")->get("/auth/twitch/redirect", [LoginController::class, "redirect"]);
     Route::name("login.callback")->get("/auth/twitch/callback", [LoginController::class, "callback"]);
 });
