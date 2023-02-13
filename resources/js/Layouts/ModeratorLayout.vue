@@ -104,9 +104,8 @@ const bottomNav = computed({
             </VAppBar>
 
             <VNavigationDrawer
-                :model-value="showMenu"
-                :permanent="mdAndUp"
-                :temporary="!mdAndUp"
+                :model-value="showMenu || mdAndUp"
+                :disable-resize-watcher="true"
             >
                 <VList color="primary">
                     <VListSubheader>Bot</VListSubheader>
