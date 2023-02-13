@@ -106,7 +106,6 @@ const bottomNav = computed({
             <VNavigationDrawer
                 :model-value="showMenu || mdAndUp"
                 :disable-resize-watcher="true"
-                absolute
             >
                 <VList color="primary">
                     <VListSubheader>Bot</VListSubheader>
@@ -150,6 +149,7 @@ const bottomNav = computed({
                 color="primary"
                 v-model="bottomNav"
                 v-if="!mdAndUp"
+                absolute
             >
                 <VBtn value="commands">
                     <VIcon :icon="mdiMessageReplyText"></VIcon>
@@ -173,5 +173,12 @@ const bottomNav = computed({
 .moderator-icon {
     object-fit: contain;
     width: 1.3rem;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    /* right: 0; */
 }
 </style>
