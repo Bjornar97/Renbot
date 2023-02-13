@@ -69,7 +69,7 @@ const bottomNav = computed({
 <template>
     <VApp>
         <VLayout>
-            <Messages></Messages>
+            <Messages class="global-messages"></Messages>
 
             <VAppBar>
                 <VAppBarTitle>
@@ -180,5 +180,8 @@ const bottomNav = computed({
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.global-messages {
 }
 </style>

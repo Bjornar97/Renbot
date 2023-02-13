@@ -60,6 +60,7 @@ watch(
         <VSnackbar
             :timeout="5000"
             color="success"
+            class="success-snackbar"
             v-model="showSuccess"
             location="bottom right"
             transition="slide-x-reverse-transition"
@@ -114,3 +115,10 @@ watch(
         </VAlert>
     </div>
 </template>
+
+<style>
+.success-snackbar .v-overlay__content {
+    position: fixed;
+    bottom: 4rem !important;
+}
+</style>
