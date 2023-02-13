@@ -2,8 +2,9 @@
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import type { Command } from "@/types/Command";
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiAlphaEBox, mdiCancel, mdiContentSave } from "@mdi/js";
-import { computed } from "vue";
+import { mdiAlphaEBox, mdiCancel, mdiContentSave, mdiTrashCan } from "@mdi/js";
+import { computed, ref } from "vue";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -62,6 +63,21 @@ const severityColor = computed(() => {
 
     return color;
 });
+
+const { smAndUp } = useDisplay();
+
+const showDelete = ref(false);
+const deleteLoading = ref(false);
+
+const deleteCommand = () => {
+    deleteLoading.value = true;
+    router.delete(route("commands.destroy", { command: props.command.id }), {
+        onFinish: () => {
+            showDelete.value = false;
+            deleteLoading.value = false;
+        },
+    });
+};
 </script>
 
 <template>
@@ -107,30 +123,35 @@ const severityColor = computed(() => {
                             class="mb-8"
                             :disabled="form.type === 'punishable'"
                         >
-                            <VBtn color="#01AD02" value="moderators">
+                            <VBtn color="#01AD02" value="moderators" stacked>
                                 <template #prepend>
                                     <img
                                         src="../../../images/icons/moderator.png"
                                         alt="Moderator icon"
                                     />
                                 </template>
-                                Moderators only
+                                Moderators
                             </VBtn>
 
-                            <VBtn color="purple-darken-4" value="subscribers">
+                            <VBtn
+                                color="purple-darken-4"
+                                value="subscribers"
+                                stacked
+                            >
                                 <template #prepend>
                                     <img
                                         src="../../../images/icons/subscriber.png"
                                         alt="Moderator icon"
                                     />
                                 </template>
-                                Subscribers
+                                Subs
                             </VBtn>
 
                             <VBtn
                                 color="red-darken-4"
                                 value="everyone"
                                 :prepend-icon="mdiAlphaEBox"
+                                stacked
                             >
                                 Everyone
                             </VBtn>
@@ -206,9 +227,36 @@ const severityColor = computed(() => {
                     <VBtn @click="cancel" color="gray" :prepend-icon="mdiCancel"
                         >Cancel</VBtn
                     >
+
+                    <VBtn
+                        color="red-darken-3"
+                        :prepend-icon="mdiTrashCan"
+                        @click="showDelete = true"
+                        >Delete command</VBtn
+                    >
                 </div>
             </div>
         </VForm>
+
+        <VDialog v-model="showDelete">
+            <VCard class="delete-dialog">
+                <VCardTitle>Are you sure?</VCardTitle>
+
+                <VCardText>
+                    Are you sure you want to delete this command?
+                </VCardText>
+
+                <VCardActions>
+                    <VBtn @click="showDelete = false">Cancel</VBtn>
+                    <VBtn
+                        color="red"
+                        @click="deleteCommand"
+                        :loading="deleteLoading"
+                        >Delete</VBtn
+                    >
+                </VCardActions>
+            </VCard>
+        </VDialog>
     </div>
 </template>
 

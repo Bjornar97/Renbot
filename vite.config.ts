@@ -25,7 +25,7 @@ export default defineConfig({
                     // as absolute paths to files on disk. Setting this to
                     // `false` will leave absolute URLs un-touched so they can
                     // reference assets in the public directory as expected.
-                    includeAbsolute: false,
+                    includeAbsolute: true,
                 },
             },
         }),

@@ -106,8 +106,22 @@ class CommandController extends Controller
      */
     public function destroy(Command $command)
     {
+        $type = $command->type;
+
         $command->delete();
 
-        return back()->with("success", "Successfully deleted command");
+        if ($type === "regular") {
+            $route = "commands.index";
+        }
+
+        if ($type === "punishable") {
+            $route = "punishable-commands.index";
+        }
+
+        if ($type === "special") {
+            $route = "special-commands.index";
+        }
+
+        return redirect()->route($route)->with("success", "Successfully deleted command");
     }
 }

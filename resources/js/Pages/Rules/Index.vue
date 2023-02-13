@@ -3,10 +3,12 @@ import RuleRow from "@/Components/Rules/RuleRow.vue";
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import type { Rule } from "@/types/Rule";
 import { Link, router } from "@inertiajs/vue3";
-import { mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiScaleBalance } from "@mdi/js";
 import route from "ziggy-js";
 import Draggable from "vuedraggable";
 import { computed } from "vue";
+import RuleListItem from "@/Components/Rules/RuleListItem.vue";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -34,6 +36,12 @@ const order = computed({
 const newRule = () => {
     router.get(route("rules.create"));
 };
+
+const showRulesPage = () => {
+    router.get(route("rules"));
+};
+
+const { mdAndUp } = useDisplay();
 </script>
 
 <template>
@@ -42,12 +50,19 @@ const newRule = () => {
             <div class="mb-2 mb-md-0">
                 <h1 class="mb-2">Rules</h1>
                 <p>
-                    The rules that show up on the rules page
-                    <Link :href="route('rules')"></Link>
+                    The rules that show up on the
+                    <Link :href="route('rules')">rules page</Link>
                 </p>
             </div>
 
             <div class="add-button">
+                <VBtn
+                    color="primary"
+                    :prepend-icon="mdiScaleBalance"
+                    @click="showRulesPage"
+                    >See rules page</VBtn
+                >
+
                 <VBtn @click="newRule" color="green" :prepend-icon="mdiPlus"
                     >Add rule</VBtn
                 >
@@ -55,7 +70,7 @@ const newRule = () => {
         </header>
 
         <main>
-            <VTable class="mt-8" hover>
+            <VTable class="mt-8" hover v-if="mdAndUp">
                 <thead>
                     <tr>
                         <th></th>
@@ -74,6 +89,14 @@ const newRule = () => {
                     </Draggable>
                 </tbody>
             </VTable>
+
+            <VList v-else class="mt-8" lines="three">
+                <Draggable v-model="order" item-key="id" id="draggable">
+                    <template #item="{ element }">
+                        <RuleListItem :rule="element"></RuleListItem>
+                    </template>
+                </Draggable>
+            </VList>
         </main>
     </div>
 </template>
@@ -85,6 +108,12 @@ const newRule = () => {
 
 .header {
     display: grid;
+}
+
+.add-button {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 @media screen and (min-width: 768px) {

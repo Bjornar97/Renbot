@@ -3,6 +3,8 @@ import type { Command } from "@/types/Command";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiTrashCan } from "@mdi/js";
 import { computed, ref } from "vue";
+import CommandUsableByIcon from "./CommandUsableByIcon.vue";
+import SeverityChip from "./SeverityChip.vue";
 
 const props = defineProps<{
     command: Command;
@@ -41,36 +43,12 @@ const deleteCommand = () => {
         },
     });
 };
-
-const severityColor = computed(() => {
-    let color = "success";
-    if (props.command.severity > 4) {
-        color = "warning";
-    }
-
-    if (props.command.severity > 7) {
-        color = "error";
-    }
-
-    return color;
-});
 </script>
 
 <template>
     <tr @click="goToEdit" class="cursor-pointer">
         <td>
-            <template v-if="command.usable_by === 'moderators'">
-                <img
-                    src="../../../images/icons/moderator.png"
-                    alt="Moderator icon"
-                />
-            </template>
-            <template v-else-if="command.usable_by === 'subscribers'">
-                <img
-                    src="../../../images/icons/subscriber.png"
-                    alt="Moderator icon"
-                />
-            </template>
+            <CommandUsableByIcon :command="command"></CommandUsableByIcon>
         </td>
 
         <td>!{{ command.command }}</td>
@@ -78,17 +56,11 @@ const severityColor = computed(() => {
         <td class="response">{{ command.response }}</td>
 
         <td v-if="type === 'punishable'">
-            <VChip :color="severityColor" size="x-large" class="text-h6">{{
-                command.severity
-            }}</VChip>
+            <SeverityChip :command="command"></SeverityChip>
         </td>
 
         <td @click.stop>
-            <VSwitch
-                v-model="enabled"
-                color="red-darken-2"
-                hide-details
-            ></VSwitch>
+            <VSwitch v-model="enabled" color="primary" hide-details></VSwitch>
         </td>
 
         <td @click.stop>

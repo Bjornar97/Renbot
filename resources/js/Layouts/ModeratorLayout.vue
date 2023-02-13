@@ -24,13 +24,46 @@ const user = computed(() => {
     return (page.props as any)?.user;
 });
 
-const { smAndUp } = useDisplay();
+const { mdAndUp } = useDisplay();
 
 const showMenu = ref(false);
 
 const goTo = (routeName: string) => {
+    if (!mdAndUp.value) {
+        showMenu.value = false;
+    }
+
     router.get(route(routeName));
 };
+
+const currentRoute = ref(route().current());
+
+router.on("navigate", () => {
+    currentRoute.value = route().current();
+});
+
+const bottomNav = computed({
+    get: () => {
+        if (currentRoute.value?.includes("commands.")) {
+            return "commands";
+        }
+
+        if (currentRoute.value?.includes("rules.")) {
+            return "rules";
+        }
+
+        return null;
+    },
+    set: (v) => {
+        if (v === "commands") {
+            return router.get(route("commands.index"));
+        }
+
+        if (v === "rules") {
+            return router.get(route("rules.index"));
+        }
+    },
+});
 </script>
 
 <template>
@@ -42,7 +75,7 @@ const goTo = (routeName: string) => {
                 <VAppBarTitle>
                     <div class="d-flex align-center">
                         <VBtn
-                            v-if="!smAndUp"
+                            v-if="!mdAndUp"
                             variant="text"
                             :icon="mdiMenu"
                             @click="showMenu = !showMenu"
@@ -57,9 +90,9 @@ const goTo = (routeName: string) => {
                     </div>
                 </VAppBarTitle>
 
-                <VSpacer v-if="smAndUp"></VSpacer>
+                <VSpacer v-if="mdAndUp"></VSpacer>
 
-                <VChip pill class="mr-4" v-if="smAndUp">
+                <VChip pill class="mr-4" v-if="mdAndUp">
                     <VAvatar start>
                         <VImg :src="user.avatar" alt="Avatar" />
                     </VAvatar>
@@ -67,11 +100,15 @@ const goTo = (routeName: string) => {
                     {{ user.username }}
                 </VChip>
 
-                <VBtn color="primary-lighten-2" @click="logout">Logout</VBtn>
+                <VBtn color="primary" @click="logout">Logout</VBtn>
             </VAppBar>
 
-            <VNavigationDrawer :model-value="showMenu || smAndUp">
-                <VList color="primary-lighten-2">
+            <VNavigationDrawer
+                :model-value="showMenu"
+                :permanent="mdAndUp"
+                :temporary="!mdAndUp"
+            >
+                <VList color="primary">
                     <VListSubheader>Bot</VListSubheader>
                     <VListItem
                         title="Health"
@@ -108,6 +145,22 @@ const goTo = (routeName: string) => {
                     ></VListItem>
                 </VList>
             </VNavigationDrawer>
+
+            <VBottomNavigation
+                color="primary"
+                v-model="bottomNav"
+                v-if="!mdAndUp"
+            >
+                <VBtn value="commands">
+                    <VIcon :icon="mdiMessageReplyText"></VIcon>
+                    Commands
+                </VBtn>
+
+                <VBtn value="rules">
+                    <VIcon :icon="mdiScaleBalance"></VIcon>
+                    Rules
+                </VBtn>
+            </VBottomNavigation>
 
             <VMain>
                 <slot></slot>

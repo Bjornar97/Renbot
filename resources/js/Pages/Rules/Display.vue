@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Rule } from "@/types/Rule";
+import RendogLogo from "../../../images/rendog-logo.png";
 
 const props = defineProps<{
     rules: Rule[];
@@ -13,7 +14,7 @@ const props = defineProps<{
                 <div class="page px-4 mt-8">
                     <img
                         class="logo mb-4"
-                        src="/images/rendog-logo.png"
+                        :src="RendogLogo"
                         alt="Rendog logo"
                     />
 

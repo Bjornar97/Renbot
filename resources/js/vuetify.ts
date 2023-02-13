@@ -6,9 +6,9 @@ import { mdiInformation } from "@mdi/js";
 const renbotTheme: ThemeDefinition = {
     dark: true,
     colors: {
-        primary: "#8a0025",
-        "primary-lighten-1": "#b52a4f",
-        "primary-lighten-2": "#e04770",
+        primary: "#CF6679",
+        "primary-darken-1": "#e04770",
+        "primary-darken-2": "#b52a4f",
         secondary: "#f36d29",
         "secondary-darken-1": "#d75e20",
     },

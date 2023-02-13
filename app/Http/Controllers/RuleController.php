@@ -80,7 +80,9 @@ class RuleController extends Controller
      */
     public function edit(Rule $rule)
     {
-        //
+        return Inertia::render("Rules/Edit", [
+            'rule' => $rule,
+        ]);
     }
 
     /**
@@ -92,7 +94,11 @@ class RuleController extends Controller
      */
     public function update(UpdateRuleRequest $request, Rule $rule)
     {
-        //
+        $data = $request->validated();
+
+        $rule->update($data);
+
+        return redirect()->route("rules.index")->with("success", "Successfully updated rule");
     }
 
     public function updateOrder(RuleOrderUpdateRequest $request)
@@ -120,6 +126,17 @@ class RuleController extends Controller
     public function destroy(Rule $rule)
     {
         $rule->delete();
+
+        $order = 0;
+
+        $rules = Rule::orderBy('order')->get();
+
+        foreach ($rules as $rule) {
+            $rule->order = $order;
+            $rule->save();
+
+            $order++;
+        }
 
         return back()->with("success", "Successfully deleted rule");
     }

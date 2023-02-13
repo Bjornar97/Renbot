@@ -40,7 +40,7 @@
         "lib": ["DOM", "ESNext"],
         "types": ["node", "unplugin-vue-define-options/macros-global"],
         "paths": {
-            "@/*": ["resources/js/*"]
+            "@/*": ["resources/js/*"],
         }
     },
     "include": [

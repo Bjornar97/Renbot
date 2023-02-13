@@ -3,6 +3,7 @@ import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiAlphaEBox, mdiCancel, mdiContentSave } from "@mdi/js";
 import { computed } from "vue";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -12,8 +13,6 @@ const props = defineProps<{
     type: "regular" | "punishable" | "special";
     actions: { action: string; title: string }[];
 }>();
-
-console.log(props.actions);
 
 const form = useForm("CreateCommand", {
     command: "",
@@ -70,6 +69,8 @@ const severityColor = computed(() => {
 
     return color;
 });
+
+const { smAndUp } = useDisplay();
 </script>
 
 <template>
@@ -116,33 +117,47 @@ const severityColor = computed(() => {
                         <VBtnToggle
                             v-model="form.usable_by"
                             divided
-                            class="mb-4"
+                            class="mb-8"
                             :disabled="form.type === 'punishable'"
                         >
-                            <VBtn color="#01AD02" value="moderators">
+                            <VBtn
+                                color="#01AD02"
+                                value="moderators"
+                                :stacked="!smAndUp"
+                                :size="smAndUp ? 'large' : 'small'"
+                            >
                                 <template #prepend>
                                     <img
                                         src="../../../images/icons/moderator.png"
                                         alt="Moderator icon"
                                     />
                                 </template>
-                                Moderators only
+                                <span v-if="smAndUp">Moderators only</span>
+                                <span v-else>Moderators</span>
                             </VBtn>
 
-                            <VBtn color="purple-darken-4" value="subscribers">
+                            <VBtn
+                                color="purple-darken-4"
+                                value="subscribers"
+                                :size="smAndUp ? 'large' : 'small'"
+                                :stacked="!smAndUp"
+                            >
                                 <template #prepend>
                                     <img
                                         src="../../../images/icons/subscriber.png"
                                         alt="Moderator icon"
                                     />
                                 </template>
-                                Subscribers
+                                <span v-if="smAndUp">Subscribers</span>
+                                <span v-else>Subs</span>
                             </VBtn>
 
                             <VBtn
                                 color="red-darken-4"
                                 value="everyone"
+                                :size="smAndUp ? 'large' : 'small'"
                                 :prepend-icon="mdiAlphaEBox"
+                                :stacked="!smAndUp"
                             >
                                 Everyone
                             </VBtn>
