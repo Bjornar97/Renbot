@@ -149,7 +149,7 @@ const bottomNav = computed({
                 color="primary"
                 v-model="bottomNav"
                 v-if="!mdAndUp"
-                absolute
+                class="bottom-nav"
             >
                 <VBtn value="commands">
                     <VIcon :icon="mdiMessageReplyText"></VIcon>
@@ -176,9 +176,9 @@ const bottomNav = computed({
 }
 
 .bottom-nav {
-    position: fixed;
+    position: fixed !important;
     bottom: 0;
     left: 0;
-    /* right: 0; */
+    right: 0;
 }
 </style>
