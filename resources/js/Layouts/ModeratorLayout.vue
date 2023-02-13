@@ -162,7 +162,7 @@ const bottomNav = computed({
                 </VBtn>
             </VBottomNavigation>
 
-            <VMain>
+            <VMain class="mb-16">
                 <slot></slot>
             </VMain>
         </VLayout>
