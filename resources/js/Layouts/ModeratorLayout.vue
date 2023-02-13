@@ -106,6 +106,7 @@ const bottomNav = computed({
             <VNavigationDrawer
                 :model-value="showMenu || mdAndUp"
                 :disable-resize-watcher="true"
+                absolute
             >
                 <VList color="primary">
                     <VListSubheader>Bot</VListSubheader>
