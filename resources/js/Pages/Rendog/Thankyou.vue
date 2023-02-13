@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
+import RendogLogo from "../../../images/rendog-logo.png";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -8,11 +9,7 @@ defineOptions({
 
 <template>
     <div class="page">
-        <img
-            class="mx-auto mb-4 mt-12"
-            src="/images/rendog-logo.png"
-            alt="Rendog logo"
-        />
+        <img class="mx-auto mb-4 mt-12" :src="RendogLogo" alt="Rendog logo" />
         <h1 class="text-md-h1 mb-8 mx-auto text-center">Thank you Rendog</h1>
 
         <p class="info text-center mx-auto">
