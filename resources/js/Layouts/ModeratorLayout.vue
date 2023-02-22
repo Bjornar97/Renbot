@@ -69,8 +69,6 @@ const bottomNav = computed({
 <template>
     <VApp>
         <VLayout>
-            <Messages class="global-messages"></Messages>
-
             <VAppBar>
                 <VAppBarTitle>
                     <div class="d-flex align-center">
@@ -111,6 +109,8 @@ const bottomNav = computed({
                     <VListSubheader>Bot</VListSubheader>
                     <VListItem
                         title="Health"
+                        :active="route().current('bot')"
+                        @click="goTo('bot')"
                         :prepend-icon="mdiHeartPulse"
                     ></VListItem>
 
@@ -163,6 +163,7 @@ const bottomNav = computed({
             </VBottomNavigation>
 
             <VMain class="mb-16">
+                <Messages class="global-messages ma-4"></Messages>
                 <slot></slot>
             </VMain>
         </VLayout>

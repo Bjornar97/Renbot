@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BotController;
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PunishableCommandController;
@@ -35,6 +36,9 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::resource("moderators/commands", CommandController::class);
     Route::resource("moderators/punishable-commands", PunishableCommandController::class);
     Route::resource("moderators/special-commands", SpecialCommandController::class);
+
+    Route::name("bot")->get("moderators/bot", [BotController::class, "bot"]);
+    Route::name("bot.restart")->post("moderators/bot/restart", [BotController::class, "restart"]);
 
     Route::name("rules.order.update")->put("/moderators/rules/order/update", [RuleController::class, "updateOrder"]);
     Route::resource("moderators/rules", RuleController::class);
