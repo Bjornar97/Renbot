@@ -58,16 +58,12 @@ class BotCommand extends Command
             'channels' => [$this->channel],
         ]));
 
+
+
         // If OS asks to stop, say that bot is restarting, then close the connection
-        $this->trap(SIGTERM, function () {
-            $this->client->say($this->channel, "This is Renbot 2.0 testing restarting.");
-
-            Cache::set("bot-shutdown-time", now()->timestamp);
-
-            sleep(2);
-
-            $this->client->close();
-        });
+        $this->trap(SIGTERM, [$this, 'handleExit']);
+        $this->trap(SIGHUP, [$this, 'handleExit']);
+        $this->trap(SIGQUIT, [$this, 'handleExit']);
 
         $this->client->on(MessageEvent::class, function (MessageEvent $message) {
             $this->onMessage($message);
@@ -76,6 +72,17 @@ class BotCommand extends Command
         $this->client->connect();
 
         return Command::SUCCESS;
+    }
+
+    private function handleExit()
+    {
+        $this->client->say($this->channel, "This is Renbot 2.0 testing restarting.");
+
+        Cache::set("bot-shutdown-time", now()->timestamp);
+
+        sleep(2);
+
+        $this->client->close();
     }
 
     private function getAccessToken()
