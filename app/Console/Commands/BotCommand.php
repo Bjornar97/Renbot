@@ -61,9 +61,9 @@ class BotCommand extends Command
 
 
         // If OS asks to stop, say that bot is restarting, then close the connection
-        $this->trap(SIGTERM, [$this, 'handleExit']);
-        $this->trap(SIGHUP, [$this, 'handleExit']);
-        $this->trap(SIGQUIT, [$this, 'handleExit']);
+        $this->trap(SIGTERM, $this->handleExit(...));
+        $this->trap(SIGHUP, $this->handleExit(...));
+        $this->trap(SIGINT, $this->handleExit(...));
 
         $this->client->on(MessageEvent::class, function (MessageEvent $message) {
             $this->onMessage($message);
