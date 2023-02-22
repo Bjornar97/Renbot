@@ -98,7 +98,7 @@ class BotCommand extends Command
                 if ($lastShutdown->isAfter(now()->subHour())) {
                     $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
 
-                    $this->client->say($this->channel, "Im back! After {$interval->forHumans()}");
+                    $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
                 }
 
                 Cache::delete("bot-shutdown-time");
