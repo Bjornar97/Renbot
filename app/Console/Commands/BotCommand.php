@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\ClientOptions;
+use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -69,6 +70,8 @@ class BotCommand extends Command
             $this->onMessage($message);
         });
 
+        $this->client->on(WelcomeEvent::class, $this->afterStartup(...));
+
         $this->client->connect();
 
         return Command::SUCCESS;
@@ -83,6 +86,23 @@ class BotCommand extends Command
         $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
     }
 
+    private function afterStartup()
+    {
+        $lastShutdown = Cache::get("bot-shutdown-time");
+
+        if ($lastShutdown) {
+            $lastShutdown = Carbon::createFromTimestamp($lastShutdown);
+
+            if ($lastShutdown->isAfter(now()->subHour())) {
+                $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
+
+                $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
+            }
+
+            Cache::delete("bot-shutdown-time");
+        }
+    }
+
     private function getAccessToken()
     {
         $renbot = User::where('username', "RenTheBot")->first();
@@ -95,20 +115,6 @@ class BotCommand extends Command
         if ($message->self) return;
 
         try {
-            $lastShutdown = Cache::get("bot-shutdown-time");
-
-            if ($lastShutdown) {
-                $lastShutdown = Carbon::createFromTimestamp($lastShutdown);
-
-                if ($lastShutdown->isAfter(now()->subHour())) {
-                    $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
-
-                    $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
-                }
-
-                Cache::delete("bot-shutdown-time");
-            }
-
             $response = CommandService::message($message, $this->client)->getResponse();
 
             $this->client->say($this->channel, $response);
