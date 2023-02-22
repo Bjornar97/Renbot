@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\User;
 use App\Services\CommandService;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\ClientOptions;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
@@ -95,8 +96,12 @@ class BotCommand extends Command
                 $lastShutdown = Carbon::createFromTimestamp($lastShutdown);
 
                 if ($lastShutdown->isAfter(now()->subHour())) {
-                    $this->client->say($this->channel, "Im back! After {$lastShutdown->diffForHumans()}");
+                    $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
+
+                    $this->client->say($this->channel, "Im back! After {$interval->forHumans()}");
                 }
+
+                Cache::delete("bot-shutdown-time");
             }
 
             $response = CommandService::message($message, $this->client)->getResponse();
