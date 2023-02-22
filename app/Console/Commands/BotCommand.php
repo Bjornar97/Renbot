@@ -80,9 +80,7 @@ class BotCommand extends Command
 
         Cache::set("bot-shutdown-time", now()->timestamp);
 
-        sleep(2);
-
-        $this->client->close();
+        $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
     }
 
     private function getAccessToken()
