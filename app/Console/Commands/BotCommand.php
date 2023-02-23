@@ -6,12 +6,17 @@ use App\Models\User;
 use App\Services\CommandService;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
+use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\ClientOptions;
+use GhostZero\Tmi\Events\Event;
 use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
+use GhostZero\Tmi\Events\Twitch\NoticeEvent;
+use GhostZero\Tmi\Events\Twitch\UserNoticeEvent;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class BotCommand extends Command
@@ -81,7 +86,7 @@ class BotCommand extends Command
     {
         $this->client->say($this->channel, "This is Renbot 2.0 testing restarting.");
 
-        Cache::set("bot-shutdown-time", now()->timestamp);
+        Cache::set("bot-shutdown-time", now()->timestamp, now()->addHours(6));
 
         $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
     }
@@ -90,22 +95,26 @@ class BotCommand extends Command
     {
         $lastShutdown = Cache::get("bot-shutdown-time");
 
-        if ($lastShutdown) {
-            $lastShutdown = Carbon::createFromTimestamp($lastShutdown);
-
-            if ($lastShutdown->isAfter(now()->subHour())) {
-                $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
-
-                $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
-            }
-
-            Cache::delete("bot-shutdown-time");
+        if (!$lastShutdown) {
+            return;
         }
+
+        Cache::delete("bot-shutdown-time");
+
+        $lastShutdown = Carbon::createFromTimestamp($lastShutdown);
+
+        $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
+
+        $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
     }
 
     private function getAccessToken()
     {
         $renbot = User::where('username', "RenTheBot")->first();
+
+        if (!$renbot) {
+            throw new Exception("RenTheBot has not logged in, and its required for the bot to work.");
+        }
 
         return $renbot->twitch_access_token;
     }

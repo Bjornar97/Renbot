@@ -45,7 +45,6 @@ const showSuccess = computed({
 watch(
     () => (usePage().props as any).flash,
     (newValue) => {
-        console.log("changed flash");
         showSnacks.value = true;
         flash.value = newValue;
     },

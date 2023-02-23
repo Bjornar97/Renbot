@@ -212,4 +212,10 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'features' => [
+        'timeouts' => env("FEATURE_TIMEOUTS", false),
+        'bans' => env("FEATURE_BANS", false),
+        'punish_debug' => env("FEATURE_PUNISH_DEBUG", false),
+    ],
+
 ];

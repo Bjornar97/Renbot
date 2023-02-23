@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Pennant\Feature;
 use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Feature::define("timeouts", fn () => config("app.features.timeouts"));
+
+        Feature::define("bans", fn () => config("app.features.bans"));
+
+        Feature::define("punish-debug", fn () => config("app.features.punish_debug"));
     }
 }

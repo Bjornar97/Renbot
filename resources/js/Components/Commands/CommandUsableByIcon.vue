@@ -3,8 +3,6 @@ import type { Command } from "@/types/Command";
 import ModeratorIcon from "../../../images/icons/moderator.png";
 import SubscriberIcon from "../../../images/icons/subscriber.png";
 
-console.log({ ModeratorIcon, SubscriberIcon });
-
 const props = defineProps<{
     command: Command;
 }>();

@@ -8,8 +8,6 @@ const props = defineProps<{
     rule: Rule;
 }>();
 
-console.log(props);
-
 const goToEdit = () => {
     router.get(route("rules.edit", { rule: props.rule.id }));
 };

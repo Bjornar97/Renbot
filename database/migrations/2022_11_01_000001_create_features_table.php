@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Command;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,17 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('command_schedules', function (Blueprint $table) {
+        Schema::create('features', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignIdFor(Command::class);
-
-            $table->text("response")->nullable();
-
-            $table->dateTime("start");
-            $table->dateTime("end");
-
+            $table->string('name');
+            $table->string('scope');
+            $table->text('value');
             $table->timestamps();
+
+            $table->unique(['name', 'scope']);
         });
     }
 
@@ -35,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('command_schedules');
+        Schema::dropIfExists('features');
     }
 };

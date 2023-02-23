@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\BanTwitchUserJob;
 use App\Jobs\DeleteTwitchMessageJob;
 use App\Jobs\TimeoutTwitchUserJob;
 use App\Models\Command;
@@ -13,6 +14,7 @@ use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Laravel\Pennant\Feature;
 use romanzipp\Twitch\Twitch;
 use Throwable;
 
@@ -32,7 +34,7 @@ class CommandService
         7 => 300,
         8 => 600,
         9 => 1200,
-        10 => 0, // insta-ban
+        10 => 10000, // insta-ban
     ];
 
     public function __construct(public MessageEvent $message, private Client $bot)
@@ -126,8 +128,6 @@ class CommandService
 
         $moderator = $this->getModerator();
 
-        Log::info("Punishing $target");
-
         if (!$target) {
             $this->bot->say($this->channel, "You need to specify which user to punish. Example: !{$this->command->command} @username");
             throw new Exception("Did not supply target for punishment");
@@ -139,14 +139,9 @@ class CommandService
 
         $response = $this->generateBasicResponse();
 
-        if ($this->command->severity >= 10 || $seconds > 10000) {
+        if (Feature::activate("bans") && $seconds >= 10000) {
             return $this->ban($twitchId, $response, $moderator);
         }
-
-        $this->command->punishes()->create([
-            'twitch_user_id' => $twitchId,
-            'seconds' => $seconds,
-        ]);
 
         return $this->timeout($twitchId, $seconds, $response, $moderator);
     }
@@ -157,11 +152,21 @@ class CommandService
 
         $target = $this->getTargetUsernameFromMessage($this->message->message);
 
-        $this->bot->say($this->channel, "Would ban @{$target}");
+        $punish = $this->command->punishes()->create([
+            'twitch_user_id' => $twitchId,
+            'type' => "ban",
+            'seconds' => -1,
+        ]);
+
+        activity()->on($punish)->by($moderator)->log("created");
+
+        Feature::when(
+            "punish-debug",
+            whenActive: fn () => $this->bot->say($this->channel, "Would ban @{$target}"),
+            whenInactive: fn () => BanTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
+        );
 
         return $response;
-
-        // TODO dispatch job to ban user
     }
 
     private function timeout(int $twitchId, int $seconds, string $response, User|null $moderator)
@@ -172,11 +177,21 @@ class CommandService
 
         $target = $this->getTargetUsernameFromMessage($this->message->message);
 
-        $this->bot->say($this->channel, "Would timeout @{$target} with {$seconds} seconds");
+        Feature::when(
+            "punish-debug",
+            whenActive: fn () => $this->bot->say($this->channel, "Would timeout @{$target} with {$seconds} seconds"),
+            whenInactive: fn () => TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator),
+        );
+
+        $punish = $this->command->punishes()->create([
+            'twitch_user_id' => $twitchId,
+            'type' => "timeout",
+            'seconds' => $seconds,
+        ]);
+
+        activity()->on($punish)->by($moderator)->log("created");
 
         return $response;
-
-        TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator);
     }
 
     public function special(): string

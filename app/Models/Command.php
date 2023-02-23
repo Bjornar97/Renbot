@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Command extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use LogsActivity;
 
     public $fillable = [
         'command',
@@ -67,5 +70,10 @@ class Command extends Model
     public function getEveryoneCanUseAttribute()
     {
         return $this->usable_by === "everyone";
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logFillable()->logOnlyDirty();
     }
 }

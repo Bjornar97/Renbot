@@ -120,6 +120,10 @@ const tab = computed({
                 </thead>
 
                 <tbody>
+                    <tr v-if="commands.length <= 0">
+                        <td colspan="3">No {{ type }} commands created yet</td>
+                    </tr>
+
                     <CommandRow
                         v-for="command in commands"
                         :command="command"
@@ -131,10 +135,13 @@ const tab = computed({
 
             <VList lines="two" v-else>
                 <CommandListItem
+                    v-if="commands.length > 0"
                     v-for="command in commands"
                     :key="command.id"
                     :command="command"
                 ></CommandListItem>
+                
+                <p v-else class="ma-4">No {{ type }} commands created yet</p>
             </VList>
         </main>
     </div>

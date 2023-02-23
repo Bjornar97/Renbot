@@ -6,10 +6,10 @@ import { ref } from "vue";
 
 const props = defineProps<{
     rule: Rule;
+    moveable: boolean;
 }>();
 
 const goToEdit = () => {
-    console.log("Going to edit");
     router.get(route("rules.edit", { rule: props.rule.id }));
 };
 
@@ -33,7 +33,7 @@ const deleteRule = () => {
         :subtitle="rule.text"
         @click.stop="goToEdit"
     >
-        <template #prepend>
+        <template #prepend v-if="moveable">
             <VIcon :icon="mdiMenu"></VIcon>
         </template>
 

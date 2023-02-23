@@ -70,6 +70,11 @@ const { mdAndUp } = useDisplay();
         </header>
 
         <main>
+            <p v-if="!mdAndUp" class="my-4">
+                You cannot change the order of rules on mobile. If you want to
+                change the order, use a computer.
+            </p>
+
             <VTable class="mt-8" hover v-if="mdAndUp">
                 <thead>
                     <tr>
@@ -81,6 +86,10 @@ const { mdAndUp } = useDisplay();
                 </thead>
 
                 <tbody>
+                    <tr v-if="rules.length <= 0">
+                        <td colspan="2">No rules created yet</td>
+                    </tr>
+
                     <!-- <RuleRow v-for="rule in rules" :rule="rule"></RuleRow> -->
                     <Draggable v-model="order" item-key="id" id="draggable">
                         <template #item="{ element }">
@@ -90,13 +99,21 @@ const { mdAndUp } = useDisplay();
                 </tbody>
             </VTable>
 
-            <VList v-else class="mt-8" lines="three">
-                <Draggable v-model="order" item-key="id" id="draggable">
+            <VList v-else-if="rules.length > 0" class="mt-8" lines="three">
+                <RuleListItem
+                    v-for="rule in rules"
+                    :rule="rule"
+                    :moveable="false"
+                ></RuleListItem>
+
+                <!-- <Draggable v-model="order" item-key="id" id="draggable">
                     <template #item="{ element }">
-                        <RuleListItem :rule="element"></RuleListItem>
+                        <RuleListItem :rule="element" :moveable="true"></RuleListItem>
                     </template>
-                </Draggable>
+                </Draggable> -->
             </VList>
+
+            <p v-else class="my-4">No rules created yet</p>
         </main>
     </div>
 </template>
