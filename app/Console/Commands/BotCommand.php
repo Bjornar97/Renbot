@@ -84,7 +84,7 @@ class BotCommand extends Command
 
     private function handleExit()
     {
-        $this->client->say($this->channel, "This is Renbot 2.0 testing restarting.");
+        $this->client->say($this->channel, "Restarting. Dont use any commands right now!");
 
         Cache::set("bot-shutdown-time", now()->timestamp, now()->addHours(6));
 

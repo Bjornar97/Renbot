@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\BotStatus;
 use App\Models\Command;
 use App\Models\Punish;
 use Exception;
+use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Support\Facades\Log;
 
@@ -15,19 +17,29 @@ class SpecialCommandService
             'action' => 'resetPunishment',
             'title' => "Reset punishment for user"
         ],
+        'restartBot' => [
+            'action' => "restartBot",
+            'title' => "Restart the bot",
+        ],
+        'stopBot' => [
+            'action' => "stopBot",
+            'title' => "Stop the bot",
+        ],
     ];
 
     public MessageEvent $message;
     public int|null $targetUserId = null;
     public string|null $targetUsername = null;
 
-    public function __construct(public Command $command)
+    public string $channel = "rendogtv";
+
+    public function __construct(public Command $command, public Client $bot)
     {
     }
 
-    public static function command(Command $command): self
+    public static function command(Command $command, Client $bot): self
     {
-        return new self($command);
+        return new self($command, $bot);
     }
 
     public function message(MessageEvent $message): self
@@ -64,5 +76,24 @@ class SpecialCommandService
         }
 
         Punish::where('twitch_user_id', $this->targetUserId)->delete();
+    }
+
+    public function restartBot(): void
+    {
+        try {
+            BotService::restart();
+        } catch (\Throwable $th) {
+            throw new Exception("Failed to restart bot. Moderators, check the dashboard.");
+        }
+    }
+
+    public function stopBot(): void
+    {
+        try {
+            $this->bot->say($this->channel, "Stopping bot");
+            BotService::stop();
+        } catch (\Throwable $th) {
+            throw new Exception("Failed to stop bot. Moderators, check the dashboard.");
+        }
     }
 }

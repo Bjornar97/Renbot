@@ -39,6 +39,8 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
 
     Route::name("bot")->get("moderators/bot", [BotController::class, "bot"]);
     Route::name("bot.restart")->post("moderators/bot/restart", [BotController::class, "restart"]);
+    Route::name("bot.start")->post("moderators/bot/start", [BotController::class, "start"]);
+    Route::name("bot.stop")->post("moderators/bot/stop", [BotController::class, "stop"]);
 
     Route::name("rules.order.update")->put("/moderators/rules/order/update", [RuleController::class, "updateOrder"]);
     Route::resource("moderators/rules", RuleController::class);

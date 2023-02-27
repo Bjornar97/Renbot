@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\BotService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,10 +29,6 @@ class RestartBotJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $result = Process::run("supervisorctl restart renbot");
-
-        if ($result->failed()) {
-            Log::error("Failed to restart bot: {$result->output()}");
-        }
+        BotService::restart();
     }
 }

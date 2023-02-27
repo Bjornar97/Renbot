@@ -56,8 +56,8 @@ class CommandService
     public function getResponse(): string
     {
         if (!$this->isAuthorized()) {
-            Log::info("Dispatching deleting message");
             DeleteTwitchMessageJob::dispatch($this->message->tags['id']);
+
             throw new Exception("Unauthorized");
         }
 
@@ -129,7 +129,7 @@ class CommandService
         $moderator = $this->getModerator();
 
         if (!$target) {
-            $this->bot->say($this->channel, "You need to specify which user to punish. Example: !{$this->command->command} @username");
+            $this->bot->say($this->channel, "@{$this->getSenderDisplayName()} You need to specify which user to punish. Example: !{$this->command->command} @username");
             throw new Exception("Did not supply target for punishment");
         }
 
@@ -199,7 +199,7 @@ class CommandService
         $target = $this->getTargetUsernameFromMessage($this->message->message);
 
         try {
-            $command = SpecialCommandService::command($this->command)
+            $command = SpecialCommandService::command($this->command, $this->bot)
                 ->message($this->message);
 
             if ($target) {
@@ -209,7 +209,11 @@ class CommandService
 
             $response = $command->run();
         } catch (Throwable $th) {
-            return $th->getMessage();
+            if (Feature::active("special-debug")) {
+                return "@{$this->getSenderDisplayName()} " . $th->getMessage();
+            }
+
+            return "@{$this->getSenderDisplayName()} Something went wrong";
         }
 
         if ($response) {
@@ -308,5 +312,10 @@ class CommandService
         $target = str_replace("@", "", $target);
 
         return $target;
+    }
+
+    private function getSenderDisplayName(): string
+    {
+        return $this->message->tags['display-name'];
     }
 }
