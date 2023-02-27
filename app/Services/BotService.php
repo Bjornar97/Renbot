@@ -17,11 +17,7 @@ class BotService
     {
         $result = Process::run("supervisorctl status renbot");
 
-        Log::debug("Did status fail: " . ($result->failed() ? 'Yes' : "No"));
-
         $output = $result->output();
-
-        Log::debug($output);
 
         if (str_contains($output, "RUNNING")) {
             return BotStatus::RUNNING;
