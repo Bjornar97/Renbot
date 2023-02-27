@@ -33,7 +33,7 @@ class BotController extends Controller
             return back()->with("error", "Something went wrong when trying to restart the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
 
-        return back()->with("success", "The bot is getting restarted!");
+        return back()->with("success", "The bot has been restarted");
     }
 
     public function start()
@@ -45,6 +45,8 @@ class BotController extends Controller
         } catch (\Throwable $th) {
             return back()->with("error", "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
+
+        return back()->with("success", "The bot has been started");
     }
 
     public function stop()
@@ -56,5 +58,7 @@ class BotController extends Controller
         } catch (\Throwable $th) {
             return back()->with("error", "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
+
+        return back()->with("success", "The bot has been stopped");
     }
 }
