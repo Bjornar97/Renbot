@@ -123,20 +123,27 @@ const deleteCommand = () => {
                             class="mb-8"
                             :disabled="form.type === 'punishable'"
                         >
-                            <VBtn color="#01AD02" value="moderators" stacked>
+                            <VBtn
+                                color="#01AD02"
+                                value="moderators"
+                                :stacked="!smAndUp"
+                                :size="smAndUp ? 'large' : 'small'"
+                            >
                                 <template #prepend>
                                     <img
                                         src="../../../images/icons/moderator.png"
                                         alt="Moderator icon"
                                     />
                                 </template>
-                                Moderators
+                                <span v-if="smAndUp">Moderators only</span>
+                                <span v-else>Moderators</span>
                             </VBtn>
 
                             <VBtn
                                 color="purple-darken-4"
                                 value="subscribers"
-                                stacked
+                                :size="smAndUp ? 'large' : 'small'"
+                                :stacked="!smAndUp"
                             >
                                 <template #prepend>
                                     <img
@@ -144,14 +151,16 @@ const deleteCommand = () => {
                                         alt="Moderator icon"
                                     />
                                 </template>
-                                Subs
+                                <span v-if="smAndUp">Subscribers</span>
+                                <span v-else>Subs</span>
                             </VBtn>
 
                             <VBtn
                                 color="red-darken-4"
                                 value="everyone"
+                                :size="smAndUp ? 'large' : 'small'"
                                 :prepend-icon="mdiAlphaEBox"
-                                stacked
+                                :stacked="!smAndUp"
                             >
                                 Everyone
                             </VBtn>
