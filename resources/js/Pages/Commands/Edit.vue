@@ -284,6 +284,7 @@ const deleteCommand = () => {
 .buttons {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .header {
