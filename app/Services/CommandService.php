@@ -34,7 +34,7 @@ class CommandService
         7 => 300,
         8 => 600,
         9 => 1200,
-        10 => 10000, // insta-ban
+        10 => 30000, // insta-ban
     ];
 
     public function __construct(public MessageEvent $message, private Client $bot)
@@ -135,15 +135,23 @@ class CommandService
 
         $twitchId = $this->getTwitchId($target);
 
+        if ($this->isJustPunished($twitchId)) {
+            return "";
+        }
+
         $seconds = $this->getPunishSeconds($twitchId);
 
         $response = $this->generateBasicResponse();
 
-        if (Feature::activate("bans") && $seconds >= 10000) {
+        if (Feature::active("bans") && $seconds >= 30000) {
             return $this->ban($twitchId, $response, $moderator);
         }
 
-        return $this->timeout($twitchId, $seconds, $response, $moderator);
+        if (Feature::active("timeouts")) {
+            return $this->timeout($twitchId, $seconds, $response, $moderator);
+        }
+
+        return "";
     }
 
     private function ban(int $twitchId, string $response, User|null $moderator)
@@ -191,6 +199,8 @@ class CommandService
 
         activity()->on($punish)->by($moderator)->log("created");
 
+        Log::info("Response: $response");
+
         return $response;
     }
 
@@ -209,6 +219,7 @@ class CommandService
 
             $response = $command->run();
         } catch (Throwable $th) {
+            Log::error($th->getMessage());
             if (Feature::active("special-debug")) {
                 return "@{$this->getSenderDisplayName()} " . $th->getMessage();
             }
@@ -257,6 +268,20 @@ class CommandService
         return $twitchId;
     }
 
+    private function isJustPunished(int $twitchId): bool
+    {
+        $exists = Punish::where('twitch_user_id', $twitchId)->where('created_at', '>', now()->subSeconds(10))->exists();
+
+        Log::info("ID: $twitchId");
+        Log::info("Exists: " . ($exists ? 'Yes' : "No"));
+
+        if ($exists) {
+            return true;
+        }
+
+        return false;
+    }
+
     private function getPunishSeconds(int $twitchId): int
     {
         $punishedTimes = Punish::where('twitch_user_id', $twitchId)
@@ -274,6 +299,8 @@ class CommandService
         }
 
         $seconds = round($seconds, -1);
+
+        $seconds = min($seconds, 1_209_600);
 
         return $seconds;
     }

@@ -217,5 +217,6 @@ return [
         'bans' => env("FEATURE_BANS", false),
         'punish_debug' => env("FEATURE_PUNISH_DEBUG", false),
         'special_debug' => env("FEATURE_SPECIAL_DEBUG", false),
+        'announce_restart' => env("FEATURE_ANNOUNCE_RESTART", false),
     ],
 ];

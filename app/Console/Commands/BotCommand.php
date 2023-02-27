@@ -17,6 +17,7 @@ use GhostZero\Tmi\Events\Twitch\UserNoticeEvent;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Laravel\Pennant\Feature;
 use Throwable;
 
 class BotCommand extends Command
@@ -84,7 +85,9 @@ class BotCommand extends Command
 
     private function handleExit()
     {
-        $this->client->say($this->channel, "Restarting. Dont use any commands right now!");
+        if (Feature::active("announce-restart")) {
+            $this->client->say($this->channel, "Restarting. Dont use any commands right now!");
+        }
 
         Cache::set("bot-shutdown-time", now()->timestamp, now()->addHours(6));
 
@@ -105,7 +108,9 @@ class BotCommand extends Command
 
         $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
 
-        $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
+        if (Feature::active("announce-restart")) {
+            $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
+        }
     }
 
     private function getAccessToken()
@@ -128,6 +133,7 @@ class BotCommand extends Command
 
             $this->client->say($this->channel, $response);
         } catch (Throwable $th) {
+            Log::error($th->getMessage());
             return;
         }
     }

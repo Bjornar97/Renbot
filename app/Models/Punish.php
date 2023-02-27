@@ -13,6 +13,7 @@ class Punish extends Model
     public $fillable = [
         'twitch_user_id',
         'seconds',
+        'type',
     ];
 
     public function command(): BelongsTo
