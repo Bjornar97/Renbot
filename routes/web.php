@@ -49,3 +49,7 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
 });
 
 Route::name("rules")->get("/rules", [RuleController::class, "display"]);
+
+
+Route::redirect("/l/brother", "https://open.spotify.com/artist/42Ut8SaEEooPqrGubG1C3M");
+Route::redirect("/l/playlist", "https://open.spotify.com/playlist/5d4vmTdLm9XN1hVaLe0EY9?si=d0820125401e434e");

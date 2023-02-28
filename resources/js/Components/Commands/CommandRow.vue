@@ -41,6 +41,7 @@ const deleteCommand = () => {
             showDelete.value = false;
             deleteLoading.value = false;
         },
+        preserveScroll: true,
     });
 };
 </script>
@@ -53,7 +54,9 @@ const deleteCommand = () => {
 
         <td>!{{ command.command }}</td>
 
-        <td class="response">{{ command.response }}</td>
+        <td class="response" :style="{ 'max-width': '66ch' }">
+            {{ command.response }}
+        </td>
 
         <td v-if="type === 'punishable'">
             <SeverityChip :command="command"></SeverityChip>

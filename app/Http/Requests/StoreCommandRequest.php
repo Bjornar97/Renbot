@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCommandRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class StoreCommandRequest extends FormRequest
     public function rules()
     {
         return [
-            'command' => ['required', 'string', 'alpha_num', 'unique:commands,command', 'max:50'],
+            'command' => ['required', 'string', 'alpha_num', Rule::unique(Command::class, "command")->whereNull("deleted_at"), 'max:50'],
             'response' => ['required', 'string', 'max:500'],
             'enabled' => ['boolean'],
             'cooldown' => ['numeric', 'nullable'],

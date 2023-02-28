@@ -118,7 +118,7 @@ const visibleCommands = computed(() => {
         <main class="mt-8">
             <VTextField label="Search" v-model="search"></VTextField>
 
-            <VTable hover v-if="mdAndUp">
+            <VTable class="commands-table" hover v-if="mdAndUp">
                 <thead>
                     <tr>
                         <th></th>
