@@ -68,105 +68,103 @@ const bottomNav = computed({
 
 <template>
     <VApp>
-        <VLayout>
-            <VAppBar>
-                <VAppBarTitle>
-                    <div class="d-flex align-center">
-                        <VBtn
-                            v-if="!mdAndUp"
-                            variant="text"
-                            :icon="mdiMenu"
-                            @click="showMenu = !showMenu"
-                        ></VBtn>
+        <VAppBar>
+            <VAppBarTitle>
+                <div class="d-flex align-center">
+                    <VBtn
+                        v-if="!mdAndUp"
+                        variant="text"
+                        :icon="mdiMenu"
+                        @click="showMenu = !showMenu"
+                    ></VBtn>
 
-                        <img
-                            class="mr-2 moderator-icon"
-                            src="../../images/icons/moderator.png"
-                            alt="Moderator Icon"
-                        />
-                        <p>Renbot - Moderators</p>
-                    </div>
-                </VAppBarTitle>
+                    <img
+                        class="mr-2 moderator-icon"
+                        src="../../images/icons/moderator.png"
+                        alt="Moderator Icon"
+                    />
+                    <p>Renbot - Moderators</p>
+                </div>
+            </VAppBarTitle>
 
-                <VSpacer v-if="mdAndUp"></VSpacer>
+            <VSpacer v-if="mdAndUp"></VSpacer>
 
-                <VChip pill class="mr-4" v-if="mdAndUp">
-                    <VAvatar start>
-                        <VImg :src="user.avatar" alt="Avatar" />
-                    </VAvatar>
+            <VChip pill class="mr-4" v-if="mdAndUp">
+                <VAvatar start>
+                    <VImg :src="user.avatar" alt="Avatar" />
+                </VAvatar>
 
-                    {{ user.username }}
-                </VChip>
+                {{ user.username }}
+            </VChip>
 
-                <VBtn color="primary" @click="logout">Logout</VBtn>
-            </VAppBar>
+            <VBtn color="primary" @click="logout">Logout</VBtn>
+        </VAppBar>
 
-            <VNavigationDrawer
-                :model-value="showMenu || mdAndUp"
-                :disable-resize-watcher="true"
-            >
-                <VList color="primary">
-                    <VListSubheader>Bot</VListSubheader>
-                    <VListItem
-                        title="Health"
-                        :active="route().current('bot')"
-                        @click="goTo('bot')"
-                        :prepend-icon="mdiHeartPulse"
-                    ></VListItem>
+        <VNavigationDrawer
+            :model-value="showMenu || mdAndUp"
+            :disable-resize-watcher="true"
+        >
+            <VList color="primary">
+                <VListSubheader>Bot</VListSubheader>
+                <VListItem
+                    title="Health"
+                    :active="route().current('bot')"
+                    @click="goTo('bot')"
+                    :prepend-icon="mdiHeartPulse"
+                ></VListItem>
 
-                    <VListSubheader>Commands</VListSubheader>
-                    <VListItem
-                        title="Regular commands"
-                        :active="route().current('commands.index')"
-                        @click="goTo('commands.index')"
-                        :prepend-icon="mdiMessageReplyText"
-                    ></VListItem>
-                    <VListItem
-                        title="Punishable commands"
-                        :active="route().current('punishable-commands.index')"
-                        @click="goTo('punishable-commands.index')"
-                        :prepend-icon="mdiTargetAccount"
-                    ></VListItem>
+                <VListSubheader>Commands</VListSubheader>
+                <VListItem
+                    title="Regular commands"
+                    :active="route().current('commands.index')"
+                    @click="goTo('commands.index')"
+                    :prepend-icon="mdiMessageReplyText"
+                ></VListItem>
+                <VListItem
+                    title="Punishable commands"
+                    :active="route().current('punishable-commands.index')"
+                    @click="goTo('punishable-commands.index')"
+                    :prepend-icon="mdiTargetAccount"
+                ></VListItem>
 
-                    <VListItem
-                        title="Special commands"
-                        :active="route().current('special-commands.index')"
-                        @click="goTo('special-commands.index')"
-                        :prepend-icon="mdiArrowDecisionAuto"
-                    ></VListItem>
+                <VListItem
+                    title="Special commands"
+                    :active="route().current('special-commands.index')"
+                    @click="goTo('special-commands.index')"
+                    :prepend-icon="mdiArrowDecisionAuto"
+                ></VListItem>
 
-                    <VListSubheader>Information</VListSubheader>
-                    <VListItem
-                        title="Rules"
-                        :prepend-icon="mdiScaleBalance"
-                        :active="route().current('rules.index')"
-                        @click="goTo('rules.index')"
-                    ></VListItem>
-                </VList>
-            </VNavigationDrawer>
+                <VListSubheader>Information</VListSubheader>
+                <VListItem
+                    title="Rules"
+                    :prepend-icon="mdiScaleBalance"
+                    :active="route().current('rules.index')"
+                    @click="goTo('rules.index')"
+                ></VListItem>
+            </VList>
+        </VNavigationDrawer>
 
-            <VBottomNavigation
-                color="primary"
-                v-model="bottomNav"
-                v-if="!mdAndUp"
-                class="bottom-nav"
-            >
-                <VBtn value="commands">
-                    <VIcon :icon="mdiMessageReplyText"></VIcon>
-                    Commands
-                </VBtn>
+        <VBottomNavigation
+            color="primary"
+            v-model="bottomNav"
+            v-if="!mdAndUp"
+            class="bottom-nav"
+        >
+            <VBtn value="commands">
+                <VIcon :icon="mdiMessageReplyText"></VIcon>
+                Commands
+            </VBtn>
 
-                <VBtn value="rules">
-                    <VIcon :icon="mdiScaleBalance"></VIcon>
-                    Rules
-                </VBtn>
-            </VBottomNavigation>
+            <VBtn value="rules">
+                <VIcon :icon="mdiScaleBalance"></VIcon>
+                Rules
+            </VBtn>
+        </VBottomNavigation>
 
-            <VMain class="mb-16">
-                <Messages class="global-messages ma-4"></Messages>
-                <slot></slot>
-            </VMain>
-        </VLayout>
+        <VMain class="app-main">
+            <Messages class="global-messages ma-4"></Messages>
+            <slot></slot>
+        </VMain>
     </VApp>
 </template>
 
@@ -183,6 +181,7 @@ const bottomNav = computed({
     right: 0;
 }
 
-.global-messages {
+.app-main {
+    margin-bottom: 15rem;
 }
 </style>

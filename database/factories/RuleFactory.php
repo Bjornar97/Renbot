@@ -17,7 +17,8 @@ class RuleFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'order' => $this->faker->numberBetween(0, 10),
+            'text' => $this->faker->sentence(),
         ];
     }
 }

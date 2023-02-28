@@ -14,6 +14,7 @@ import {
 } from "@mdi/js";
 import { useDisplay } from "vuetify/lib/framework.mjs";
 import { computed, ref } from "vue";
+import debounce from "lodash.debounce";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -61,6 +62,14 @@ const tab = computed({
         );
     },
 });
+
+const search = ref("");
+
+const visibleCommands = computed(() => {
+    return props.commands.filter((command) =>
+        command.command.toLowerCase().includes(search.value.toLowerCase())
+    );
+});
 </script>
 
 <template>
@@ -106,8 +115,10 @@ const tab = computed({
             </nav>
         </header>
 
-        <main>
-            <VTable class="mt-8" hover v-if="mdAndUp">
+        <main class="mt-8">
+            <VTextField label="Search" v-model="search"></VTextField>
+
+            <VTable hover v-if="mdAndUp">
                 <thead>
                     <tr>
                         <th></th>
@@ -120,12 +131,17 @@ const tab = computed({
                 </thead>
 
                 <tbody>
-                    <tr v-if="commands.length <= 0">
-                        <td colspan="3">No {{ type }} commands created yet</td>
+                    <tr v-if="visibleCommands.length <= 0">
+                        <td colspan="3">
+                            <template v-if="search"> No results </template>
+                            <template v-else>
+                                No {{ type }} commands created yet
+                            </template>
+                        </td>
                     </tr>
 
                     <CommandRow
-                        v-for="command in commands"
+                        v-for="command in visibleCommands"
                         :command="command"
                         :key="command.id"
                         :type="type"
@@ -135,12 +151,13 @@ const tab = computed({
 
             <VList lines="two" v-else>
                 <CommandListItem
-                    v-if="commands.length > 0"
-                    v-for="command in commands"
+                    v-if="visibleCommands.length > 0"
+                    v-for="command in visibleCommands"
                     :key="command.id"
                     :command="command"
                 ></CommandListItem>
-                
+
+                <p v-else-if="search">No results</p>
                 <p v-else class="ma-4">No {{ type }} commands created yet</p>
             </VList>
         </main>
