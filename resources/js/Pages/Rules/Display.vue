@@ -34,10 +34,12 @@ const cssGridRowsString = computed(() => {
                     }"
                 >
                     <div class="rule" v-for="rule in rules">
-                        <VIcon
-                            class="order-number"
-                            :icon="mdiMinecraft"
-                        ></VIcon>
+                        <div class="order-number">
+                            <div class="center">
+                                <VIcon :icon="mdiMinecraft"></VIcon>
+                            </div>
+                        </div>
+
                         <p class="text">{{ rule.text }}</p>
                     </div>
                 </div>
@@ -71,15 +73,17 @@ const cssGridRowsString = computed(() => {
 .rule {
     display: grid;
     grid-template-columns: max-content 1fr;
-    align-items: center;
+    align-items: stretch;
     gap: 1.5rem;
     background-color: #222;
     border-radius: 0.4rem;
 }
 
 .order-number {
+    display: flex;
+    align-items: center;
     color: #777;
-    font-size: 5rem;
+    font-size: 1.8rem;
     line-height: 0.9em;
     letter-spacing: -0.3rem;
     background-color: #1a1a1a;
@@ -89,6 +93,8 @@ const cssGridRowsString = computed(() => {
 
 .text {
     padding-right: 1rem;
+    padding-block: 1rem;
+    align-self: center;
 }
 
 @media screen and (min-width: 768px) {
