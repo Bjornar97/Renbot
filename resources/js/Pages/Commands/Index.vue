@@ -95,6 +95,13 @@ const visibleCommands = computed(() => {
                 >
             </div>
 
+            <VTextField
+                class="mt-8 search"
+                label="Search"
+                v-model="search"
+                hide-details
+            ></VTextField>
+
             <nav v-if="!mdAndUp" class="mt-4">
                 <VCard>
                     <VTabs v-model="tab" color="primary" stacked :grow="true">
@@ -115,9 +122,7 @@ const visibleCommands = computed(() => {
             </nav>
         </header>
 
-        <main class="mt-8">
-            <VTextField label="Search" v-model="search"></VTextField>
-
+        <main>
             <VTable class="commands-table" hover v-if="mdAndUp">
                 <thead>
                     <tr>
@@ -157,7 +162,7 @@ const visibleCommands = computed(() => {
                     :command="command"
                 ></CommandListItem>
 
-                <p v-else-if="search">No results</p>
+                <p v-else-if="search" class="mx-4">No results</p>
                 <p v-else class="ma-4">No {{ type }} commands created yet</p>
             </VList>
         </main>
@@ -184,6 +189,11 @@ const visibleCommands = computed(() => {
 
     .add-button {
         align-self: flex-end;
+    }
+
+    .search {
+        grid-column: 1/3;
+        margin-bottom: 1.5rem;
     }
 }
 
