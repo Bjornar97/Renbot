@@ -52,7 +52,7 @@ class BotCommand extends Command
         $this->botUsername = config("services.twitch.username");
 
         $this->client = new Client(new ClientOptions([
-            'options' => ['debug' => true],
+            'options' => ['debug' => config("app.tmi_debug", false)],
             'connection' => [
                 'secure' => true,
                 'reconnect' => true,

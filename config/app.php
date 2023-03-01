@@ -219,4 +219,6 @@ return [
         'special_debug' => env("FEATURE_SPECIAL_DEBUG", false),
         'announce_restart' => env("FEATURE_ANNOUNCE_RESTART", false),
     ],
+
+    'tmi_debug' => env("TMI_DEBUG", false),
 ];
