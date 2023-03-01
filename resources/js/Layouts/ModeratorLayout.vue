@@ -7,6 +7,7 @@ import {
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
+    mdiRobotExcited,
     mdiScaleBalance,
     mdiTargetAccount,
 } from "@mdi/js";
@@ -52,6 +53,10 @@ const bottomNav = computed({
             return "rules";
         }
 
+        if (currentRoute.value?.includes("bot")) {
+            return "bot";
+        }
+
         return null;
     },
     set: (v) => {
@@ -61,6 +66,10 @@ const bottomNav = computed({
 
         if (v === "rules") {
             return router.get(route("rules.index"));
+        }
+
+        if (v === "bot") {
+            return router.get(route("bot"));
         }
     },
 });
@@ -150,6 +159,11 @@ const bottomNav = computed({
             v-if="!mdAndUp"
             class="bottom-nav"
         >
+            <VBtn value="bot">
+                <VIcon :icon="mdiRobotExcited"></VIcon>
+                Bot
+            </VBtn>
+
             <VBtn value="commands">
                 <VIcon :icon="mdiMessageReplyText"></VIcon>
                 Commands

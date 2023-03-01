@@ -102,7 +102,7 @@ const stop = () => {
             </VBtn>
         </div>
 
-        <div v-if="status !== BotStatusType.STOPPED">
+        <div v-if="status !== BotStatusType.STOPPED" class="mx-1">
             <p class="mb-2">
                 If there is a problem with the bot, a restart can often solve
                 it.
