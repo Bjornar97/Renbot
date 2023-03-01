@@ -29,6 +29,7 @@ class BotController extends Controller
 
         try {
             BotService::restart();
+            activity()->log("Restarted bot");
         } catch (Throwable $th) {
             return back()->with("error", "Something went wrong when trying to restart the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
@@ -42,6 +43,7 @@ class BotController extends Controller
 
         try {
             BotService::start();
+            activity()->log("Started bot");
         } catch (\Throwable $th) {
             return back()->with("error", "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
@@ -55,6 +57,7 @@ class BotController extends Controller
 
         try {
             BotService::stop();
+            activity()->log("Stopped bot");
         } catch (\Throwable $th) {
             return back()->with("error", "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
