@@ -109,7 +109,7 @@ class BotCommand extends Command
         $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
 
         if (Feature::active("announce-restart")) {
-            $this->client->say($this->channel, "Im back after test restart! After {$interval->forHumans()}");
+            $this->client->say($this->channel, "Im back after restart! I was gone for {$interval->forHumans()}");
         }
     }
 
