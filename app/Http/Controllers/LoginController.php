@@ -114,7 +114,7 @@ class LoginController extends Controller
             $route = "rendog.thankyou";
         }
 
-        return redirect()->route($route)->with("success", "You successfully logged in!");
+        return redirect()->intended(route($route))->with("success", "You successfully logged in!");
     }
 
     private function getType(ContractsUser $user)
