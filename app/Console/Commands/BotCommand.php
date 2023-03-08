@@ -73,6 +73,8 @@ class BotCommand extends Command
         $this->trap(SIGINT, $this->handleExit(...));
 
         $this->client->on(MessageEvent::class, function (MessageEvent $message) {
+            if ($message->self) return;
+
             $this->onMessage($message);
         });
 
@@ -126,8 +128,6 @@ class BotCommand extends Command
 
     public function onMessage(MessageEvent $message)
     {
-        if ($message->self) return;
-
         try {
             $response = CommandService::message($message, $this->client)->getResponse();
 

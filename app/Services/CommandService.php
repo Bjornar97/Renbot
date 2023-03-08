@@ -313,7 +313,7 @@ class CommandService
 
         $command = $words[0] ?? null;
 
-        if (!str_contains($command, "!")) {
+        if (!str_starts_with($command, "!")) {
             return null;
         }
 
