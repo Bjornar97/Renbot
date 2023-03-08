@@ -218,6 +218,7 @@ return [
         'punish_debug' => env("FEATURE_PUNISH_DEBUG", false),
         'special_debug' => env("FEATURE_SPECIAL_DEBUG", false),
         'announce_restart' => env("FEATURE_ANNOUNCE_RESTART", false),
+        'auto_caps_punishment' => env("FEATURE_AUTO_CAPS_PUNISHMENT", false),
     ],
 
     'tmi_debug' => env("TMI_DEBUG", false),

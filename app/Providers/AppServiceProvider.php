@@ -34,5 +34,7 @@ class AppServiceProvider extends ServiceProvider
         Feature::define("special-debug", fn () => config("app.features.special_debug"));
 
         Feature::define("announce-restart", fn () => config("app.features.announce_restart"));
+
+        Feature::define("auto-caps-punishment", fn () => config("app.features.auto_caps_punishment"));
     }
 }

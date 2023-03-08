@@ -2,8 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Command as ModelsCommand;
 use App\Models\User;
 use App\Services\CommandService;
+use App\Services\MessageService;
+use App\Services\PunishService;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Exception;
@@ -129,12 +132,63 @@ class BotCommand extends Command
     public function onMessage(MessageEvent $message)
     {
         try {
-            $response = CommandService::message($message, $this->client)->getResponse();
+            $this->analyzeForPunishment($message);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+        }
 
+        try {
+            $response = CommandService::message($message, $this->client)->getResponse();
             $this->client->say($this->channel, $response);
         } catch (Throwable $th) {
             Log::error($th->getMessage());
             return;
         }
+    }
+
+    private function analyzeForPunishment(MessageEvent $message)
+    {
+        Feature::when(
+            "auto-caps-punishment",
+            whenActive: fn () => $this->capsCheck($message),
+        );
+    }
+
+    private function capsCheck(MessageEvent $message)
+    {
+        $caps = $this->getNumberOfCaps($message->message);
+        $percentage = $this->getPercentageOfCaps($message->message);
+
+        if ($caps > 4 && $percentage > 0.5) {
+            $messageService = MessageService::message($message);
+            $userId = $messageService->getSenderTwitchId();
+            $displayName = $messageService->getSenderDisplayName();
+
+            $command = ModelsCommand::where('command', "caps")->first();
+
+            $response = PunishService::user($userId, $displayName)
+                ->command($command)
+                ->bot($this->client)
+                ->punish();
+
+            $this->client->say($this->channel, $response);
+        }
+    }
+
+    private function getNumberOfCaps(string $message): int
+    {
+        $message = str_replace(" ", "", $message);
+
+        return strlen(preg_replace("/[^A-Z]/", "", $message));
+    }
+
+    private function getPercentageOfCaps(string $message): float
+    {
+        $message = str_replace(" ", "", $message);
+
+        $total = strlen($message);
+        $caps = strlen(preg_replace("/[^A-Z]/", "", $message));
+
+        return $caps / $total;
     }
 }
