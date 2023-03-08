@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\BotStatus;
 use App\Jobs\BanTwitchUserJob;
 use App\Jobs\TimeoutTwitchUserJob;
 use App\Models\Command;
@@ -11,7 +10,6 @@ use App\Models\User;
 use Carbon\CarbonInterval;
 use Exception;
 use GhostZero\Tmi\Client;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
 
