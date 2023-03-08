@@ -52,4 +52,9 @@ class MessageService
     {
         return $this->message->tags['user-id'];
     }
+
+    public function isModerator(): bool
+    {
+        return (bool) $this->message->tags['mod'];
+    }
 }

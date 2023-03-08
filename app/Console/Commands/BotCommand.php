@@ -132,7 +132,11 @@ class BotCommand extends Command
     public function onMessage(MessageEvent $message)
     {
         try {
-            $this->analyzeForPunishment($message);
+            $messageService = MessageService::message($message);
+
+            if (!$messageService->isModerator()) {
+                $this->analyzeForPunishment($message);
+            }
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
         }
