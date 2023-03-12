@@ -131,7 +131,7 @@ class BotCommand extends Command
         try {
             $messageService = MessageService::message($message);
 
-            if (!$messageService->isModerator()) {
+            if ($messageService->isModerator()) {
                 $this->analyzeForPunishment($message);
             }
         } catch (\Throwable $th) {
@@ -157,8 +157,9 @@ class BotCommand extends Command
 
     private function capsCheck(MessageEvent $message)
     {
-        $caps = $this->getNumberOfCaps($message->message);
-        $percentage = $this->getPercentageOfCaps($message->message);
+        $string = $this->removeEmotes($message);
+        $caps = $this->getNumberOfCaps($string);
+        $percentage = $this->getPercentageOfCaps($string);
 
         if ($caps > 4 && $percentage > 0.5) {
             $messageService = MessageService::message($message);
@@ -174,6 +175,39 @@ class BotCommand extends Command
 
             $this->client->say($this->channel, $response);
         }
+    }
+
+    private function removeEmotes(MessageEvent $message): string
+    {
+        $string = $message->message;
+
+        $emotes = $message->tags['emotes'];
+
+        if (!$emotes) {
+            return $message;
+        }
+
+        $emotes = explode("/", $emotes);
+
+        foreach ($emotes as $emote) {
+            $emote = explode(":", $emote);
+            $emoteId = $emote[0];
+            $emotePositions = $emote[1];
+
+            $emotePositions = explode(",", $emotePositions);
+
+            foreach ($emotePositions as $emotePosition) {
+                $emotePosition = explode("-", $emotePosition);
+                $start = $emotePosition[0];
+                $end = $emotePosition[1];
+
+                $length = $end - $start + 1;
+
+                $string = substr_replace($string, str_repeat(" ", $length), $start, $length);
+            }
+        }
+
+        return $string;
     }
 
     private function getNumberOfCaps(string $message): int
