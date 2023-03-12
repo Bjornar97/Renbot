@@ -207,6 +207,9 @@ class BotCommand extends Command
             }
         }
 
+        // Remove double spaces
+        $string = preg_replace("/\s\s+/", " ", $string);
+
         return $string;
     }
 
