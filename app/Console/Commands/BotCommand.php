@@ -168,6 +168,8 @@ class BotCommand extends Command
 
             $command = ModelsCommand::where('command', "caps")->first();
 
+            Log::info("Punishing auto caps: $displayName");
+
             $response = PunishService::user($userId, $displayName)
                 ->command($command)
                 ->bot($this->client)
@@ -226,6 +228,10 @@ class BotCommand extends Command
 
         $total = strlen($message);
         $caps = strlen(preg_replace("/[^A-Z]/", "", $message));
+
+        if ($total <= 0) {
+            return 0;
+        }
 
         return $caps / $total;
     }
