@@ -184,7 +184,7 @@ class BotCommand extends Command
         $emotes = $message->tags['emotes'];
 
         if (!$emotes) {
-            return $message;
+            return $message->message;
         }
 
         $emotes = explode("/", $emotes);
