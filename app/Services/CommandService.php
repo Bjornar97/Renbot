@@ -112,7 +112,7 @@ class CommandService
             throw new Exception("Did not supply target for punishment");
         }
 
-        $twitchId = TwitchService::getTwitchId($target);
+        $twitchId = TwitchService::getTwitchId($target, $moderator);
 
         PunishService::user($twitchId, $target)
             ->command($this->command)

@@ -14,8 +14,6 @@ class TwitchService
     {
         Log::info("Getting id");
 
-        Log::info("Got moderator: {$moderator->username}");
-
         $twitchId = Cache::remember("twitchId:{$username}", 8 * 60 * 60, function () use ($username, $moderator) {
             Log::info("Getting twitch id");
             $twitch = new Twitch;
