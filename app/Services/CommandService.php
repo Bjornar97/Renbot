@@ -114,14 +114,14 @@ class CommandService
 
         $twitchId = TwitchService::getTwitchId($target, $moderator);
 
-        PunishService::user($twitchId, $target)
+        $response = PunishService::user($twitchId, $target)
             ->command($this->command)
             ->moderator($moderator)
             ->bot($this->bot)
             ->basicResponse($this->generateBasicResponse())
             ->punish();
 
-        return "";
+        return $response;
     }
 
     public function special(): string

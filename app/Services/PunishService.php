@@ -111,6 +111,8 @@ class PunishService
         if (Feature::active("timeouts")) {
             return $this->timeout($this->targetUserId, $seconds, $response, $this->moderator);
         }
+
+        return "";
     }
 
     private function ban(int $twitchId, string $response, User|null $moderator)
