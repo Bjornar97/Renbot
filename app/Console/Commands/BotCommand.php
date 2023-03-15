@@ -131,7 +131,7 @@ class BotCommand extends Command
         try {
             $messageService = MessageService::message($message);
 
-            if ($messageService->isModerator()) {
+            if (!$messageService->isModerator()) {
                 $this->analyzeForPunishment($message);
             }
         } catch (\Throwable $th) {
