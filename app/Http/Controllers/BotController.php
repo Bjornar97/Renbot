@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\BotStatus;
-use App\Services\BotService;
+use App\Services\BotManagerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Process;
@@ -16,7 +16,7 @@ class BotController extends Controller
     {
         Gate::authorize("moderate");
 
-        $status = BotService::getStatus();
+        $status = BotManagerService::getStatus();
 
         return Inertia::render("Bot/Show", [
             'status' => $status
@@ -28,7 +28,7 @@ class BotController extends Controller
         Gate::authorize("moderate");
 
         try {
-            BotService::restart();
+            BotManagerService::restart();
             activity()->log("Restarted bot");
         } catch (Throwable $th) {
             return back()->with("error", "Something went wrong when trying to restart the bot. Contact Bjornar97. Error: {$th->getMessage()}");
@@ -42,7 +42,7 @@ class BotController extends Controller
         Gate::authorize("moderate");
 
         try {
-            BotService::start();
+            BotManagerService::start();
             activity()->log("Started bot");
         } catch (\Throwable $th) {
             return back()->with("error", "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
@@ -56,7 +56,7 @@ class BotController extends Controller
         Gate::authorize("moderate");
 
         try {
-            BotService::stop();
+            BotManagerService::stop();
             activity()->log("Stopped bot");
         } catch (\Throwable $th) {
             return back()->with("error", "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");

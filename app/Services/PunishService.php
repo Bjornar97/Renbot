@@ -88,10 +88,6 @@ class PunishService
             throw new Exception("Command not set");
         }
 
-        if (!$this->bot) {
-            throw new Exception("Bot not set");
-        }
-
         if (!$this->moderator) {
             $this->moderator = User::where("username", "renthebot")->first();
 
@@ -129,7 +125,7 @@ class PunishService
 
         Feature::when(
             "punish-debug",
-            whenActive: fn () => $this->bot->say($this->channel, "Would ban @{$this->targetUsername}"),
+            whenActive: fn () => $this->bot?->say($this->channel, "Would ban @{$this->targetUsername}"),
             whenInactive: fn () => BanTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
         );
 
@@ -144,7 +140,7 @@ class PunishService
 
         Feature::when(
             "punish-debug",
-            whenActive: fn () => $this->bot->say($this->channel, "Would timeout @{$this->targetUsername} with {$seconds} seconds"),
+            whenActive: fn () => $this->bot?->say($this->channel, "Would timeout @{$this->targetUsername} with {$seconds} seconds"),
             whenInactive: fn () => TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator),
         );
 

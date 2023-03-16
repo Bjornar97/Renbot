@@ -81,7 +81,7 @@ class SpecialCommandService
     public function restartBot(): void
     {
         try {
-            BotService::restart();
+            BotManagerService::restart();
         } catch (\Throwable $th) {
             throw new Exception("Failed to restart bot. Moderators, check the dashboard.");
         }
@@ -91,7 +91,7 @@ class SpecialCommandService
     {
         try {
             $this->bot->say($this->channel, "Stopping bot");
-            BotService::stop();
+            BotManagerService::stop();
         } catch (\Throwable $th) {
             throw new Exception("Failed to stop bot. Moderators, check the dashboard.");
         }

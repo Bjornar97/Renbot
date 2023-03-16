@@ -57,4 +57,40 @@ class MessageService
     {
         return (bool) $this->message->tags['mod'];
     }
+
+    public function getMessageWithoutEmotes(): string
+    {
+        $string = $this->message->message;
+
+        $emotes = $this->message->tags['emotes'] ?? null;
+
+        if (!$emotes) {
+            return $this->message->message;
+        }
+
+        $emotes = explode("/", $emotes);
+
+        foreach ($emotes as $emote) {
+            $emote = explode(":", $emote);
+            $emoteId = $emote[0];
+            $emotePositions = $emote[1];
+
+            $emotePositions = explode(",", $emotePositions);
+
+            foreach ($emotePositions as $emotePosition) {
+                $emotePosition = explode("-", $emotePosition);
+                $start = $emotePosition[0];
+                $end = $emotePosition[1];
+
+                $length = $end - $start + 1;
+
+                $string = substr_replace($string, str_repeat(" ", $length), $start, $length);
+            }
+        }
+
+        // Remove double spaces
+        $string = preg_replace("/\s\s+/", " ", $string);
+
+        return $string;
+    }
 }
