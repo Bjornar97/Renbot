@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\BotService;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
 use Laravel\Sanctum\Sanctum;
@@ -16,6 +17,8 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         Sanctum::ignoreMigrations();
+
+        $this->app->bind(BotService::class, fn () => new BotService());
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\BotService;
+use App\Services\BotManagerService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,6 +29,6 @@ class RestartBotJob implements ShouldQueue
      */
     public function handle(): void
     {
-        BotService::restart();
+        BotManagerService::restart();
     }
 }

@@ -19,7 +19,8 @@
 				"recca0120.vscode-phpunit",
 				"esbenp.prettier-vscode",
 				"hbenl.vscode-test-explorer",
-				"Vue.volar"
+				"Vue.volar",
+				"GitHub.copilot"
 			],
 			"settings": {}
 		}

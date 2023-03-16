@@ -2,62 +2,56 @@
 
 namespace App\Services;
 
-use App\Enums\BotStatus;
+use App\Models\User;
 use Exception;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Process;
+use GhostZero\Tmi\Client;
+use GhostZero\Tmi\ClientOptions;
 
 class BotService
 {
+    protected Client $client;
+    protected string $channel;
+    protected string $botUsername;
+
     public function __construct()
     {
+        $oauthToken = "oauth:{$this->getAccessToken()}";
+        $this->channel = config("services.twitch.channel");
+        $this->botUsername = config("services.twitch.username");
+
+        $this->client = new Client(new ClientOptions([
+            'options' => ['debug' => config("app.tmi_debug", false)],
+            'connection' => [
+                'secure' => true,
+                'reconnect' => true,
+                'rejoin' => true,
+            ],
+            'identity' => [
+                'username' => $this->botUsername,
+                'password' => $oauthToken,
+            ],
+            'channels' => [$this->channel],
+        ]));
     }
 
-    public static function getStatus(): BotStatus
+    private function getAccessToken()
     {
-        $result = Process::run("supervisorctl status renbot");
+        $renbot = User::where('username', "RenTheBot")->first();
 
-        $output = $result->output();
-
-        if (str_contains($output, "RUNNING")) {
-            return BotStatus::RUNNING;
+        if (!$renbot) {
+            throw new Exception("RenTheBot has not logged in, and its required for the bot to work.");
         }
 
-        if (str_contains($output, "STOPPED")) {
-            return BotStatus::STOPPED;
-        }
-
-        if (str_contains($output, "FAILED")) {
-            return BotStatus::FAILED;
-        }
-
-        return BotStatus::UNKNOWN;
+        return $renbot->twitch_access_token;
     }
 
-    public static function restart(): void
+    public function getBot(): Client
     {
-        $result = Process::run("supervisorctl restart renbot");
-
-        if ($result->failed()) {
-            throw new Exception("Failed to restart bot: {$result->output()}");
-        }
+        return $this->client;
     }
 
-    public static function start(): void
+    public static function bot(): Client
     {
-        $result = Process::run("supervisorctl start renbot");
-
-        if ($result->failed()) {
-            throw new Exception("Failed to start bot: {$result->output()}");
-        }
-    }
-
-    public static function stop(): void
-    {
-        $result = Process::run("supervisorctl stop renbot");
-
-        if ($result->failed()) {
-            throw new Exception("Failed to stop bot: {$result->output()}");
-        }
+        return app(self::class)->getBot();
     }
 }
