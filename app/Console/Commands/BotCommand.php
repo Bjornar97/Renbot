@@ -102,7 +102,6 @@ class BotCommand extends Command
 
     public function onMessage(MessageEvent $message)
     {
-        dd($message->message, $message->tags);
         try {
             $messageService = MessageService::message($message);
 

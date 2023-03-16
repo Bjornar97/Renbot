@@ -43,7 +43,7 @@ it("is not punishable caps", function (string $message) {
 })->with([
     'this is not caps',
     'This Has One Caps Per Word',
-    'OMG That is an abbrievation',
+    'OMG That is an acronym',
     'FOAF is an acronym',
 ]);
 
