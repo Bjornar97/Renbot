@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Analysis;
 
+use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
 use App\Services\BotService;
 use App\Services\CommandService;
@@ -54,10 +55,14 @@ class AnalyzeCapsJob implements ShouldQueue
     {
         $command = Command::where('command', 'caps')->first();
 
-        PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
+        $bot = BotService::bot();
+
+        $response = PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
             ->command($command)
-            ->bot(BotService::bot())
+            ->bot($bot)
             ->punish();
+
+        $bot->say(config("services.twitch.channel"), $response);
     }
 
     public function isPunishable(): bool
