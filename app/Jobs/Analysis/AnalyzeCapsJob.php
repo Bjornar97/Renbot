@@ -54,7 +54,7 @@ class AnalyzeCapsJob implements ShouldQueue
     {
         $command = Command::where('command', 'caps')->first();
 
-        PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderUsername())
+        PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
             ->command($command)
             ->bot(BotService::bot())
             ->punish();

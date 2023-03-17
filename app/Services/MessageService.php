@@ -43,11 +43,6 @@ class MessageService
         return $this->message->tags['display-name'];
     }
 
-    public function getSenderUsername(): string
-    {
-        return $this->message->tags['username'];
-    }
-
     public function getSenderTwitchId(): string
     {
         return $this->message->tags['user-id'];
