@@ -119,6 +119,10 @@ class AnalyzeCapsJob implements ShouldQueue
             return false;
         }
 
+        if (str_starts_with($word, "@")) {
+            return false;
+        }
+
         $caps = preg_match_all("/[A-Z]/", $word);
         $total = strlen($word);
         $ratio = $caps / $total;
