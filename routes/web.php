@@ -49,6 +49,10 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::resource("moderators/rules", RuleController::class);
 
     Route::name("rendog.thankyou")->get("/rendog/thankyou", [RendogController::class, "thankyou"]);
+
+    Route::get("/api/user", function (Request $request) {
+        return response()->json($request->user());
+    });
 });
 
 Route::name("rules")->get("/rules", [RuleController::class, "display"]);
