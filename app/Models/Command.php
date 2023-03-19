@@ -27,6 +27,7 @@ class Command extends Model
         'severity',
         'punish_reason',
         'action',
+        'prepend_sender',
     ];
 
     public $casts = [
@@ -34,6 +35,7 @@ class Command extends Model
         'severity' => 'integer',
         'cooldown' => 'integer',
         'global_cooldown' => 'integer',
+        'prepend_sender' => 'boolean',
     ];
 
     public function punishes(): HasMany

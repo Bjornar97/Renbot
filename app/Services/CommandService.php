@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\DeleteTwitchMessageJob;
 use App\Models\Command;
+use Carbon\Carbon;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
@@ -78,6 +79,13 @@ class CommandService
             return true;
         }
 
+        // If user is broadcaster, user is authorized
+        $badges = $this->message->tags['badges'] ?? "";
+        $badges = explode(",", $badges);
+        if (in_array("broadcaster/1", $badges)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -89,6 +97,8 @@ class CommandService
 
         if ($target) {
             $response .= "@{$target} ";
+        } else if ($this->command->prepend_sender) {
+            $response .= "@{$this->messageService->getSenderDisplayName()} ";
         }
 
         $response .= $this->command->response;
@@ -112,7 +122,11 @@ class CommandService
             throw new Exception("Did not supply target for punishment");
         }
 
-        $twitchId = TwitchService::getTwitchId($target, $moderator);
+        try {
+            $twitchId = TwitchService::getTwitchId($target, $moderator);
+        } catch (\Throwable $th) {
+            return "@{$this->messageService->getSenderDisplayName()} {$th->getMessage()}";
+        }
 
         $response = PunishService::user($twitchId, $target)
             ->command($this->command)

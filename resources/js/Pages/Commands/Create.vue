@@ -25,6 +25,7 @@ const form = useForm("CreateCommand", {
     severity: 5,
     punish_reason: "",
     action: null,
+    prepend_sender: false,
 });
 
 const submit = () => {
@@ -90,7 +91,7 @@ const { smAndUp } = useDisplay();
                 </header>
 
                 <div class="row">
-                    <div class="info">
+                    <div class="info mb-4">
                         <VTextField
                             v-model="form.command"
                             label="Command"
@@ -104,13 +105,20 @@ const { smAndUp } = useDisplay();
                             v-model="form.response"
                             label="Response"
                             :error-messages="form.errors.response"
-                            class="mb-4"
                             :hint="
                                 form.type === 'special'
                                     ? 'The response might get overriden by the action'
                                     : ''
                             "
                         ></VTextarea>
+
+                        <VSwitch
+                            v-if="form.type !== 'punishable'"
+                            v-model="form.prepend_sender"
+                            color="primary"
+                            label="Prepend username"
+                            messages="Prepend the user's name to the response if no user is tagged in command."
+                        ></VSwitch>
                     </div>
 
                     <div class="settings">

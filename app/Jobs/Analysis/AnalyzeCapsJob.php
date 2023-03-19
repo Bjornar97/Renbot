@@ -2,15 +2,13 @@
 
 namespace App\Jobs\Analysis;
 
-use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
+use App\Models\Setting;
 use App\Services\BotService;
-use App\Services\CommandService;
 use App\Services\MessageService;
 use App\Services\PunishService;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -20,14 +18,22 @@ class AnalyzeCapsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public const TOTAL_CAPS_THRESHOLD = 0.5;
-    public const WORD_CAPS_THRESHOLD = 0.4;
+    public const TOTAL_CAPS_THRESHOLD_DEFAULT = 0.5;
+    public const WORD_CAPS_THRESHOLD_DEFAULT = 0.4;
 
-    public const TOTAL_LENGTH_THRESHOLD = 4;
-    public const WORD_LENGTH_THRESHOLD = 4;
+    public const TOTAL_LENGTH_THRESHOLD_DEFAULT = 4;
+    public const WORD_LENGTH_THRESHOLD_DEFAULT = 4;
 
     public string $string;
     private MessageService $messageService;
+
+    private float $totalCapsThreshold = self::TOTAL_CAPS_THRESHOLD_DEFAULT;
+    private float $wordCapsThreshold = self::WORD_CAPS_THRESHOLD_DEFAULT;
+
+    private int $totalLengthThreshold = self::TOTAL_LENGTH_THRESHOLD_DEFAULT;
+    private int $wordLengthThreshold = self::WORD_LENGTH_THRESHOLD_DEFAULT;
+
+    private Command|null $command;
 
     /**
      * Create a new job instance.
@@ -35,8 +41,15 @@ class AnalyzeCapsJob implements ShouldQueue
     public function __construct(private MessageEvent $message)
     {
         $this->messageService = MessageService::message($message);
-
         $this->string = $this->messageService->getMessageWithoutEmotes();
+
+        $this->totalCapsThreshold = Setting::key("punishment.totalCapsThreshold")->first()?->value ?? self::TOTAL_CAPS_THRESHOLD_DEFAULT;
+        $this->wordCapsThreshold = Setting::key("punishment.wordCapsThreshold")->first()?->value ?? self::WORD_CAPS_THRESHOLD_DEFAULT;
+
+        $this->totalLengthThreshold = Setting::key("punishment.totalLengthThreshold")->first()?->value ?? self::TOTAL_LENGTH_THRESHOLD_DEFAULT;
+        $this->wordLengthThreshold = Setting::key("punishment.wordLengthThreshold")->first()?->value ?? self::WORD_LENGTH_THRESHOLD_DEFAULT;
+
+        $this->command = Command::find(Setting::key("punishment.autoCapsCommand")->first()?->value);
     }
 
     /**
@@ -48,17 +61,19 @@ class AnalyzeCapsJob implements ShouldQueue
             return;
         }
 
+        if (!$this->command) {
+            return;
+        }
+
         $this->punish();
     }
 
     protected function punish()
     {
-        $command = Command::where('command', 'caps')->first();
-
         $bot = BotService::bot();
 
         $response = PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
-            ->command($command)
+            ->command($this->command)
             ->bot($bot)
             ->punish();
 
@@ -88,7 +103,7 @@ class AnalyzeCapsJob implements ShouldQueue
         $total = strlen($this->string);
         $ratio = $caps / $total;
 
-        if ($ratio > self::TOTAL_CAPS_THRESHOLD && $caps > self::TOTAL_LENGTH_THRESHOLD) {
+        if ($ratio > $this->totalCapsThreshold && $caps > $this->totalLengthThreshold) {
             return true;
         }
 
@@ -97,7 +112,7 @@ class AnalyzeCapsJob implements ShouldQueue
 
     protected function hasEnoughCharacters(): bool
     {
-        return strlen($this->string) > self::TOTAL_LENGTH_THRESHOLD;
+        return strlen($this->string) > $this->totalLengthThreshold;
     }
 
     protected function hasPunishableWord()
@@ -127,7 +142,7 @@ class AnalyzeCapsJob implements ShouldQueue
         $total = strlen($word);
         $ratio = $caps / $total;
 
-        if ($ratio > self::WORD_CAPS_THRESHOLD && $caps > self::WORD_LENGTH_THRESHOLD) {
+        if ($ratio > $this->wordCapsThreshold && $caps > $this->wordLengthThreshold) {
             return true;
         }
 
@@ -136,6 +151,6 @@ class AnalyzeCapsJob implements ShouldQueue
 
     protected function isWordLongEnough(string $word): bool
     {
-        return strlen($word) > self::WORD_LENGTH_THRESHOLD;
+        return strlen($word) > $this->wordLengthThreshold;
     }
 }

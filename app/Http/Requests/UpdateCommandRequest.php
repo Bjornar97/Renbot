@@ -38,6 +38,7 @@ class UpdateCommandRequest extends FormRequest
             'severity' => ['integer', 'min:1', 'max:10'],
             'punish_reason' => ['nullable', 'string', 'max:500'],
             'action' => ['nullable', 'string', 'max:255'],
+            'prepend_sender' => ['boolean'],
         ];
     }
 }

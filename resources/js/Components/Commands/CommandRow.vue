@@ -49,21 +49,24 @@ const deleteCommand = () => {
 <template>
     <tr @click="goToEdit" class="cursor-pointer">
         <td>
-            <CommandUsableByIcon :command="command"></CommandUsableByIcon>
+            <SeverityChip
+                v-if="command.type === 'punishable'"
+                :command="command"
+            ></SeverityChip>
+            <CommandUsableByIcon
+                v-else
+                :command="command"
+            ></CommandUsableByIcon>
         </td>
 
         <td>!{{ command.command }}</td>
 
-        <td class="response" :style="{ 'max-width': '66ch' }">
-            {{ command.response }}
-        </td>
-
-        <td v-if="type === 'punishable'">
-            <SeverityChip :command="command"></SeverityChip>
-        </td>
-
         <td @click.stop>
             <VSwitch v-model="enabled" color="primary" hide-details></VSwitch>
+        </td>
+
+        <td class="response" :style="{ 'max-width': '66ch' }">
+            {{ command.response }}
         </td>
 
         <td @click.stop>

@@ -10,6 +10,7 @@ export interface Command {
     severity: number;
     punish_reason: string;
     action: string;
+    prepend_sender: boolean;
 
     created_at: string;
     updated_at: string;

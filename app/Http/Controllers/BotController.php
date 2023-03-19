@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Enums\BotStatus;
+use App\Http\Requests\UpdateBotSettingsRequest;
+use App\Jobs\Analysis\AnalyzeCapsJob;
+use App\Models\Command;
+use App\Models\Setting;
 use App\Services\BotManagerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Process;
 use Inertia\Inertia;
+use Laravel\Pennant\Feature;
 use Throwable;
 
 class BotController extends Controller
@@ -18,9 +23,87 @@ class BotController extends Controller
 
         $status = BotManagerService::getStatus();
 
-        return Inertia::render("Bot/Show", [
+        return Inertia::render("Bot/Health", [
             'status' => $status
         ]);
+    }
+
+    public function settings()
+    {
+        Gate::authorize("moderate");
+
+        return Inertia::render("Bot/Settings", [
+            'announceRestart' => Feature::active("announce-restart"),
+            'punishableBansEnabled' => Feature::active("bans"),
+            'punishableTimeoutsEnabled' => Feature::active("timeouts"),
+            'punishDebugEnabled' => Feature::active("punish-debug"),
+            'autoCapsEnabled' => Feature::active("auto-caps-punishment"),
+            'punishableCommands' => Command::punishable()->select(['id', 'command', 'response'])->get(),
+            'autoCapsCommand' => (int) Setting::key("punishment.autoCapsCommand")->first()?->value,
+            'autoCapsTotalCapsThreshold' => (float) Setting::key("punishment.totalCapsThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT,
+            'autoCapsTotalLengthThreshold' => (int) Setting::key("punishment.totalLengthThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT,
+            'autoCapsWordCapsThreshold' => (float) Setting::key("punishment.wordCapsThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT,
+            'autoCapsWordLengthThreshold' => (int) Setting::key("punishment.wordLengthThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_LENGTH_THRESHOLD_DEFAULT,
+        ]);
+    }
+
+    public function updateSettings(UpdateBotSettingsRequest $request)
+    {
+        Gate::authorize("moderate");
+
+        $validated = $request->validated();
+
+        if ($validated['announceRestart'] ?? null) {
+            Feature::activate("announce-restart");
+        } else {
+            Feature::deactivate("announce-restart", false);
+        }
+
+        if ($validated['punishableBansEnabled'] ?? null) {
+            Feature::activate("bans");
+        } else {
+            Feature::deactivate("bans", false);
+        }
+
+        if ($validated['punishableTimeoutsEnabled'] ?? null) {
+            Feature::activate("timeouts");
+        } else {
+            Feature::deactivate("timeouts", false);
+        }
+
+        if ($validated['punishDebugEnabled'] ?? null) {
+            Feature::activate("punish-debug");
+        } else {
+            Feature::deactivate("punish-debug", false);
+        }
+
+        if ($validated['autoCapsEnabled'] ?? null) {
+            Feature::activate("auto-caps-punishment");
+        } else {
+            Feature::deactivate("auto-caps-punishment", false);
+        }
+
+        if (isset($validated['autoCapsCommand'])) {
+            Setting::updateOrCreate(['key' => 'punishment.autoCapsCommand'], ['value' => $validated['autoCapsCommand']]);
+        }
+
+        if (isset($validated['autoCapsTotalCapsThreshold'])) {
+            Setting::updateOrCreate(['key' => 'punishment.totalCapsThreshold'], ['value' => $validated['autoCapsTotalCapsThreshold']]);
+        }
+
+        if (isset($validated['autoCapsTotalLengthThreshold'])) {
+            Setting::updateOrCreate(['key' => 'punishment.totalLengthThreshold'], ['value' => $validated['autoCapsTotalLengthThreshold']]);
+        }
+
+        if (isset($validated['autoCapsWordCapsThreshold'])) {
+            Setting::updateOrCreate(['key' => 'punishment.wordCapsThreshold'], ['value' => $validated['autoCapsWordCapsThreshold']]);
+        }
+
+        if (isset($validated['autoCapsWordLengthThreshold'])) {
+            Setting::updateOrCreate(['key' => 'punishment.wordLengthThreshold'], ['value' => $validated['autoCapsWordLengthThreshold']]);
+        }
+
+        return back()->with("success", "Bot settings updated");
     }
 
     public function restart()

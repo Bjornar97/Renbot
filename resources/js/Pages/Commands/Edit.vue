@@ -26,6 +26,7 @@ const form = useForm("CreateCommand", {
     type: props.command.type,
     punish_reason: props.command.punish_reason,
     action: props.command.action,
+    prepend_sender: props.command.prepend_sender,
 });
 
 const submit = () => {
@@ -98,7 +99,7 @@ const deleteCommand = () => {
                 </header>
 
                 <div class="row">
-                    <div class="info">
+                    <div class="info mb-4">
                         <VTextField
                             v-model="form.command"
                             label="Command"
@@ -112,8 +113,15 @@ const deleteCommand = () => {
                             v-model="form.response"
                             label="Response"
                             :error-messages="form.errors.response"
-                            class="mb-4"
                         ></VTextarea>
+
+                        <VSwitch
+                            v-if="form.type !== 'punishable'"
+                            v-model="form.prepend_sender"
+                            color="primary"
+                            label="Prepend username"
+                            messages="Prepend the user's name to the response if no user is tagged in command."
+                        ></VSwitch>
                     </div>
 
                     <div class="settings">

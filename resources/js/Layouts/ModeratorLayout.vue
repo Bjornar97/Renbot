@@ -4,6 +4,7 @@ import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 import {
     mdiArrowDecisionAuto,
+    mdiCog,
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
@@ -121,6 +122,13 @@ const bottomNav = computed({
                     @click="goTo('bot')"
                     :prepend-icon="mdiHeartPulse"
                 ></VListItem>
+                <VListItem
+                    title="Settings"
+                    :active="route().current('bot.settings')"
+                    @click="goTo('bot.settings')"
+                    :prepend-icon="mdiCog"
+                >
+                </VListItem>
 
                 <VListSubheader>Commands</VListSubheader>
                 <VListItem

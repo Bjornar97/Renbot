@@ -22,7 +22,7 @@ class DeleteTwitchMessageJob implements ShouldQueue
      */
     public function __construct(public string $messageId)
     {
-        Log::info("Created delete message job $messageId");
+        //
     }
 
     /**
@@ -32,7 +32,6 @@ class DeleteTwitchMessageJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info("Deleting message {$this->messageId}");
         $renbot = User::where('username', config("services.twitch.username"))->first();
 
         if (!$renbot) {
@@ -48,8 +47,5 @@ class DeleteTwitchMessageJob implements ShouldQueue
             'moderator_id' => config("services.twitch.bot_id"),
             'message_id' => $this->messageId,
         ]);
-
-        Log::info("Status: ");
-        Log::info($result->getStatus());
     }
 }

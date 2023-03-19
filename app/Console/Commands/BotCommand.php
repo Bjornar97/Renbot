@@ -41,6 +41,16 @@ class BotCommand extends Command
     private Client $client;
     private string $channel;
 
+    private Carbon $lastFeatureFlush;
+
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->lastFeatureFlush = now();
+    }
+
     /**
      * Execute the console command.
      *
@@ -72,6 +82,8 @@ class BotCommand extends Command
 
     private function handleExit()
     {
+        $this->maybeFlushFeatures();
+
         if (Feature::active("announce-restart")) {
             $this->client->say($this->channel, "Restarting. Dont use any commands right now!");
         }
@@ -100,8 +112,19 @@ class BotCommand extends Command
         }
     }
 
+    private function maybeFlushFeatures()
+    {
+        if ($this->lastFeatureFlush->diffInSeconds(now()) > 10) {
+            Log::info("Flushing features");
+            Feature::flushCache();
+            $this->lastFeatureFlush = now();
+        }
+    }
+
     public function onMessage(MessageEvent $message)
     {
+        $this->maybeFlushFeatures();
+
         try {
             $messageService = MessageService::message($message);
 
@@ -113,7 +136,9 @@ class BotCommand extends Command
         }
 
         try {
-            $response = CommandService::message($message, $this->client)->getResponse();
+            $commandService = CommandService::message($message, $this->client);
+            $response = $commandService->getResponse();
+
             $this->client->say($this->channel, $response);
         } catch (Throwable $th) {
             Log::error($th->getMessage());

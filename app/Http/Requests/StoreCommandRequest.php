@@ -36,6 +36,7 @@ class StoreCommandRequest extends FormRequest
             'severity' => ['required_if:type,punishable', 'integer', 'min:1', 'max:10'],
             'punish_reason' => ['required_if:type,punishable', 'string', 'nullable', 'max:500'],
             'action' => ['string', 'nullable', 'max:255'],
+            'prepend_sender' => ['boolean'],
         ];
     }
 }

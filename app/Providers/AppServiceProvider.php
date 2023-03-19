@@ -28,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Feature::resolveScopeUsing(fn ($driver) => null);
+
         Feature::define("timeouts", fn () => config("app.features.timeouts"));
 
         Feature::define("bans", fn () => config("app.features.bans"));

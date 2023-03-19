@@ -126,11 +126,14 @@ const visibleCommands = computed(() => {
             <VTable class="commands-table" hover v-if="mdAndUp">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th>
+                            <template v-if="type === 'punishable'"
+                                >Severity</template
+                            >
+                        </th>
                         <th>Command</th>
-                        <th>Response</th>
-                        <th v-if="type === 'punishable'">Severity</th>
                         <th>Enabled</th>
+                        <th>Response</th>
                         <th></th>
                     </tr>
                 </thead>

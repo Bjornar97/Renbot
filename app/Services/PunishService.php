@@ -60,9 +60,9 @@ class PunishService
         return $this;
     }
 
-    public function basicResponse(): self
+    public function basicResponse(string $response): self
     {
-        $this->basicResponse = $this->command->response;
+        $this->basicResponse = $response;
         return $this;
     }
 
@@ -108,7 +108,7 @@ class PunishService
             return $this->timeout($this->targetUserId, $seconds, $response, $this->moderator);
         }
 
-        return "";
+        return $response;
     }
 
     private function ban(int $twitchId, string $response, User|null $moderator)
@@ -152,17 +152,12 @@ class PunishService
 
         activity()->on($punish)->by($moderator)->log("created");
 
-        Log::info("Response: $response");
-
         return $response;
     }
 
     private function isJustPunished(int $twitchId): bool
     {
         $exists = Punish::where('twitch_user_id', $twitchId)->where('created_at', '>', now()->subSeconds(10))->exists();
-
-        Log::info("ID: $twitchId");
-        Log::info("Exists: " . ($exists ? 'Yes' : "No"));
 
         if ($exists) {
             return true;

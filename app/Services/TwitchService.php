@@ -12,10 +12,7 @@ class TwitchService
 {
     public static function getTwitchId(string $username, User $moderator = null): int
     {
-        Log::info("Getting id");
-
         $twitchId = Cache::remember("twitchId:{$username}", 8 * 60 * 60, function () use ($username, $moderator) {
-            Log::info("Getting twitch id");
             $twitch = new Twitch;
 
             if ($moderator) {
@@ -27,11 +24,8 @@ class TwitchService
             ]);
 
             if (!$result->success() || count($result->data()) === 0) {
-                Log::info("Not successful!");
-                throw new Exception("User does not exist", 404);
+                throw new Exception("User @{$username} does not exist", 404);
             }
-
-            Log::info($result->data());
 
             return $result->data()[0]->id;
         });

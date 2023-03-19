@@ -33,8 +33,6 @@ class TimeoutTwitchUserJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info("Timing out user {$this->twitchUserId}");
-
         $moderator = $this->moderator;
 
         if (!$moderator) {
@@ -58,8 +56,5 @@ class TimeoutTwitchUserJob implements ShouldQueue
                 'reason' => $this->reason,
             ]
         ]);
-
-        Log::info("Status: ");
-        Log::info($result->getStatus());
     }
 }
