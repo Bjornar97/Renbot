@@ -44,7 +44,7 @@ class BotController extends Controller
             'autoCapsTotalLengthThreshold' => (int) (Setting::key("punishment.totalLengthThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT),
             'autoCapsWordCapsThreshold' => (float) (Setting::key("punishment.wordCapsThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT),
             'autoCapsWordLengthThreshold' => (int) (Setting::key("punishment.wordLengthThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_LENGTH_THRESHOLD_DEFAULT),
-        ]));
+        ]);
     }
 
     public function updateSettings(UpdateBotSettingsRequest $request)
