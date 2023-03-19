@@ -39,7 +39,7 @@ class BotController extends Controller
             'punishDebugEnabled' => Feature::active("punish-debug"),
             'autoCapsEnabled' => Feature::active("auto-caps-punishment"),
             'punishableCommands' => Command::punishable()->select(['id', 'command', 'response'])->get(),
-            'autoCapsCommand' => (int) Setting::key("punishment.autoCapsCommand")->first()?->value,
+            'autoCapsCommand' => ((int) Setting::key("punishment.autoCapsCommand")->first()?->value) ?? null,
             'autoCapsTotalCapsThreshold' => (float) (Setting::key("punishment.totalCapsThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT),
             'autoCapsTotalLengthThreshold' => (int) (Setting::key("punishment.totalLengthThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT),
             'autoCapsWordCapsThreshold' => (float) (Setting::key("punishment.wordCapsThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT),
