@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('commands', function (Blueprint $table) {
             $table->id();
 
-            $table->string("command");
+            $table->string("command"); // Is not unique because of soft deletes
             $table->text("response")->nullable();
 
             $table->string("usable_by");
