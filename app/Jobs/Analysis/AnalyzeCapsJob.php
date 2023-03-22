@@ -43,6 +43,9 @@ class AnalyzeCapsJob implements ShouldQueue
         $this->messageService = MessageService::message($message);
         $this->string = $this->messageService->getMessageWithoutEmotes();
 
+        // Remove :ACTION from start of string, since its not part of the message, but added when using /me 
+        $this->string = preg_replace("/^:ACTION /", "", $this->string);
+
         $this->totalCapsThreshold = Setting::key("punishment.totalCapsThreshold")->first()?->value ?? self::TOTAL_CAPS_THRESHOLD_DEFAULT;
         $this->wordCapsThreshold = Setting::key("punishment.wordCapsThreshold")->first()?->value ?? self::WORD_CAPS_THRESHOLD_DEFAULT;
 
