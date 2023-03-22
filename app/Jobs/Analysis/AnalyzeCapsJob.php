@@ -77,7 +77,11 @@ class AnalyzeCapsJob implements ShouldQueue
             ->bot($bot)
             ->punish();
 
-        $bot->say(config("services.twitch.channel"), $response);
+        $bot->on(MessageEvent::class, function (MessageEvent $event) use ($response, $bot) {
+            $bot->say(config("services.twitch.channel"), $response);
+
+            $bot->getLoop()->addTimer(3, fn () => $bot->close());
+        });
     }
 
     public function isPunishable(): bool
