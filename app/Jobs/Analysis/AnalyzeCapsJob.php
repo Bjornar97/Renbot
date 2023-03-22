@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Services\BotService;
 use App\Services\MessageService;
 use App\Services\PunishService;
+use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -86,7 +87,7 @@ class AnalyzeCapsJob implements ShouldQueue
             ->bot($bot)
             ->punish();
 
-        $bot->on(MessageEvent::class, function (MessageEvent $event) use ($response, $bot) {
+        $bot->on(WelcomeEvent::class, function (WelcomeEvent $event) use ($response, $bot) {
             $bot->say(config("services.twitch.channel"), $response);
 
             $bot->getLoop()->addTimer(3, fn () => $bot->close());
