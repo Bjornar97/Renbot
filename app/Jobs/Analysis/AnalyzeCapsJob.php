@@ -49,7 +49,7 @@ class AnalyzeCapsJob implements ShouldQueue
         Log::info("Caps analysis before replace: {$this->string}");
 
         // Remove :ACTION from start of string, since its not part of the message, but added when using /me 
-        $this->string = preg_replace("/^:ACTION /", "", $this->string);
+        $this->string = preg_replace("/^ACTION /", "", $this->string);
 
         Log::info("Caps analysis after replace: {$this->string}");
 
