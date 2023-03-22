@@ -38,7 +38,7 @@
         // See <https://github.com/vuejs/vue-cli/pull/5688>
         "skipLibCheck": true,
         "lib": ["DOM", "ESNext"],
-        "types": ["node", "unplugin-vue-define-options/macros-global"],
+        "types": ["node", "unplugin-vue-define-options/macros-global", "chrome"],
         "paths": {
             "@/*": ["resources/js/*"],
         }

@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://www.twitch.tv'],
+    'allowed_origins' => ['https://www.twitch.tv', "chrome-extension://lenicplpfmojmabfeoakapmofppkmhbb"],
 
     'allowed_origins_patterns' => [],
 

@@ -35,6 +35,7 @@ class SpecialCommandService
 
     public function __construct(public Command $command, public Client $bot)
     {
+        $this->channel = config("services.twitch.channel", "rendogtv");
     }
 
     public static function command(Command $command, Client $bot): self

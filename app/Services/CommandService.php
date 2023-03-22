@@ -22,6 +22,8 @@ class CommandService
 
     public function __construct(public MessageEvent $message, private Client $bot)
     {
+        $this->channel = config("services.twitch.channel", "rendogtv");
+
         $command = $this->getCommandFromMessage($message->message);
 
         if (!$command) {
