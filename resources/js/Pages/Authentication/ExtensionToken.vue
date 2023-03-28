@@ -45,11 +45,14 @@ const sendToken = () => {
 
     chrome.runtime.sendMessage(
         extensionId,
-        { token: props.token },
+        {
+            token: props.token,
+        },
         (response) => {
-            if (!response.success) {
+            if (!response?.success) {
                 console.log("Failed to send token");
-                error.value = response.message;
+                error.value =
+                    response?.message ?? "Something unexpected happened";
                 return;
             }
 
