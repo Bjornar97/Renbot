@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\LoginController;
@@ -50,17 +51,11 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
 
     Route::name("rendog.thankyou")->get("/rendog/thankyou", [RendogController::class, "thankyou"]);
 
-    Route::get("/api/user", function (Request $request) {
-        return response()->json($request->user());
-    });
+    Route::name("token.show")->get("/moderators/token", [ApiTokenController::class, "showToken"]);
+    Route::name("token.create")->post("/moderators/token/create", [ApiTokenController::class, "createToken"]);
 });
 
 Route::name("rules")->get("/rules", [RuleController::class, "display"]);
-
-Route::get("/api/is-authenticated", function (Request $request) {
-    return response()->json($request->user() !== null);
-});
-
 
 Route::redirect("/l/brother", "https://open.spotify.com/artist/42Ut8SaEEooPqrGubG1C3M");
 Route::redirect("/l/playlist", "https://open.spotify.com/playlist/5d4vmTdLm9XN1hVaLe0EY9?si=d0820125401e434e");

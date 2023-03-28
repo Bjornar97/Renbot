@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PunishController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,17 @@ use Illuminate\Support\Facades\Route;
 // });
 
 // Route::webhooks('/webhooks/twitch/stream-online');
+
+Route::middleware("auth:sanctum")->group(function () {
+    Route::get("/punishable-commands", [PunishController::class, "punishableCommands"]);
+
+    Route::post('/punish', [PunishController::class, "punish"]);
+
+    Route::get("/is-authenticated", function (Request $request) {
+        return response()->json($request->user() !== null);
+    });
+
+    Route::get("/user", function (Request $request) {
+        return response()->json($request->user());
+    });
+});

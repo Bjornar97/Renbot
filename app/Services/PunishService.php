@@ -40,6 +40,7 @@ class PunishService
 
     public function __construct(protected int $targetUserId, protected $targetUsername)
     {
+        $this->channel = config("services.twitch.channel", "rendogtv");
     }
 
     public static function user(int $targetUserId, string $targetUsername): self

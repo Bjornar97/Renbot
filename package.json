@@ -5,6 +5,7 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@types/chrome": "^0.0.224",
         "@types/lodash": "^4.14.191",
         "@types/lodash.debounce": "^4.0.7",
         "@types/node": "^18.13.0",
