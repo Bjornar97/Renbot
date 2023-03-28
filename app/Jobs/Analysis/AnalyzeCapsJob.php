@@ -7,12 +7,14 @@ use App\Models\Setting;
 use App\Services\BotService;
 use App\Services\MessageService;
 use App\Services\PunishService;
+use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class AnalyzeCapsJob implements ShouldQueue
 {
@@ -42,6 +44,14 @@ class AnalyzeCapsJob implements ShouldQueue
     {
         $this->messageService = MessageService::message($message);
         $this->string = $this->messageService->getMessageWithoutEmotes();
+        $this->string = trim($this->string);
+
+        Log::info("Caps analysis before replace: {$this->string}");
+
+        // Remove :ACTION from start of string, since its not part of the message, but added when using /me 
+        $this->string = preg_replace("/^ACTION /", "", $this->string);
+
+        Log::info("Caps analysis after replace: {$this->string}");
 
         $this->totalCapsThreshold = Setting::key("punishment.totalCapsThreshold")->first()?->value ?? self::TOTAL_CAPS_THRESHOLD_DEFAULT;
         $this->wordCapsThreshold = Setting::key("punishment.wordCapsThreshold")->first()?->value ?? self::WORD_CAPS_THRESHOLD_DEFAULT;
@@ -77,9 +87,11 @@ class AnalyzeCapsJob implements ShouldQueue
             ->bot($bot)
             ->punish();
 
-        $bot->say(config("services.twitch.channel"), $response);
+        $bot->on(WelcomeEvent::class, function (WelcomeEvent $event) use ($response, $bot) {
+            $bot->say(config("services.twitch.channel"), $response);
 
-        $bot->getLoop()->addTimer(3, fn () => $bot->close());
+            $bot->getLoop()->addTimer(3, fn () => $bot->close());
+        });
     }
 
     public function isPunishable(): bool
