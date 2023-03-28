@@ -11,6 +11,7 @@ defineOptions({
 
 const props = defineProps<{
     token?: string;
+    fromExtension?: boolean;
 }>();
 
 const loading = ref(false);
@@ -29,10 +30,16 @@ const getToken = () => {
     );
 };
 
-console.log(props.token);
+if (props.fromExtension) {
+    if (!props.token) {
+        getToken();
+    }
+}
+
+const error = ref(null as string | null);
 
 const sendToken = () => {
-    const extensionId = "lenicplpfmojmabfeoakapmofppkmhbb";
+    const extensionId = "komdeaocjociimaeieplaehfieihgcoi";
 
     console.log("Sending token");
 
@@ -40,7 +47,17 @@ const sendToken = () => {
         extensionId,
         { token: props.token },
         (response) => {
-            console.log(response);
+            if (!response.success) {
+                console.log("Failed to send token");
+                error.value = response.message;
+                return;
+            }
+
+            error.value = null;
+
+            if (props.fromExtension) {
+                window.close();
+            }
         }
     );
 };
@@ -59,8 +76,14 @@ watch(
     <div class="pa-4">
         <h1 class="mb-8">Chrome extension login</h1>
 
-        <VBtn @click="getToken" color="primary" :loading="loading"
-            >Get Token</VBtn
-        >
+        <VAlert color="warning" v-if="error" class="mb-4">
+            <VAlertTitle> Something went wrong </VAlertTitle>
+
+            {{ error }}
+        </VAlert>
+
+        <VBtn @click="getToken" color="primary" :loading="loading">
+            Try again
+        </VBtn>
     </div>
 </template>

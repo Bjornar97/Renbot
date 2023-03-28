@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Log;
 
 class PunishController extends Controller
 {
+    public function punishableCommands(Request $request)
+    {
+        Gate::authorize("moderate");
+
+        return response()->json(Command::punishable()->active()->get());
+    }
+
     public function punish(Request $request)
     {
         Gate::authorize("moderate");
