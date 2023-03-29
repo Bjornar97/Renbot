@@ -18,7 +18,7 @@ class PunishController extends Controller
     {
         Gate::authorize("moderate");
 
-        return response()->json(Command::punishable()->active()->get());
+        return response()->json(Command::punishable()->active()->orderBy("command")->get());
     }
 
     public function punish(Request $request)
