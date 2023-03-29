@@ -19,7 +19,15 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://www.twitch.tv', "chrome-extension://komdeaocjociimaeieplaehfieihgcoi"],
+    'allowed_origins' => [
+        'https://www.twitch.tv',
+        // localhost test extension
+        "chrome-extension://komdeaocjociimaeieplaehfieihgcoi",
+        // Microsoft edge store
+        "chrome-extension://kfcmniendgehcpinaeofailgmcmmplpf",
+        // Chrome web store
+        "chrome-extension://aggckhjjebacnbchdepadpkioodiimha",
+    ],
 
     'allowed_origins_patterns' => [],
 
