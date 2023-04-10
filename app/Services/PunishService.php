@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Jobs\BanTwitchUserJob;
+use App\Jobs\SingleChatMessageJob;
 use App\Jobs\TimeoutTwitchUserJob;
 use App\Models\Command;
 use App\Models\Punish;
@@ -126,7 +127,7 @@ class PunishService
 
         Feature::when(
             "punish-debug",
-            whenActive: fn () => $this->bot?->say($this->channel, "Would ban @{$this->targetUsername}"),
+            whenActive: fn () => $this->say("Would ban @{$this->targetUsername}"),
             whenInactive: fn () => BanTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
         );
 
@@ -141,7 +142,7 @@ class PunishService
 
         Feature::when(
             "punish-debug",
-            whenActive: fn () => $this->bot?->say($this->channel, "Would timeout @{$this->targetUsername} with {$seconds} seconds"),
+            whenActive: fn () => $this->say("Would timeout @{$this->targetUsername} with {$seconds} seconds"),
             whenInactive: fn () => TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator),
         );
 
@@ -188,5 +189,15 @@ class PunishService
         $seconds = min($seconds, 1_209_600);
 
         return $seconds;
+    }
+
+    private function say(string $message)
+    {
+        if (!isset($this->bot)) {
+            SingleChatMessageJob::dispatch($message);
+            return;
+        }
+
+        $this->bot?->say($this->channel, $message);
     }
 }

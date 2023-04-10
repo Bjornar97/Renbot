@@ -12,6 +12,7 @@ defineOptions({
 const props = defineProps<{
     token?: string;
     fromExtension?: boolean;
+    env?: string;
 }>();
 
 const loading = ref(false);
@@ -39,7 +40,11 @@ if (props.fromExtension) {
 const error = ref(null as string | null);
 
 const sendToken = () => {
-    const extensionId = "aggckhjjebacnbchdepadpkioodiimha";
+    let extensionId = "aggckhjjebacnbchdepadpkioodiimha";
+
+    if (props.env === "local") {
+        extensionId = "komdeaocjociimaeieplaehfieihgcoi";
+    }
 
     console.log("Sending token");
 

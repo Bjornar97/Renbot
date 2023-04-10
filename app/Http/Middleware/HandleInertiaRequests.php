@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error', []),
             ],
             'user' => auth()?->user() ?? null,
+            'env' => config("app.env"),
         ]);
     }
 }

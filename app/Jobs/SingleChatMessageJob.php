@@ -7,6 +7,7 @@ use App\Services\BotService;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\ClientOptions;
+use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,8 +34,12 @@ class SingleChatMessageJob implements ShouldQueue
     {
         $client = BotService::bot();
 
-        $client->say(config("services.twitch.channel"), $this->message);
+        $client->on(WelcomeEvent::class, function () use ($client) {
+            $client->say(config("services.twitch.channel"), $this->message);
 
-        $client->getLoop()->addTimer(3, fn () => $client->close());
+            $client->getLoop()->addTimer(3, fn () => $client->close());
+        });
+
+        $client->connect();
     }
 }

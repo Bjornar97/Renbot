@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
 use App\Services\BotService;
 use App\Services\PunishService;
@@ -30,31 +31,15 @@ class PunishController extends Controller
             "command" => ["required", "string"],
         ]);
 
-        $bot = BotService::bot();
+        $twitchUserId = TwitchService::getTwitchId($data['user'], $request->user());
+        $command = Command::punishable()->where('command', $data['command'])->first();
 
-        $bot->on(WelcomeEvent::class, function () use ($data, $bot, $request) {
-            Log::info("Punish controller welcome!");
-            $twitchUserId = TwitchService::getTwitchId($data['user'], $request->user());
-            $command = Command::punishable()->where('command', $data['command'])->first();
+        $response = PunishService::user($twitchUserId, $data['user'])
+            ->moderator($request->user())
+            ->command($command)
+            ->punish();
 
-            $response = PunishService::user($twitchUserId, $data['user'])
-                ->moderator($request->user())
-                ->command($command)
-                ->bot($bot)
-                ->punish();
-
-            Log::info("Punished");
-
-            $bot->say(config("services.twitch.channel"), $response);
-
-            Log::info("Closing");
-
-            $bot->getLoop()->addTimer(3, fn () => $bot->close());
-        });
-
-        Log::info("Connecting");
-
-        $bot->connect();
+        SingleChatMessageJob::dispatch($response);
 
         return response()->json([
             "success" => true,
