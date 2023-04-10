@@ -39,7 +39,7 @@ if (props.fromExtension) {
 const error = ref(null as string | null);
 
 const sendToken = () => {
-    const extensionId = "komdeaocjociimaeieplaehfieihgcoi";
+    const extensionId = "aggckhjjebacnbchdepadpkioodiimha";
 
     console.log("Sending token");
 
