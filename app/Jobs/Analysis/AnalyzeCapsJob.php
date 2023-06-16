@@ -88,6 +88,8 @@ class AnalyzeCapsJob implements ShouldQueue
 
             $bot->getLoop()->addTimer(3, fn () => $bot->close());
         });
+
+        $bot->connect();
     }
 
     public function isPunishable(): bool

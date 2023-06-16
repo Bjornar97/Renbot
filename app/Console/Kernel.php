@@ -19,6 +19,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         $schedule->job(RestartBotJob::class)->everySixHours();
+
+        $schedule->command('telescope:prune --hours=72')->daily();
     }
 
     /**
