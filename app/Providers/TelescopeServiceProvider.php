@@ -17,6 +17,10 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         Telescope::night();
 
         $this->hideSensitiveRequestDetails();
+
+        Telescope::filter(function (IncomingEntry $entry) {
+            return true;
+        });
     }
 
     /**
