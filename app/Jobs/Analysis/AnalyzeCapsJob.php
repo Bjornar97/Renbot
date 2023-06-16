@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Analysis;
 
+use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
 use App\Models\Setting;
 use App\Services\BotService;
@@ -76,20 +77,11 @@ class AnalyzeCapsJob implements ShouldQueue
 
     protected function punish()
     {
-        $bot = BotService::bot();
-
         $response = PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
             ->command($this->command)
-            ->bot($bot)
             ->punish();
 
-        $bot->on(WelcomeEvent::class, function (WelcomeEvent $event) use ($response, $bot) {
-            $bot->say(config("services.twitch.channel"), $response);
-
-            $bot->getLoop()->addTimer(3, fn () => $bot->close());
-        });
-
-        $bot->connect();
+        SingleChatMessageJob::dispatch($response);
     }
 
     public function isPunishable(): bool
