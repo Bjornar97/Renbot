@@ -2,14 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
 use App\Services\BotService;
-use Exception;
-use GhostZero\Tmi\Client;
-use GhostZero\Tmi\ClientOptions;
 use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;

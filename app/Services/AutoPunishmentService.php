@@ -56,7 +56,7 @@ class AutoPunishmentService
     {
         $punishService = PunishService::user($this->userId, $this->username)
             ->command(Command::where("name", $command)->first())
-            ->basicResponse()
+            ->basicResponse($this->message)
             ->moderator(User::where("username", "renthebot")->first());
 
         if ($this->bot) {

@@ -2,12 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use romanzipp\Twitch\Twitch;
 
 class SubscribeToTwitchWebhooksJob implements ShouldQueue
 {
@@ -26,6 +28,16 @@ class SubscribeToTwitchWebhooksJob implements ShouldQueue
      */
     public function handle(): void
     {
-        //
+        $renbot = User::where('username', config("services.twitch.username"))->first();
+
+        if (!$renbot) {
+            Log::error("The bot is not registered as a user");
+            return;
+        }
+
+        $twitch = new Twitch();
+        $twitch->setToken($renbot->twitch_access_token);
+
+        $twitch->subscribeEventSub([]);
     }
 }
