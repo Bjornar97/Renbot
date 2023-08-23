@@ -11,9 +11,12 @@ const props = defineProps<{
     type: "regular" | "punishable" | "special";
 }>();
 
+const switchLoading = ref(false);
+
 const enabled = computed({
     get: () => props.command.enabled,
     set: (v: boolean) => {
+        switchLoading.value = true;
         router.patch(
             route("commands.update", { command: props.command.id }),
             {
@@ -22,6 +25,9 @@ const enabled = computed({
             {
                 preserveScroll: true,
                 preserveState: true,
+                onFinish: () => {
+                    switchLoading.value = false;
+                },
             }
         );
     },
@@ -62,7 +68,12 @@ const deleteCommand = () => {
         <td>!{{ command.command }}</td>
 
         <td @click.stop>
-            <VSwitch v-model="enabled" color="primary" hide-details></VSwitch>
+            <VSwitch
+                v-model="enabled"
+                color="primary"
+                hide-details
+                :loading="switchLoading"
+            ></VSwitch>
         </td>
 
         <td class="response" :style="{ 'max-width': '66ch' }">

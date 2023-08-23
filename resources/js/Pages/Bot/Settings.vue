@@ -131,7 +131,7 @@ const form = useForm({
                         <template #item="{ props, item }">
                             <VListItem
                                 v-bind="props"
-                                :key="item.id"
+                                :key="item.raw.id"
                                 :title="`!${item.raw.command}`"
                                 :subtitle="item.raw.response"
                             >
@@ -255,7 +255,7 @@ const form = useForm({
     </div>
 </template>
 
-<style>
+<style scoped>
 @media screen and (min-width: 768px) {
     .sections {
         display: grid;

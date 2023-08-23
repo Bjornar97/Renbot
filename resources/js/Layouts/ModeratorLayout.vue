@@ -99,11 +99,13 @@ const bottomNav = computed({
 
             <VSpacer v-if="mdAndUp"></VSpacer>
 
-            <VChip pill class="mr-4" v-if="mdAndUp">
-                <VAvatar start>
-                    <VImg :src="user.avatar" alt="Avatar" />
-                </VAvatar>
-
+            <VChip
+                pill
+                rounded
+                class="mr-4"
+                v-if="mdAndUp"
+                :prepend-avatar="user.avatar"
+            >
                 {{ user.username }}
             </VChip>
 

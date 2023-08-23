@@ -2,6 +2,7 @@ import "vuetify/styles"; // Global CSS has to be imported
 import { createVuetify, type ThemeDefinition } from "vuetify";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
 import { mdiInformation } from "@mdi/js";
+import { md3 } from "vuetify/blueprints";
 
 const renbotTheme: ThemeDefinition = {
     dark: true,
@@ -25,7 +26,11 @@ export const vuetify = createVuetify({
         VAutocomplete: {
             variant: "outlined",
         },
+        VSwitch: {
+            inset: true,
+        },
     },
+    blueprint: md3,
     theme: {
         defaultTheme: "renbotTheme",
         variations: {
