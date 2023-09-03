@@ -2,9 +2,15 @@
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import type { Command } from "@/types/Command";
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiAlphaEBox, mdiCancel, mdiContentSave, mdiTrashCan } from "@mdi/js";
-import { computed, ref } from "vue";
-import { useDisplay } from "vuetify/lib/framework.mjs";
+import { mdiCancel, mdiContentSave } from "@mdi/js";
+import { ref } from "vue";
+import CommandResponse from "./Partials/CommandResponse.vue";
+import UsableBy from "./Partials/UsableBy.vue";
+import Cooldowns from "./Partials/Cooldowns.vue";
+import Punishable from "./Partials/Punishable.vue";
+import SpecialAction from "./Partials/SpecialAction.vue";
+import AutoPost from "./Partials/AutoPost.vue";
+import type { AutoPost as AutoPostType } from "@/types/AutoPost";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -13,6 +19,7 @@ defineOptions({
 const props = defineProps<{
     command: Command;
     actions: { action: string; title: string }[];
+    autoPosts: AutoPostType[];
 }>();
 
 const form = useForm("CreateCommand", {
@@ -27,6 +34,13 @@ const form = useForm("CreateCommand", {
     punish_reason: props.command.punish_reason,
     action: props.command.action,
     prepend_sender: props.command.prepend_sender,
+    auto_post_enabled: props.command.auto_post_enabled,
+    auto_post_id: props.command.auto_post_id,
+    auto_post: {
+        interval: props.command.auto_post?.interval ?? 10,
+        interval_type: props.command.auto_post?.interval_type ?? "hours",
+        min_posts_between: props.command.auto_post?.min_posts_between ?? 100,
+    },
 });
 
 const submit = () => {
@@ -52,21 +66,6 @@ const cancel = () => {
     router.get(route("commands.index"));
 };
 
-const severityColor = computed(() => {
-    let color = "success";
-    if (form.severity > 4) {
-        color = "warning";
-    }
-
-    if (form.severity > 7) {
-        color = "error";
-    }
-
-    return color;
-});
-
-const { smAndUp } = useDisplay();
-
 const showDelete = ref(false);
 const deleteLoading = ref(false);
 
@@ -83,220 +82,163 @@ const deleteCommand = () => {
 
 <template>
     <div class="pa-2 pa-md-4">
-        <VForm>
-            <div>
-                <header class="header">
-                    <h1 class="mb-4">
-                        Edit {{ command.type }} command !{{ command.command }}
-                    </h1>
+        <VForm class="command-form">
+            <header class="header">
+                <h1 class="text-md-h2">
+                    Edit {{ form.type }} command !{{ props.command.command }}
+                </h1>
 
-                    <VSwitch
-                        color="red"
-                        v-model="form.enabled"
-                        label="Enabled"
-                        :error-messages="form.errors.enabled"
-                    ></VSwitch>
-                </header>
+                <VSwitch
+                    color="red"
+                    v-model="form.enabled"
+                    label="Enabled"
+                    :error-messages="form.errors.enabled"
+                    hide-details
+                ></VSwitch>
+            </header>
 
-                <div class="row">
-                    <div class="info mb-4">
-                        <VTextField
-                            v-model="form.command"
-                            label="Command"
-                            class="mb-4"
-                            :error-messages="form.errors.command"
-                        >
-                            <template #prepend-inner>!</template>
-                        </VTextField>
+            <div class="command-response">
+                <VSheet class="pa-4 pa-md-6" rounded>
+                    <h2 class="text-overline mb-4">Command and reponse</h2>
 
-                        <VTextarea
-                            v-model="form.response"
-                            label="Response"
-                            :error-messages="form.errors.response"
-                        ></VTextarea>
+                    <CommandResponse
+                        v-model:command="form.command"
+                        v-model:response="form.response"
+                        v-model:prepend-sender="form.prepend_sender"
+                        :errors="form.errors"
+                        :type="form.type"
+                    ></CommandResponse>
+                </VSheet>
+            </div>
 
-                        <VSwitch
-                            v-if="form.type !== 'punishable'"
-                            v-model="form.prepend_sender"
-                            color="primary"
-                            label="Prepend username"
-                            messages="Prepend the user's name to the response if no user is tagged in command."
-                        ></VSwitch>
-                    </div>
+            <div class="permissions">
+                <VSheet class="pa-4 pa-md-6" rounded>
+                    <h2 class="text-overline mb-4">Permissions</h2>
 
-                    <div class="settings">
-                        <VBtnToggle
-                            v-model="form.usable_by"
-                            divided
-                            class="mb-8"
-                            :disabled="form.type === 'punishable'"
-                        >
-                            <VBtn
-                                color="#01AD02"
-                                value="moderators"
-                                :stacked="!smAndUp"
-                                :size="smAndUp ? 'large' : 'small'"
-                            >
-                                <template #prepend>
-                                    <img
-                                        src="../../../images/icons/moderator.png"
-                                        alt="Moderator icon"
-                                    />
-                                </template>
-                                <span v-if="smAndUp">Moderators only</span>
-                                <span v-else>Moderators</span>
-                            </VBtn>
+                    <UsableBy
+                        :type="form.type"
+                        v-model:usable-by="form.usable_by"
+                        :errors="form.errors"
+                    ></UsableBy>
 
-                            <VBtn
-                                color="purple-darken-4"
-                                value="subscribers"
-                                :size="smAndUp ? 'large' : 'small'"
-                                :stacked="!smAndUp"
-                            >
-                                <template #prepend>
-                                    <img
-                                        src="../../../images/icons/subscriber.png"
-                                        alt="Moderator icon"
-                                    />
-                                </template>
-                                <span v-if="smAndUp">Subscribers</span>
-                                <span v-else>Subs</span>
-                            </VBtn>
+                    <Cooldowns
+                        v-model:cooldown="form.cooldown"
+                        v-model:global-cooldown="form.global_cooldown"
+                        :usable-by="form.usable_by"
+                        :errors="form.errors"
+                    ></Cooldowns>
+                </VSheet>
+            </div>
 
-                            <VBtn
-                                color="red-darken-4"
-                                value="everyone"
-                                :size="smAndUp ? 'large' : 'small'"
-                                :prepend-icon="mdiAlphaEBox"
-                                :stacked="!smAndUp"
-                            >
-                                Everyone
-                            </VBtn>
-                        </VBtnToggle>
+            <div class="type-specific">
+                <VSheet
+                    class="pa-4 pa-md-6"
+                    rounded
+                    v-if="form.type === 'regular'"
+                >
+                    <h2 class="text-overline mb-4">Auto post</h2>
 
-                        <VTextField
-                            class="mb-4"
-                            v-if="form.usable_by !== 'moderators'"
-                            type="number"
-                            v-model="form.cooldown"
-                            label="Cooldown"
-                            hint="If the same person runs this command twice within this duration, the second will not be allowed. Does not apply to moderators."
-                            :error-messages="form.errors.cooldown"
-                        ></VTextField>
+                    <AutoPost
+                        v-model:auto-post-id="form.auto_post_id"
+                        v-model:auto-post-enabled="form.auto_post_enabled"
+                        v-model:auto-post-interval="form.auto_post.interval"
+                        v-model:auto-post-interval-type="
+                            form.auto_post.interval_type
+                        "
+                        v-model:auto-post-min-posts-between="
+                            form.auto_post.min_posts_between
+                        "
+                        :errors="form.errors"
+                        :auto-posts="autoPosts"
+                    ></AutoPost>
+                </VSheet>
 
-                        <VTextField
-                            class="mb-4"
-                            v-if="form.usable_by !== 'moderators'"
-                            type="number"
-                            v-model="form.global_cooldown"
-                            label="Global cooldown"
-                            hint="If any person runs this command within this duration after previous time it was run by any person, it will not be allowed. Does not apply to moderators."
-                            :error-messages="form.errors.global_cooldown"
-                        ></VTextField>
-                    </div>
-                </div>
+                <VSheet
+                    class="pa-4 pa-md-6"
+                    rounded
+                    v-if="form.type === 'punishable'"
+                >
+                    <h2 class="text-overline mb-4">Punishment</h2>
 
-                <div v-if="form.type === 'punishable'">
-                    <VSlider
-                        class="mb-8"
-                        v-model="form.severity"
-                        :color="severityColor"
-                        :show-ticks="true"
-                        :step="1"
-                        min="1"
-                        max="10"
-                        label="Punish severity"
-                        :error-messages="form.errors.severity"
-                        messages="How hard should the chatter be punished. 1 will timeout 10 seconds first time, 5 will timeout 120 seconds first time, 10 will insta-ban."
-                        thumb-label="always"
-                    ></VSlider>
+                    <Punishable
+                        v-model:severity="form.severity"
+                        v-model:punish-reason="form.punish_reason"
+                        :errors="form.errors"
+                    ></Punishable>
+                </VSheet>
 
-                    <VTextField
-                        v-model="form.punish_reason"
-                        :error-messages="form.errors.punish_reason"
-                        label="Punish reason"
-                    ></VTextField>
-                </div>
+                <VSheet
+                    class="pa-4 pa-md-6"
+                    rounded
+                    v-if="form.type === 'special' && actions"
+                >
+                    <h2 class="text-overline mb-4">Action</h2>
 
-                <div v-if="form.type === 'special'">
-                    <VAutocomplete
-                        v-model="form.action"
-                        class="mb-4"
-                        :items="actions"
-                        item-title="title"
-                        item-value="action"
-                        label="Action"
-                        hint="The action to run when this command is excecuted"
-                        persistent-hint
-                        :error-messages="form.errors.action"
-                    ></VAutocomplete>
-                </div>
+                    <SpecialAction
+                        v-model:action="form.action"
+                        :actions="actions"
+                        :errors="form.errors"
+                    ></SpecialAction>
+                </VSheet>
+            </div>
 
-                <div class="buttons">
-                    <VBtn
-                        color="green"
-                        @click="submit"
-                        :prepend-icon="mdiContentSave"
-                        :loading="form.processing"
-                    >
-                        Save
-                    </VBtn>
-                    <VBtn @click="cancel" color="gray" :prepend-icon="mdiCancel"
-                        >Cancel</VBtn
-                    >
-
-                    <VBtn
-                        color="red-darken-3"
-                        :prepend-icon="mdiTrashCan"
-                        @click="showDelete = true"
-                        >Delete command</VBtn
-                    >
-                </div>
+            <div class="buttons">
+                <VBtn
+                    color="green"
+                    @click="submit"
+                    :prepend-icon="mdiContentSave"
+                    :loading="form.processing"
+                >
+                    Save
+                </VBtn>
+                <VBtn @click="cancel" color="gray" :prepend-icon="mdiCancel"
+                    >Cancel</VBtn
+                >
             </div>
         </VForm>
-
-        <VDialog v-model="showDelete">
-            <VCard class="delete-dialog">
-                <VCardTitle>Are you sure?</VCardTitle>
-
-                <VCardText>
-                    Are you sure you want to delete this command?
-                </VCardText>
-
-                <VCardActions>
-                    <VBtn @click="showDelete = false">Cancel</VBtn>
-                    <VBtn
-                        color="red"
-                        @click="deleteCommand"
-                        :loading="deleteLoading"
-                        >Delete</VBtn
-                    >
-                </VCardActions>
-            </VCard>
-        </VDialog>
     </div>
 </template>
 
 <style scoped>
-.row {
+.command-form {
     display: grid;
+    gap: 2rem;
 }
 
 @media screen and (min-width: 1280px) {
-    .row {
+    .command-form {
         grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        grid-template-areas:
+            "header header"
+            "command-response permissions"
+            "type-specific ."
+            "buttons .";
+    }
+    .header {
+        grid-area: header;
+        display: grid;
+        grid-template-columns: 1fr max-content;
+    }
+
+    .command-response {
+        grid-area: command-response;
+    }
+
+    .permissions {
+        grid-area: permissions;
+    }
+
+    .type-specific {
+        grid-area: type-specific;
+    }
+
+    .buttons {
+        grid-area: buttons;
     }
 }
 
 .buttons {
     display: flex;
     gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.header {
-    display: grid;
-    grid-template-columns: 1fr max-content;
 }
 </style>

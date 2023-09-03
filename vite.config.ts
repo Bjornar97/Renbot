@@ -28,6 +28,9 @@ export default defineConfig({
                     includeAbsolute: true,
                 },
             },
+            script: {
+                defineModel: true,
+            },
         }),
         DefineOptions(),
         vuetify(),

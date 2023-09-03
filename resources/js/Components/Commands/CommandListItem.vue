@@ -6,6 +6,7 @@ import SubscriberIcon from "../../../images/icons/subscriber.png";
 import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
 import { computed } from "vue";
+import { mdiClockOutline } from "@mdi/js";
 
 const props = defineProps<{
     command: Command;
@@ -64,6 +65,17 @@ const enabled = computed({
                 class="mr-4 mt-3"
                 :command="command"
             ></CommandUsableByIcon>
+        </template>
+
+        <template #title>
+            <VIcon
+                size="small"
+                color="grey-darken-1"
+                :icon="mdiClockOutline"
+                v-if="command.auto_post_enabled"
+            ></VIcon>
+
+            !{{ command.command }}
         </template>
 
         <template #append>

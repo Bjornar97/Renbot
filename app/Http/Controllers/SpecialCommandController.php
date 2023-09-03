@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommandRequest;
+use App\Models\AutoPost;
 use App\Models\Command;
 use App\Services\SpecialCommandService;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class SpecialCommandController extends Controller
         return Inertia::render("Commands/Create", [
             'type' => 'special',
             'actions' => array_values(SpecialCommandService::$functions),
+            'autoPosts' => AutoPost::all(),
         ]);
     }
 
@@ -44,7 +46,6 @@ class SpecialCommandController extends Controller
      */
     public function store(StoreCommandRequest $request)
     {
-
         $data = $request->validated();
 
         Command::create($data);

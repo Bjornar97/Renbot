@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommandRequest;
+use App\Models\AutoPost;
 use App\Models\Command;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -31,6 +32,7 @@ class PunishableCommandController extends Controller
     {
         return Inertia::render("Commands/Create", [
             'type' => 'punishable',
+            'autoPosts' => AutoPost::all(),
         ]);
     }
 

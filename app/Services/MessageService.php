@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
+use Illuminate\Support\Str;
 
 class MessageService
 {
@@ -51,6 +52,13 @@ class MessageService
     public function isModerator(): bool
     {
         return (bool) $this->message->tags['mod'];
+    }
+
+    public function isThisBot(): bool
+    {
+        $botId = config("services.twitch.bot_id");
+
+        return ((int) $botId) === ((int) $this->getSenderTwitchId());
     }
 
     public function getMessageWithoutEmotes(): string

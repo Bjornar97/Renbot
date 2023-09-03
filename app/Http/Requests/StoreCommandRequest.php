@@ -37,6 +37,12 @@ class StoreCommandRequest extends FormRequest
             'punish_reason' => ['required_if:type,punishable', 'string', 'nullable', 'max:500'],
             'action' => ['string', 'nullable', 'max:255'],
             'prepend_sender' => ['boolean'],
+            'auto_post_enabled' => ['boolean'],
+            'auto_post_id' => ['integer', 'exists:auto_posts,id'],
+            'auto_post' => ['array', 'nullable'],
+            'auto_post.interval' => ['integer', 'nullable'],
+            'auto_post.interval_type' => ['string', 'nullable', 'in:seconds,minutes,hours,days'],
+            'auto_post.min_posts_between' => ['integer', 'nullable'],
         ];
     }
 }

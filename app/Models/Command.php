@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
@@ -28,6 +29,8 @@ class Command extends Model
         'punish_reason',
         'action',
         'prepend_sender',
+        'auto_post_enabled',
+        'auto_post_id',
     ];
 
     public $casts = [
@@ -36,11 +39,18 @@ class Command extends Model
         'cooldown' => 'integer',
         'global_cooldown' => 'integer',
         'prepend_sender' => 'boolean',
+        'auto_post_enabled' => 'boolean',
+        'auto_post_id' => 'integer',
     ];
 
     public function punishes(): HasMany
     {
         return $this->hasMany(Punish::class);
+    }
+
+    public function autoPost(): BelongsTo
+    {
+        return $this->belongsTo(AutoPost::class);
     }
 
     public function scopeActive(Builder $query): Builder

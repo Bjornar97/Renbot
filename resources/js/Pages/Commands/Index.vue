@@ -103,17 +103,20 @@ const visibleCommands = computed(() => {
             ></VTextField>
 
             <nav v-if="!mdAndUp" class="mt-4">
-                <VCard>
+                <VCard class="rounded rounded-b-0">
                     <VTabs v-model="tab" color="primary" stacked :grow="true">
-                        <VTab value="commands.index">
+                        <VTab value="commands.index" :rounded="false">
                             <VIcon :icon="mdiMessageReplyText"></VIcon>
                             Regular</VTab
                         >
-                        <VTab value="punishable-commands.index">
+                        <VTab
+                            value="punishable-commands.index"
+                            :rounded="false"
+                        >
                             <VIcon :icon="mdiTargetAccount"></VIcon>
                             Punishable</VTab
                         >
-                        <VTab value="special-commands.index">
+                        <VTab value="special-commands.index" :rounded="false">
                             <VIcon :icon="mdiArrowDecisionAuto"></VIcon>
                             Special
                         </VTab>
@@ -131,6 +134,7 @@ const visibleCommands = computed(() => {
                                 >Severity</template
                             >
                         </th>
+                        <th></th>
                         <th>Command</th>
                         <th>Enabled</th>
                         <th>Response</th>
@@ -157,7 +161,7 @@ const visibleCommands = computed(() => {
                 </tbody>
             </VTable>
 
-            <VList lines="two" v-else>
+            <VList lines="two" class="rounded rounded-t-0" v-else>
                 <CommandListItem
                     v-if="visibleCommands.length > 0"
                     v-for="command in visibleCommands"

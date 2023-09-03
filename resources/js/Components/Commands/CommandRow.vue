@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Command } from "@/types/Command";
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiTrashCan } from "@mdi/js";
+import { mdiClockOutline, mdiTrashCan } from "@mdi/js";
 import { computed, ref } from "vue";
 import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
@@ -63,6 +63,20 @@ const deleteCommand = () => {
                 v-else
                 :command="command"
             ></CommandUsableByIcon>
+        </td>
+
+        <td>
+            <VTooltip location="top">
+                <template #activator="{ props }">
+                    <VIcon
+                        v-bind="props"
+                        color="grey"
+                        :icon="mdiClockOutline"
+                        v-if="command.auto_post_enabled"
+                    ></VIcon>
+                </template>
+                Auto post enabled
+            </VTooltip>
         </td>
 
         <td>!{{ command.command }}</td>

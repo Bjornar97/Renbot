@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiTokenController;
+use App\Http\Controllers\AutoPostController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\LoginController;
@@ -34,6 +35,8 @@ Route::middleware("guest")->group(function () {
 Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
+    Route::resource("moderators/auto-posts", AutoPostController::class)->only(["store", "destroy"]);
+
     Route::resource("moderators/commands", CommandController::class);
     Route::resource("moderators/punishable-commands", PunishableCommandController::class);
     Route::resource("moderators/special-commands", SpecialCommandController::class);

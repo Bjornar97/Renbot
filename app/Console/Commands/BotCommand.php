@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Analysis\AnalyzeCapsJob;
+use App\Jobs\AutoPostCheckJob;
 use App\Models\Command as ModelsCommand;
 use App\Models\User;
 use App\Services\BotService;
@@ -126,6 +127,8 @@ class BotCommand extends Command
         $this->maybeFlushFeatures();
 
         try {
+            $this->checkAutoPost($message);
+
             $messageService = MessageService::message($message);
 
             if (!$messageService->isModerator()) {
@@ -144,6 +147,11 @@ class BotCommand extends Command
             Log::error($th->getMessage());
             return;
         }
+    }
+
+    private function checkAutoPost(MessageEvent $message)
+    {
+        AutoPostCheckJob::dispatch($message);
     }
 
     private function analyzeForPunishment(MessageEvent $message)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommandRequest;
 use App\Http\Requests\UpdateCommandRequest;
+use App\Models\AutoPost;
 use App\Models\Command;
 use App\Services\SpecialCommandService;
 use Inertia\Inertia;
@@ -37,6 +38,7 @@ class CommandController extends Controller
     {
         return Inertia::render("Commands/Create", [
             'type' => 'regular',
+            'autoPosts' => AutoPost::all(),
         ]);
     }
 
@@ -48,9 +50,14 @@ class CommandController extends Controller
      */
     public function store(StoreCommandRequest $request)
     {
-        $data = $request->validated();
+        $commandData = $request->safe()->except("auto_post");
+        $autoPostData = $request->validated("auto_post");
 
-        $command = Command::create($data);
+        $command = Command::create($commandData);
+
+        if ($command->auto_post_enabled && $autoPostData) {
+            $command->autoPost()->update($autoPostData);
+        }
 
         return redirect()
             ->route("commands.index")
@@ -77,8 +84,9 @@ class CommandController extends Controller
     public function edit(Command $command)
     {
         return Inertia::render("Commands/Edit", [
-            'command' => $command,
+            'command' => $command->load("autoPost"),
             'actions' => array_values(SpecialCommandService::$functions),
+            'autoPosts' => AutoPost::all(),
         ]);
     }
 
@@ -91,9 +99,11 @@ class CommandController extends Controller
      */
     public function update(UpdateCommandRequest $request, Command $command)
     {
-        $data = $request->validated();
+        $commandData = $request->safe()->except("auto_post");
+        $autoPostData = $request->validated("auto_post");
 
-        $command->update($data);
+        $command->update($commandData);
+        $command->autoPost()->update($autoPostData);
 
         return back()->with("success", "Successfully updated command");
     }
