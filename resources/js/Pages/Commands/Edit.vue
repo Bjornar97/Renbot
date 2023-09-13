@@ -65,19 +65,6 @@ const cancel = () => {
     form.reset();
     router.get(route("commands.index"));
 };
-
-const showDelete = ref(false);
-const deleteLoading = ref(false);
-
-const deleteCommand = () => {
-    deleteLoading.value = true;
-    router.delete(route("commands.destroy", { command: props.command.id }), {
-        onFinish: () => {
-            showDelete.value = false;
-            deleteLoading.value = false;
-        },
-    });
-};
 </script>
 
 <template>

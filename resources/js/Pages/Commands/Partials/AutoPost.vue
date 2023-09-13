@@ -24,10 +24,11 @@ const autoPostMinPostsBetween = defineModel<number>("autoPostMinPostsBetween", {
 
 const props = defineProps<{
     errors: {
-        auto_post?: string;
-        auto_post_interval?: string;
-        auto_post_interval_type?: string;
-        auto_post_min_posts_between?: string;
+        auto_post_enabled?: string;
+        auto_post_id?: string;
+        "auto_post.interval"?: string;
+        "auto_post.interval_type"?: string;
+        "auto_post.min_posts_between"?: string;
     };
     autoPosts: AutoPost[];
 }>();
@@ -120,6 +121,7 @@ watch(
                     :items="autoPosts"
                     item-value="id"
                     clearable
+                    :error-messages="errors.auto_post_id"
                 ></VAutocomplete>
 
                 <VBtn
@@ -144,20 +146,20 @@ watch(
                     v-model="autoPostInterval"
                     type="number"
                     :hint="`Posts a command from the queue in chat every ${autoPostInterval} ${autoPostIntervalType}`"
-                    :error-messages="errors.auto_post_interval"
+                    :error-messages="errors['auto_post.interval']"
                 >
                 </VTextField>
 
                 <VSelect
                     :items="intervalOptions"
                     v-model="autoPostIntervalType"
-                    :error-messages="errors.auto_post_interval_type"
+                    :error-messages="errors['auto_post.interval_type']"
                 ></VSelect>
             </div>
 
             <VTextField
                 v-model="autoPostMinPostsBetween"
-                :error-messages="errors.auto_post_min_posts_between"
+                :error-messages="errors['auto_post.min_posts_between']"
                 label="Minimum number of chats between each auto post"
             ></VTextField>
         </div>

@@ -38,11 +38,11 @@ class StoreCommandRequest extends FormRequest
             'action' => ['string', 'nullable', 'max:255'],
             'prepend_sender' => ['boolean'],
             'auto_post_enabled' => ['boolean'],
-            'auto_post_id' => ['integer', 'exists:auto_posts,id'],
-            'auto_post' => ['array', 'nullable'],
-            'auto_post.interval' => ['integer', 'nullable'],
-            'auto_post.interval_type' => ['string', 'nullable', 'in:seconds,minutes,hours,days'],
-            'auto_post.min_posts_between' => ['integer', 'nullable'],
+            'auto_post_id' => ['nullable', 'required_if:auto_post_enabled,true', 'integer', 'exists:auto_posts,id'],
+            'auto_post' => ['array', 'nullable', 'required_if:auto_post_enabled,true'],
+            'auto_post.interval' => ['integer', 'nullable', 'required_if:auto_post_enabled,true'],
+            'auto_post.interval_type' => ['string', 'nullable', 'in:seconds,minutes,hours,days', 'required_if:auto_post_enabled,true'],
+            'auto_post.min_posts_between' => ['integer', 'nullable', 'required_if:auto_post_enabled,true'],
         ];
     }
 }
