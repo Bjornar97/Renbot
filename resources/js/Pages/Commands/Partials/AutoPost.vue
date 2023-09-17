@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AutoPost } from "@/types/AutoPost";
-import { router, useForm } from "@inertiajs/vue3";
-import { mdiContentSave, mdiPlus } from "@mdi/js";
+import { useForm } from "@inertiajs/vue3";
+import { mdiPlus } from "@mdi/js";
 import { watch } from "vue";
 import { ref } from "vue";
 import { computed } from "vue";
@@ -194,6 +194,7 @@ watch(
                     <VTextField
                         v-model="autoPostForm.min_posts_between"
                         :error-messages="autoPostForm.errors.min_posts_between"
+                        type="number"
                         label="Minimum number of chats between each auto post"
                     ></VTextField>
                 </VCardText>

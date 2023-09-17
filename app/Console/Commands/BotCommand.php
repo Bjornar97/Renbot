@@ -4,17 +4,13 @@ namespace App\Console\Commands;
 
 use App\Jobs\Analysis\AnalyzeCapsJob;
 use App\Jobs\AutoPostCheckJob;
-use App\Models\Command as ModelsCommand;
-use App\Models\User;
+use App\Models\Message;
 use App\Services\BotService;
 use App\Services\CommandService;
 use App\Services\MessageService;
-use App\Services\PunishService;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
-use Exception;
 use GhostZero\Tmi\Client;
-use GhostZero\Tmi\ClientOptions;
 use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Console\Command;
@@ -43,6 +39,7 @@ class BotCommand extends Command
     private string $channel;
 
     private Carbon $lastFeatureFlush;
+
 
 
     public function __construct()
@@ -127,9 +124,14 @@ class BotCommand extends Command
         $this->maybeFlushFeatures();
 
         try {
-            $this->checkAutoPost($message);
-
             $messageService = MessageService::message($message);
+
+            Message::query()->create([
+                'twitch_user_id' => $messageService->getSenderTwitchId(),
+                'message' => $message->message,
+            ]);
+
+            $this->checkAutoPost($message);
 
             if (!$messageService->isModerator()) {
                 $this->analyzeForPunishment($message);

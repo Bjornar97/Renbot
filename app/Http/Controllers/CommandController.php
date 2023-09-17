@@ -105,7 +105,7 @@ class CommandController extends Controller
         $command->update($commandData);
 
         if ($autoPostData) {
-            $command->autoPost()->update($autoPostData);
+            $command->autoPost?->update($autoPostData);
         }
 
         return back()->with("success", "Successfully updated command");

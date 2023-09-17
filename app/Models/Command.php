@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
+use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +18,7 @@ class Command extends Model
     use HasFactory;
     use SoftDeletes;
     use LogsActivity;
+    use BroadcastsEvents;
 
     public $fillable = [
         'command',
@@ -40,7 +43,6 @@ class Command extends Model
         'global_cooldown' => 'integer',
         'prepend_sender' => 'boolean',
         'auto_post_enabled' => 'boolean',
-        'auto_post_id' => 'integer',
     ];
 
     public function punishes(): HasMany
@@ -87,5 +89,26 @@ class Command extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->logFillable()->logOnlyDirty();
+    }
+
+    /**
+     * Get the channels that model events should broadcast on.
+     *
+     * @return array<int, \Illuminate\Broadcasting\Channel|\Illuminate\Database\Eloquent\Model>
+     */
+    public function broadcastOn(string $event): array
+    {
+        return [$this];
+    }
+
+    /**
+     * Create a new broadcastable model event for the model. Custom to not broadcast to current user
+     */
+    protected function newBroadcastableEvent(string $event): BroadcastableModelEventOccurred
+    {
+        return (new BroadcastableModelEventOccurred(
+            $this,
+            $event
+        ))->dontBroadcastToCurrentUser();
     }
 }

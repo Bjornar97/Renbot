@@ -35,7 +35,7 @@ Route::middleware("guest")->group(function () {
 Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
-    Route::resource("moderators/auto-posts", AutoPostController::class)->only(["store", "destroy"]);
+    Route::resource("moderators/auto-posts", AutoPostController::class);
 
     Route::resource("moderators/commands", CommandController::class);
     Route::resource("moderators/punishable-commands", PunishableCommandController::class);

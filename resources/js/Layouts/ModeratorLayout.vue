@@ -4,6 +4,7 @@ import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 import {
     mdiArrowDecisionAuto,
+    mdiClockOutline,
     mdiCog,
     mdiHeartPulse,
     mdiMenu,
@@ -151,6 +152,13 @@ const bottomNav = computed({
                     :active="route().current('special-commands.index')"
                     @click="goTo('special-commands.index')"
                     :prepend-icon="mdiArrowDecisionAuto"
+                ></VListItem>
+
+                <VListItem
+                    title="Auto posts"
+                    :active="route().current('auto-posts.index')"
+                    @click="goTo('auto-posts.index')"
+                    :prepend-icon="mdiClockOutline"
                 ></VListItem>
 
                 <VListSubheader>Information</VListSubheader>

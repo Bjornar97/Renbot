@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { Command } from "@/types/Command";
-import { router, useForm } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { mdiClockOutline, mdiTrashCan } from "@mdi/js";
 import { computed, ref } from "vue";
 import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
+import { websocket } from "@/echo";
+import { watch } from "vue";
 
 const props = defineProps<{
     command: Command;
@@ -13,12 +15,37 @@ const props = defineProps<{
 
 const switchLoading = ref(false);
 
+const command = ref(props.command);
+
+watch(
+    () => props.command,
+    (value) => {
+        command.value = value;
+    },
+    {
+        deep: true,
+    }
+);
+
+const flash = ref(false);
+
+websocket
+    .private(`App.Models.Command.${props.command.id}`)
+    .listen(".CommandUpdated", ({ model }: { model: Command }) => {
+        command.value = model;
+
+        flash.value = true;
+        setTimeout(() => {
+            flash.value = false;
+        }, 1000);
+    });
+
 const enabled = computed({
-    get: () => props.command.enabled,
+    get: () => command.value.enabled,
     set: (v: boolean) => {
         switchLoading.value = true;
         router.patch(
-            route("commands.update", { command: props.command.id }),
+            route("commands.update", { command: command.value.id }),
             {
                 enabled: v,
             },
@@ -34,7 +61,7 @@ const enabled = computed({
 });
 
 const goToEdit = () => {
-    router.get(route("commands.edit", { command: props.command.id }));
+    router.get(route("commands.edit", { command: command.value.id }));
 };
 
 const showDelete = ref(false);
@@ -42,7 +69,7 @@ const deleteLoading = ref(false);
 
 const deleteCommand = () => {
     deleteLoading.value = true;
-    router.delete(route("commands.destroy", { command: props.command.id }), {
+    router.delete(route("commands.destroy", { command: command.value.id }), {
         onFinish: () => {
             showDelete.value = false;
             deleteLoading.value = false;
@@ -53,7 +80,13 @@ const deleteCommand = () => {
 </script>
 
 <template>
-    <tr @click="goToEdit" class="cursor-pointer">
+    <tr
+        @click="goToEdit"
+        class="cursor-pointer command-row"
+        :class="{
+            flash: flash,
+        }"
+    >
         <td>
             <SeverityChip
                 v-if="command.type === 'punishable'"
@@ -112,7 +145,7 @@ const deleteCommand = () => {
                 </VCardText>
 
                 <VCardActions>
-                    <VBtn @click="showDelete = false">Cancel</VBtn>
+                    <VBtn @click="showDelete = false" color="grey">Cancel</VBtn>
                     <VBtn
                         color="red"
                         @click="deleteCommand"
@@ -137,5 +170,13 @@ const deleteCommand = () => {
 
 .response {
     padding-block: 1rem !important;
+}
+
+.command-row {
+    transition: all 250ms ease;
+}
+
+.flash {
+    background-color: rgb(var(--v-theme-secondary-darken-1));
 }
 </style>

@@ -3,7 +3,6 @@ import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import type { Command } from "@/types/Command";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCancel, mdiContentSave } from "@mdi/js";
-import { ref } from "vue";
 import CommandResponse from "./Partials/CommandResponse.vue";
 import UsableBy from "./Partials/UsableBy.vue";
 import Cooldowns from "./Partials/Cooldowns.vue";
@@ -35,7 +34,7 @@ const form = useForm("CreateCommand", {
     action: props.command.action,
     prepend_sender: props.command.prepend_sender,
     auto_post_enabled: props.command.auto_post_enabled,
-    auto_post_id: props.command.auto_post_id,
+    auto_post_id: props.command.auto_post_id ?? null,
     auto_post: {
         interval: props.command.auto_post?.interval ?? 10,
         interval_type: props.command.auto_post?.interval_type ?? "hours",

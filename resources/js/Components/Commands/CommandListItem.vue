@@ -7,10 +7,33 @@ import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
 import { computed } from "vue";
 import { mdiClockOutline } from "@mdi/js";
+import { websocket } from "@/echo";
+import { reactive } from "vue";
+import { ref } from "vue";
+import { watch } from "vue";
 
 const props = defineProps<{
     command: Command;
 }>();
+
+const command = ref(props.command);
+
+watch(
+    () => props.command,
+    (value) => {
+        command.value = value;
+    },
+    {
+        deep: true,
+    }
+);
+
+websocket
+    .private(`App.Models.Command.${props.command.id}`)
+    .listen(".CommandUpdated", ({ model }: { model: Command }) => {
+        console.log({ model });
+        command.value = model;
+    });
 
 const goToCommand = () => {
     router.get(route("commands.edit", { command: props.command.id }));
@@ -29,10 +52,10 @@ const getCommandUsableByIcon = () => {
 };
 
 const enabled = computed({
-    get: () => props.command.enabled,
+    get: () => command.value.enabled,
     set: (v: boolean) => {
         router.patch(
-            route("commands.update", { command: props.command.id }),
+            route("commands.update", { command: command.value.id }),
             {
                 enabled: v,
             },

@@ -17,11 +17,6 @@
 
         // Required in Vite
         "isolatedModules": true,
-        // For `<script setup>`
-        // See <https://devblogs.microsoft.com/typescript/announcing-typescript-4-5-beta/#preserve-value-imports>
-        "preserveValueImports": true,
-        // Enforce using `import type` instead of `import` for types
-        "importsNotUsedAsValues": "error",
 
         // A few notes:
         // - Vue 3 supports ES2016+
@@ -38,7 +33,7 @@
         // See <https://github.com/vuejs/vue-cli/pull/5688>
         "skipLibCheck": true,
         "lib": ["DOM", "ESNext"],
-        "types": ["node", "unplugin-vue-define-options/macros-global", "chrome"],
+        "types": ["node", "unplugin-vue-define-options/macros-global", "chrome", "vite/client"],
         "paths": {
             "@/*": ["resources/js/*"],
         }
