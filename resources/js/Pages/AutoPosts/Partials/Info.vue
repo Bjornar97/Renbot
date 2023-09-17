@@ -215,7 +215,12 @@ const deleteQueue = () => {
     display: grid;
     grid-template-columns: max-content 1fr max-content;
     height: 100px;
+    gap: 0.5rem;
     overflow: hidden;
+}
+
+.command-info:hover {
+    background-color: #292929;
 }
 
 .header {
@@ -228,6 +233,7 @@ const deleteQueue = () => {
     color: #ccc;
     overflow: hidden;
     position: relative;
+    word-break: break-all;
 }
 
 .chips {

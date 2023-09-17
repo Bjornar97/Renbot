@@ -24,6 +24,7 @@
     "dependencies": {
         "@inertiajs/vue3": "^1.0.0",
         "@mdi/js": "^7.1.96",
+        "@soketi/soketi": "^1.6.0",
         "@vitejs/plugin-vue": "^4.0.0",
         "dayjs": "^1.11.9",
         "lodash.debounce": "^4.0.8",
