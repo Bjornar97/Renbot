@@ -2,10 +2,12 @@ import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 // @ts-ignore
-import DefineOptions from "unplugin-vue-define-options/vite";
 import vuetify from "vite-plugin-vuetify";
 
 export default defineConfig({
+    build: {
+        target: ["es2022", "chrome117", "firefox117", "safari16"],
+    },
     plugins: [
         laravel({
             input: ["resources/css/app.css", "resources/js/app.ts"],
@@ -32,7 +34,6 @@ export default defineConfig({
                 defineModel: true,
             },
         }),
-        DefineOptions(),
         vuetify(),
     ],
     server: {
