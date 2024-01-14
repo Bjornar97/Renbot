@@ -23,6 +23,7 @@ const props = defineProps<{
 
 const form = useForm("CreateCommand", {
     command: props.command.command,
+    aliases: props.command.children?.map((child) => child.command),
     response: props.command.response,
     enabled: props.command.enabled,
     cooldown: props.command.cooldown,
@@ -90,6 +91,7 @@ const cancel = () => {
                     <CommandResponse
                         v-model:command="form.command"
                         v-model:response="form.response"
+                        v-model:aliases="form.aliases"
                         v-model:prepend-sender="form.prepend_sender"
                         :errors="form.errors"
                         :type="form.type"

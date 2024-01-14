@@ -25,6 +25,7 @@ const props = defineProps<{
 
 const form = useForm("CreateCommand", {
     command: "",
+    aliases: [],
     response: "",
     enabled: true,
     cooldown: 0,
@@ -96,6 +97,7 @@ const cancel = () => {
 
                     <CommandResponse
                         v-model:command="form.command"
+                        v-model:aliases="form.aliases"
                         v-model:response="form.response"
                         v-model:prepend-sender="form.prepend_sender"
                         :errors="form.errors"

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateCommandRequest;
 use App\Models\AutoPost;
 use App\Models\Command;
 use App\Services\SpecialCommandService;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CommandController extends Controller
@@ -23,8 +24,10 @@ class CommandController extends Controller
      */
     public function index()
     {
+        // dd(Command::regular()->where('parent_id', null)->with('children')->orderBy('command')->get());
+
         return Inertia::render("Commands/Index", [
-            'commands' => Command::regular()->orderBy('command')->get(),
+            'commands' => Command::regular()->where('parent_id', null)->with('children')->orderBy('command')->get(),
             'type' => 'regular',
         ]);
     }
@@ -50,18 +53,37 @@ class CommandController extends Controller
      */
     public function store(StoreCommandRequest $request)
     {
-        $commandData = $request->safe()->except("auto_post");
-        $autoPostData = $request->validated("auto_post");
+        $commandName = "";
 
-        $command = Command::create($commandData);
+        DB::transaction(function ()  use ($request, &$commandName) {
+            $commandData = $request->safe()->except(["auto_post", "aliases"]);
+            $autoPostData = $request->validated("auto_post");
+            $aliases = $request->validated("aliases");
 
-        if ($command->auto_post_enabled && $autoPostData) {
-            $command->autoPost()->update($autoPostData);
-        }
+            /** @var Command $command */
+            $command = Command::create($commandData);
+            $commandName = $command->command;
+
+            if ($command->auto_post_enabled && $autoPostData) {
+                $command->autoPost()->update($autoPostData);
+            }
+
+            $command->children()->whereNotIn('command', $aliases)->delete();
+
+            foreach ($aliases as $alias) {
+                $command->children()->where('command', $alias)->updateOrCreate([
+                    'command' => $alias,
+                ], [
+                    'usable_by' => $command->usable_by,
+                    'enabled' => true,
+                    'type' => $command->type,
+                ]);
+            }
+        });
 
         return redirect()
             ->route("commands.index")
-            ->with("success", "The new command {$command->command} was saved");
+            ->with("success", "The new command {$commandName} was saved");
     }
 
     /**
@@ -84,7 +106,7 @@ class CommandController extends Controller
     public function edit(Command $command)
     {
         return Inertia::render("Commands/Edit", [
-            'command' => $command->load("autoPost"),
+            'command' => $command->load("autoPost", "children"),
             'actions' => array_values(SpecialCommandService::$functions),
             'autoPosts' => AutoPost::all(),
         ]);
@@ -99,13 +121,28 @@ class CommandController extends Controller
      */
     public function update(UpdateCommandRequest $request, Command $command)
     {
-        $commandData = $request->safe()->except("auto_post");
+        $commandData = $request->safe()->except(["auto_post", "aliases"]);
         $autoPostData = $request->validated("auto_post");
+        $aliases = $request->validated('aliases');
 
         $command->update($commandData);
 
         if ($autoPostData) {
             $command->autoPost?->update($autoPostData);
+        }
+
+        if ($aliases !== null) {
+            $command->children()->whereNotIn('command', $aliases)->delete();
+
+            foreach ($aliases as $alias) {
+                $command->children()->where('command', $alias)->updateOrCreate([
+                    'command' => $alias,
+                ], [
+                    'usable_by' => $command->usable_by,
+                    'enabled' => true,
+                    'type' => $command->type,
+                ]);
+            }
         }
 
         return back()->with("success", "Successfully updated command");

@@ -66,14 +66,22 @@ const enabled = computed({
         );
     },
 });
+
+const commandName = computed(() => {
+    let result = `!${command.value.command}`;
+
+    command.value.children?.forEach((child) => {
+        result += ` | !${child.command}`;
+    });
+
+    return result;
+});
+
+console.log(commandName.value);
 </script>
 
 <template>
-    <VListItem
-        @click="goToCommand"
-        :title="`!${command.command}`"
-        :subtitle="command.response"
-    >
+    <VListItem @click="goToCommand" :subtitle="command.response">
         <template #prepend>
             <SeverityChip
                 v-if="command.type === 'punishable'"
@@ -91,14 +99,21 @@ const enabled = computed({
         </template>
 
         <template #title>
-            <VIcon
-                size="small"
-                color="grey-darken-1"
-                :icon="mdiClockOutline"
-                v-if="command.auto_post_enabled"
-            ></VIcon>
+            <div class="d-flex align-center">
+                <VIcon
+                    size="small"
+                    color="grey-darken-1 mr-1"
+                    :icon="mdiClockOutline"
+                    v-if="command.auto_post_enabled"
+                ></VIcon>
 
-            !{{ command.command }}
+                <VChipGroup>
+                    <VChip>!{{ command.command }}</VChip>
+                    <VChip v-for="child in command.children" :key="child.id"
+                        >!{{ child.command }}</VChip
+                    >
+                </VChipGroup>
+            </div>
         </template>
 
         <template #append>

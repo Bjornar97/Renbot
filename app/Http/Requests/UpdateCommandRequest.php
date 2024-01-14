@@ -29,6 +29,8 @@ class UpdateCommandRequest extends FormRequest
 
         return [
             'command' => ['string', 'alpha_num', 'max:50', Rule::unique(Command::class, "command")->whereNull("deleted_at")->ignore($command->id)],
+            'aliases' => ['array', 'nullable'],
+            'aliases.*' => ['string'],
             'response' => ['string', 'max:500'],
             'enabled' => ['boolean'],
             'cooldown' => ['numeric', 'nullable'],

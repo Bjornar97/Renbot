@@ -19,7 +19,7 @@ class SpecialCommandController extends Controller
     public function index()
     {
         return Inertia::render("Commands/Index", [
-            'commands' => Command::special()->orderBy('command')->get(),
+            'commands' => Command::special()->where('parent_id', null)->with('children')->orderBy('command')->get(),
             'type' => 'special',
         ]);
     }
@@ -47,8 +47,21 @@ class SpecialCommandController extends Controller
     public function store(StoreCommandRequest $request)
     {
         $data = $request->validated();
+        $aliases = $request->validated('aliases');
 
-        Command::create($data);
+        $command = Command::create($data);
+
+        $command->children()->whereNotIn('command', $aliases)->delete();
+
+        foreach ($aliases as $alias) {
+            $command->children()->where('command', $alias)->updateOrCreate([
+                'command' => $alias,
+            ], [
+                'usable_by' => $command->usable_by,
+                'enabled' => true,
+                'type' => $command->type,
+            ]);
+        }
 
         return redirect()->route("special-commands.index")->with("success", "The punishable command was successfully created!");
     }

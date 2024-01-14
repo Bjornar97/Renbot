@@ -112,7 +112,13 @@ const deleteCommand = () => {
             </VTooltip>
         </td>
 
-        <td>!{{ command.command }}</td>
+        <td class="py-2">
+            !{{ command.command }}
+
+            <template v-for="child in command.children" :key="child.id">
+                <br />!{{ child.command }}
+            </template>
+        </td>
 
         <td @click.stop>
             <VSwitch

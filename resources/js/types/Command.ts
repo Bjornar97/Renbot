@@ -17,9 +17,13 @@ export interface Command {
     prepend_sender: boolean;
     auto_post_enabled: boolean;
     auto_post_id: number;
+    parent_id: number | null;
 
     auto_post?: AutoPost;
 
     created_at: string;
     updated_at: string;
+
+    parent?: Command;
+    children?: Command[];
 }

@@ -4,6 +4,8 @@ import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 import {
     mdiArrowDecisionAuto,
+    mdiBell,
+    mdiChevronDown,
     mdiClockOutline,
     mdiCog,
     mdiHeartPulse,
@@ -16,6 +18,10 @@ import {
 import route from "ziggy-js";
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify/lib/framework.mjs";
+import NotificationSound from "../../audio/ViolinLose5.mp3";
+import { websocket } from "@/echo";
+import { watch } from "vue";
+import dayjs, { Dayjs } from "dayjs";
 
 const logout = () => {
     router.post(route("logout"));
@@ -75,6 +81,61 @@ const bottomNav = computed({
         }
     },
 });
+
+const audio = ref(new Audio(NotificationSound));
+audio.value.volume = parseFloat(
+    localStorage.getItem("notificationSystem.volume") ?? "0.5"
+);
+const volumeValue = ref(audio.value.volume);
+
+const volume = computed({
+    get: () => volumeValue.value,
+    set: (v: number) => {
+        audio.value.volume = v;
+        volumeValue.value = v;
+        localStorage.setItem("notificationSystem.volume", v.toString());
+    },
+});
+
+let defaultNotificationEnabled =
+    user?.value?.username?.toLowerCase() === "rendogtv";
+
+const localStorageNotificationEnabled = localStorage.getItem(
+    "notificationSystem.enabled"
+);
+
+const notificationEnabled = ref(
+    localStorageNotificationEnabled === null
+        ? defaultNotificationEnabled
+        : localStorageNotificationEnabled === "true"
+);
+
+watch(
+    () => notificationEnabled.value,
+    (newValue) => {
+        localStorage.setItem(
+            "notificationSystem.enabled",
+            newValue ? "true" : "false"
+        );
+    }
+);
+
+const makeNoise = () => {
+    audio.value.play();
+};
+
+const lastNoise = ref(null as Dayjs | null);
+
+websocket.private("App.MakeNoise").listen(".makeNoise", () => {
+    if (lastNoise.value && dayjs().diff(lastNoise.value, "seconds") < 10) {
+        return;
+    }
+
+    if (notificationEnabled.value) {
+        lastNoise.value = dayjs();
+        makeNoise();
+    }
+});
 </script>
 
 <template>
@@ -99,6 +160,40 @@ const bottomNav = computed({
             </VAppBarTitle>
 
             <VSpacer v-if="mdAndUp"></VSpacer>
+
+            <VMenu :close-on-content-click="false" v-if="mdAndUp">
+                <template #activator="{ props }">
+                    <VBtn
+                        :prepend-icon="mdiBell"
+                        class="mr-2"
+                        color="secondary"
+                        variant="tonal"
+                        v-bind="props"
+                        :append-icon="mdiChevronDown"
+                        >Notification system</VBtn
+                    >
+                </template>
+
+                <VList>
+                    <VListItem>
+                        <VSwitch
+                            color="primary"
+                            v-model="notificationEnabled"
+                            label="Enabled"
+                        ></VSwitch>
+                    </VListItem>
+                    <VListItem>
+                        <VSlider
+                            label="Volume"
+                            :max="1"
+                            :min="0"
+                            :step="0.01"
+                            v-model="volume"
+                        ></VSlider>
+                    </VListItem>
+                    <VListItem @click="makeNoise">Make test noise</VListItem>
+                </VList>
+            </VMenu>
 
             <VChip
                 pill

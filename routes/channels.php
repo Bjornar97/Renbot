@@ -25,3 +25,7 @@ Broadcast::channel('App.Models.AutoPost.{id}', function ($user, $id) {
 Broadcast::channel('App.Models.Command.{id}', function ($user, $id) {
     return Gate::allows("moderate");
 });
+
+Broadcast::channel('App.MakeNoise', function ($user) {
+    return Gate::allows("moderate");
+});

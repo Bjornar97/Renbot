@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import CommandListItem from "@/Components/Commands/CommandListItem.vue";
 import CommandRow from "@/Components/Commands/CommandRow.vue";
-import CommandUsableByIcon from "@/Components/Commands/CommandUsableByIcon.vue";
-import SeverityChip from "@/Components/Commands/SeverityChip.vue";
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import type { Command } from "@/types/Command";
 import { router } from "@inertiajs/core";
@@ -14,7 +12,6 @@ import {
 } from "@mdi/js";
 import { useDisplay } from "vuetify/lib/framework.mjs";
 import { computed, ref } from "vue";
-import debounce from "lodash.debounce";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -66,9 +63,23 @@ const tab = computed({
 const search = ref("");
 
 const visibleCommands = computed(() => {
-    return props.commands.filter((command) =>
-        command.command.toLowerCase().includes(search.value.toLowerCase())
-    );
+    let searchValue = search.value.toLowerCase();
+
+    return props.commands.filter((command) => {
+        if (command.command.toLowerCase().includes(searchValue)) {
+            return true;
+        }
+
+        if (!command.children) {
+            return false;
+        }
+
+        return (
+            command.children?.findIndex((child) =>
+                child.command.toLowerCase().includes(searchValue)
+            ) >= 0
+        );
+    });
 });
 </script>
 

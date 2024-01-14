@@ -18,7 +18,7 @@ class PunishableCommandController extends Controller
     public function index()
     {
         return Inertia::render("Commands/Index", [
-            'commands' => Command::punishable()->orderBy('command')->get(),
+            'commands' => Command::punishable()->where('parent_id', null)->with('children')->orderBy('command')->get(),
             'type' => 'punishable',
         ]);
     }
@@ -45,8 +45,21 @@ class PunishableCommandController extends Controller
     public function store(StoreCommandRequest $request)
     {
         $data = $request->validated();
+        $aliases = $request->validated('aliases');
 
-        Command::create($data);
+        $command = Command::create($data);
+
+        $command->children()->whereNotIn('command', $aliases)->delete();
+
+        foreach ($aliases as $alias) {
+            $command->children()->where('command', $alias)->updateOrCreate([
+                'command' => $alias,
+            ], [
+                'usable_by' => $command->usable_by,
+                'enabled' => true,
+                'type' => $command->type,
+            ]);
+        }
 
         return redirect()->route("punishable-commands.index")->with("success", "The punishable command was successfully created!");
     }

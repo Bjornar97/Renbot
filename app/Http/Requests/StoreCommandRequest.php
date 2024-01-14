@@ -27,6 +27,8 @@ class StoreCommandRequest extends FormRequest
     {
         return [
             'command' => ['required', 'string', 'alpha_num', Rule::unique(Command::class, "command")->whereNull("deleted_at"), 'max:50'],
+            'aliases' => ['array', 'nullable'],
+            'aliases.*' => ['string'],
             'response' => ['required', 'string', 'max:500'],
             'enabled' => ['boolean'],
             'cooldown' => ['numeric', 'nullable'],

@@ -3,11 +3,13 @@
 namespace App\Services;
 
 use App\Enums\BotStatus;
+use App\Events\MakeNoiseEvent;
 use App\Models\Command;
 use App\Models\Punish;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Log;
 
 class SpecialCommandService
@@ -24,6 +26,10 @@ class SpecialCommandService
         'stopBot' => [
             'action' => "stopBot",
             'title' => "Stop the bot",
+        ],
+        'makeSoundForRendog' => [
+            'action' => 'makeSoundForRendog',
+            'title' => 'Make noise for Rendog',
         ],
     ];
 
@@ -95,6 +101,15 @@ class SpecialCommandService
             BotManagerService::stop();
         } catch (\Throwable $th) {
             throw new Exception("Failed to stop bot. Moderators, check the dashboard.");
+        }
+    }
+
+    public function makeSoundForRendog(): void
+    {
+        try {
+            MakeNoiseEvent::dispatch();
+        } catch (\Throwable $th) {
+            throw new Exception("Something went wrong while making noise for Rendog");
         }
     }
 }

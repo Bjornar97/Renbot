@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { CommandType } from "@/types/CommandType";
+import { mdiPlus, mdiTrashCan } from "@mdi/js";
 
 const command = defineModel<string>("command");
 const response = defineModel<string>("response");
 const prependSender = defineModel<boolean>("prependSender");
+const aliases = defineModel<string[]>("aliases", { default: [] });
 
 const props = defineProps<{
     errors: {
@@ -19,11 +21,31 @@ const props = defineProps<{
         <VTextField
             v-model="command"
             label="Command"
-            class="mb-4"
             :error-messages="props.errors.command"
         >
             <template #prepend-inner>!</template>
         </VTextField>
+
+        <div>
+            <div v-for="(alias, index) in aliases" class="d-flex">
+                <VTextField v-model="aliases[index]" label="Alias">
+                    <template #prepend-inner>!</template></VTextField
+                >
+                <VBtn
+                    class="ml-2 mt-1"
+                    :icon="mdiTrashCan"
+                    @click="aliases.splice(index, 1)"
+                ></VBtn>
+            </div>
+        </div>
+
+        <VBtn
+            variant="text"
+            class="mb-8"
+            :prepend-icon="mdiPlus"
+            @click="aliases.push('')"
+            >Add alias</VBtn
+        >
 
         <VTextarea
             v-model="response"
