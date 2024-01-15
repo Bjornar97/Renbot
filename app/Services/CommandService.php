@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Jobs\DeleteTwitchMessageJob;
 use App\Models\Command;
-use Carbon\Carbon;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
@@ -48,19 +47,12 @@ class CommandService
             throw new Exception("Unauthorized");
         }
 
-        switch ($this->command->type) {
-            case "regular":
-                return $this->regular();
-
-            case "punishable":
-                return $this->punishable();
-
-            case "special":
-                return $this->special();
-
-            default:
-                return "Invalid command type";
-        }
+        return match ($this->command->type) {
+            "regular" => $this->regular(),
+            "punishable" => $this->punishable(),
+            "special" => $this->special(),
+            default => "Invalid command type",
+        };
     }
 
     private function isAuthorized()
