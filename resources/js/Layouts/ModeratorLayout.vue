@@ -18,7 +18,7 @@ import {
 import route from "ziggy-js";
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify/lib/framework.mjs";
-import NotificationSound from "../../audio/ViolinLose5.mp3";
+import NotificationSound from "../../audio/RobotForeignObjectDetected.mp3";
 import { websocket } from "@/echo";
 import { watch } from "vue";
 import dayjs, { Dayjs } from "dayjs";
@@ -170,7 +170,7 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                         variant="tonal"
                         v-bind="props"
                         :append-icon="mdiChevronDown"
-                        >Notification system</VBtn
+                        >Alarm system</VBtn
                     >
                 </template>
 
@@ -183,13 +183,15 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                         ></VSwitch>
                     </VListItem>
                     <VListItem>
-                        <VSlider
-                            label="Volume"
-                            :max="1"
-                            :min="0"
-                            :step="0.01"
-                            v-model="volume"
-                        ></VSlider>
+                        <div>
+                            <VLabel>Volume</VLabel>
+                            <VSlider
+                                :max="1"
+                                :min="0"
+                                :step="0.01"
+                                v-model="volume"
+                            ></VSlider>
+                        </div>
                     </VListItem>
                     <VListItem @click="makeNoise">Make test noise</VListItem>
                 </VList>
