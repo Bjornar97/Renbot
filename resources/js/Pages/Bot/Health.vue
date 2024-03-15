@@ -2,7 +2,7 @@
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import { ref } from "vue";
 import { router } from "@inertiajs/core";
-import route from "ziggy-js";
+import { route } from "ziggy-js";
 import { BotStatus as BotStatusType } from "@/types/BotStatus";
 import BotStatus from "@/Components/Bot/BotStatus.vue";
 import { mdiRestart, mdiRobotExcited, mdiRobotOff } from "@mdi/js";

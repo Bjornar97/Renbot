@@ -16,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Sanctum::ignoreMigrations();
+        // Sanctum::ignoreMigrations();
 
         $this->app->bind(BotService::class, fn () => new BotService());
     }

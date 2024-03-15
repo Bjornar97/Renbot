@@ -4,7 +4,7 @@ import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import type { Rule } from "@/types/Rule";
 import { Link, router } from "@inertiajs/vue3";
 import { mdiPlus, mdiScaleBalance } from "@mdi/js";
-import route from "ziggy-js";
+import { route } from "ziggy-js";
 import Draggable from "vuedraggable";
 import { computed } from "vue";
 import RuleListItem from "@/Components/Rules/RuleListItem.vue";

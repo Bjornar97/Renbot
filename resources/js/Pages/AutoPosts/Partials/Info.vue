@@ -8,7 +8,7 @@ import { watch } from "vue";
 import { mdiPencil, mdiTrashCan } from "@mdi/js";
 import { Link, router } from "@inertiajs/vue3";
 import Edit from "./Edit.vue";
-import route from "ziggy-js";
+import { route } from "ziggy-js";
 
 const props = defineProps<{
     autoPost: AutoPostType;

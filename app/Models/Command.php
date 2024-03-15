@@ -37,14 +37,17 @@ class Command extends Model
         'auto_post_id',
     ];
 
-    public $casts = [
-        'enabled' => 'boolean',
-        'severity' => 'integer',
-        'cooldown' => 'integer',
-        'global_cooldown' => 'integer',
-        'prepend_sender' => 'boolean',
-        'auto_post_enabled' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'enabled' => 'boolean',
+            'severity' => 'integer',
+            'cooldown' => 'integer',
+            'global_cooldown' => 'integer',
+            'prepend_sender' => 'boolean',
+            'auto_post_enabled' => 'boolean',
+        ];
+    }
 
     public function parent(): BelongsTo
     {
@@ -208,10 +211,10 @@ class Command extends Model
         return Attribute::make(
             get: function ($value) {
                 if ($this->parent) {
-                    return $this->parent->prepend_sender;
+                    return (bool) $this->parent->prepend_sender;
                 }
 
-                return $value;
+                return (bool) $value;
             },
         );
     }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import { ref } from "vue";
-import route from "ziggy-js";
+import { route } from "ziggy-js";
 import { router } from "@inertiajs/core";
 import { watch } from "vue";
 

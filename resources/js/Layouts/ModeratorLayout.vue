@@ -15,7 +15,7 @@ import {
     mdiScaleBalance,
     mdiTargetAccount,
 } from "@mdi/js";
-import route from "ziggy-js";
+import { route } from "ziggy-js";
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify/lib/framework.mjs";
 import NotificationSound from "../../audio/RobotForeignObjectDetected.mp3";

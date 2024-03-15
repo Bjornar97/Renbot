@@ -4,7 +4,7 @@ import type { Command } from "@/types/Command";
 import { useForm } from "@inertiajs/vue3";
 import { mdiContentSave, mdiRestore } from "@mdi/js";
 import { computed } from "vue";
-import route from "ziggy-js";
+import { route } from "ziggy-js";
 
 defineOptions({
     layout: ModeratorLayout,

@@ -6,31 +6,31 @@
     },
     "type": "module",
     "devDependencies": {
-        "@types/chrome": "^0.0.256",
-        "@types/lodash": "^4.14.202",
+        "@types/chrome": "^0.0.263",
+        "@types/lodash": "^4.17.0",
         "@types/lodash.debounce": "^4.0.9",
-        "@types/node": "^18.19.4",
+        "@types/node": "^18.19.24",
         "@types/ziggy-js": "^1.8.0",
-        "axios": "^1.6.5",
-        "laravel-echo": "^1.15.3",
-        "laravel-vite-plugin": "^1.0.1",
+        "axios": "^1.6.8",
+        "laravel-echo": "^1.16.0",
+        "laravel-vite-plugin": "^1.0.2",
         "lodash": "^4.17.21",
-        "postcss": "^8.4.33",
+        "postcss": "^8.4.35",
         "pusher-js": "^8.3.0",
-        "typescript": "^4.9.5",
-        "vite": "^5.0.11",
-        "ziggy-js": "^1.8.1"
+        "typescript": "^5.4.2",
+        "vite": "^5.1.6",
+        "ziggy-js": "^2.0.4"
     },
     "dependencies": {
-        "@inertiajs/vue3": "^1.0.14",
+        "@inertiajs/vue3": "^1.0.15",
         "@mdi/js": "^7.4.47",
         "@soketi/soketi": "^1.6.0",
-        "@vitejs/plugin-vue": "^5.0.2",
+        "@vitejs/plugin-vue": "^5.0.4",
         "dayjs": "^1.11.10",
         "lodash.debounce": "^4.0.8",
-        "vite-plugin-vuetify": "^2.0.1",
-        "vue": "^3.4.5",
+        "vite-plugin-vuetify": "^2.0.3",
+        "vue": "^3.4.21",
         "vuedraggable": "^4.1.0",
-        "vuetify": "^3.4.9"
+        "vuetify": "^3.5.9"
     }
 }
