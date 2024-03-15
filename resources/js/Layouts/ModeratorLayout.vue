@@ -3,6 +3,7 @@ import Messages from "@/Components/Shared/Messages.vue";
 import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 import {
+    mdiAccountStar,
     mdiArrowDecisionAuto,
     mdiBell,
     mdiChevronDown,
@@ -264,6 +265,12 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     :prepend-icon="mdiScaleBalance"
                     :active="route().current('rules.index')"
                     @click="goTo('rules.index')"
+                ></VListItem>
+                <VListItem
+                    title="Creators"
+                    :prepend-icon="mdiAccountStar"
+                    :active="route().current('creators.index')"
+                    @click="goTo('creators.index')"
                 ></VListItem>
             </VList>
         </VNavigationDrawer>

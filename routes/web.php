@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\AutoPostController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\CommandController;
+use App\Http\Controllers\CreatorController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PunishableCommandController;
 use App\Http\Controllers\RendogController;
@@ -40,6 +41,7 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::resource("moderators/commands", CommandController::class);
     Route::resource("moderators/punishable-commands", PunishableCommandController::class);
     Route::resource("moderators/special-commands", SpecialCommandController::class);
+    Route::resource("moderators/creators", CreatorController::class);
 
     Route::name("bot")->get("moderators/bot", [BotController::class, "bot"]);
     Route::name("bot.restart")->post("moderators/bot/restart", [BotController::class, "restart"]);

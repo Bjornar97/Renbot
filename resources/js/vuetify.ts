@@ -26,6 +26,9 @@ export const vuetify = createVuetify({
         VAutocomplete: {
             variant: "outlined",
         },
+        VFileInput: {
+            variant: "outlined",
+        },
         VSwitch: {
             inset: true,
         },
