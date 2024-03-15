@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
 import { Creator } from "@/types/Creator";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import { mdiAccount, mdiPencil, mdiPlus, mdiTrashCan } from "@mdi/js";
+import { ref } from "vue";
 import { route } from "ziggy-js";
 
 defineOptions({
@@ -12,6 +13,29 @@ defineOptions({
 const props = defineProps<{
     creators: Creator[];
 }>();
+
+const openDelete = (creator: Creator) => {
+    creatorToDelete.value = creator;
+    showDelete.value = true;
+};
+
+const showDelete = ref(false);
+const creatorToDelete = ref<Creator | null>(null);
+const deleteLoading = ref(false);
+const deleteCreator = () => {
+    deleteLoading.value = true;
+    router.delete(
+        route("creators.destroy", { creator: creatorToDelete.value }),
+        {
+            onFinish: () => {
+                deleteLoading.value = false;
+            },
+            onSuccess: () => {
+                showDelete.value = false;
+            },
+        }
+    );
+};
 </script>
 
 <template>
@@ -49,7 +73,11 @@ const props = defineProps<{
                                 <VBtn variant="text" :icon="mdiPencil"></VBtn>
                             </Link>
 
-                            <VBtn variant="text" :icon="mdiTrashCan"></VBtn>
+                            <VBtn
+                                variant="text"
+                                :icon="mdiTrashCan"
+                                @click="openDelete(creator)"
+                            ></VBtn>
                         </div>
                     </template>
                 </VListItem>
@@ -57,6 +85,26 @@ const props = defineProps<{
 
             <p v-else class="mt-4">No creators created yet</p>
         </main>
+
+        <VDialog v-model="showDelete" max-width="35rem">
+            <VCard>
+                <VCardTitle>Are you sure?</VCardTitle>
+                <VCardText>
+                    Are you sure you want to delete the creator "{{
+                        creatorToDelete?.name
+                    }}"?
+                </VCardText>
+                <VCardActions>
+                    <VBtn color="grey" @click="showDelete = false">Cancel</VBtn>
+                    <VBtn
+                        color="error"
+                        @click="deleteCreator"
+                        :loading="deleteLoading"
+                        >Delete</VBtn
+                    >
+                </VCardActions>
+            </VCard>
+        </VDialog>
     </div>
 </template>
 

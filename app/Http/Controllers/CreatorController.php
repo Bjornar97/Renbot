@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCreatorRequest;
 use App\Http\Requests\UpdateCreatorRequest;
 use App\Models\Creator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -92,6 +93,10 @@ class CreatorController extends Controller
      */
     public function destroy(Creator $creator)
     {
-        //
+        Gate::authorize("moderate");
+
+        $creator->delete();
+
+        return back()->with('success', "Creator was successfully deleted");
     }
 }
