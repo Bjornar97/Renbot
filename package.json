@@ -22,6 +22,7 @@
         "ziggy-js": "^2.0.4"
     },
     "dependencies": {
+        "@date-io/dayjs": "^3.0.0",
         "@inertiajs/vue3": "^1.0.15",
         "@mdi/js": "^7.4.47",
         "@soketi/soketi": "^1.6.0",

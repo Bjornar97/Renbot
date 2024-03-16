@@ -17,6 +17,7 @@ class CreatorController extends Controller
      */
     public function index()
     {
+        Gate::authorize('moderate');
         return Inertia::render("Creators/Index", [
             'creators' => Creator::all(),
         ]);
@@ -27,6 +28,7 @@ class CreatorController extends Controller
      */
     public function create()
     {
+        Gate::authorize('moderate');
         return Inertia::render('Creators/Create');
     }
 
@@ -61,6 +63,7 @@ class CreatorController extends Controller
      */
     public function edit(Creator $creator)
     {
+        Gate::authorize('moderate');
         return Inertia::render("Creators/Edit", [
             'creator' => $creator,
         ]);

@@ -10,6 +10,8 @@ use App\Http\Controllers\PunishableCommandController;
 use App\Http\Controllers\RendogController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\SpecialCommandController;
+use App\Http\Controllers\StreamdayController;
+use App\Http\Controllers\StreamdaySlotController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -38,10 +40,14 @@ Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::resource("moderators/auto-posts", AutoPostController::class);
 
+    Route::name('streamday')->get('/streamday', [StreamdayController::class, 'show']);
+
     Route::resource("moderators/commands", CommandController::class);
     Route::resource("moderators/punishable-commands", PunishableCommandController::class);
     Route::resource("moderators/special-commands", SpecialCommandController::class);
     Route::resource("moderators/creators", CreatorController::class);
+    Route::resource("moderators/streamdays", StreamdayController::class);
+    Route::resource("moderators/streamdays.slots", StreamdaySlotController::class)->except(['show']);
 
     Route::name("bot")->get("moderators/bot", [BotController::class, "bot"]);
     Route::name("bot.restart")->post("moderators/bot/restart", [BotController::class, "restart"]);

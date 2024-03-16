@@ -3,6 +3,8 @@ import { createVuetify, type ThemeDefinition } from "vuetify";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
 import { mdiInformation } from "@mdi/js";
 import { md3 } from "vuetify/blueprints";
+import DayJsAdapter from "@date-io/dayjs";
+import enGB from "dayjs/locale/en-gb";
 
 const renbotTheme: ThemeDefinition = {
     dark: true,
@@ -65,5 +67,11 @@ export const vuetify = createVuetify({
     },
     locale: {
         locale: "en",
+    },
+    date: {
+        adapter: DayJsAdapter,
+        locale: {
+            en: enGB,
+        },
     },
 });
