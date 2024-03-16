@@ -3,6 +3,7 @@ import Messages from "@/Components/Shared/Messages.vue";
 import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 import {
+    mdiAccountStar,
     mdiArrowDecisionAuto,
     mdiBell,
     mdiChevronDown,
@@ -11,6 +12,7 @@ import {
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
+    mdiMonitorAccount,
     mdiRobotExcited,
     mdiScaleBalance,
     mdiTargetAccount,
@@ -264,6 +266,18 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     :prepend-icon="mdiScaleBalance"
                     :active="route().current('rules.index')"
                     @click="goTo('rules.index')"
+                ></VListItem>
+                <VListItem
+                    title="Creators"
+                    :prepend-icon="mdiAccountStar"
+                    :active="route().current('creators.index')"
+                    @click="goTo('creators.index')"
+                ></VListItem>
+                <VListItem
+                    title="Stream days"
+                    :prepend-icon="mdiMonitorAccount"
+                    :active="route().current('streamdays.index')"
+                    @click="goTo('streamdays.index')"
                 ></VListItem>
             </VList>
         </VNavigationDrawer>
