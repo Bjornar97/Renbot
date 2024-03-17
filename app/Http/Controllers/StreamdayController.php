@@ -18,7 +18,7 @@ class StreamdayController extends Controller
     {
         Gate::authorize('moderate');
         return Inertia::render('Streamdays/Index', [
-            'streamdays' => Streamday::query()->where('end_date', '>', now())->get(),
+            'streamdays' => Streamday::query()->where('end_date', '>', now()->subDay())->get(),
         ]);
     }
 
