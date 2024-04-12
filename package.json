@@ -18,7 +18,7 @@
         "postcss": "^8.4.35",
         "pusher-js": "^8.3.0",
         "typescript": "^5.4.2",
-        "vite": "^5.1.6",
+        "vite": "^5.1.7",
         "ziggy-js": "^2.0.4"
     },
     "dependencies": {
