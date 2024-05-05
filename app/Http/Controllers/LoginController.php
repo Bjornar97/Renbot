@@ -139,7 +139,7 @@ class LoginController extends Controller
 
         $skipBiometry = session('skipBiometry', 'no');
 
-        if ($skipBiometry) {
+        if ($skipBiometry === 'yes') {
             return redirect()->intended(route($route))->with("success", "You successfully logged in!");
         }
 
