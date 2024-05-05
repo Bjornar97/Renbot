@@ -118,11 +118,11 @@ const cancel = () => {
                 </VSheet>
             </div>
 
-            <div class="type-specific">
+            <div class="auto-post">
                 <VSheet
                     class="pa-4 pa-md-6"
                     rounded
-                    v-if="form.type === 'regular'"
+                    v-if="form.type === 'regular' || form.type === 'special'"
                 >
                     <h2 class="text-overline mb-4">Auto post</h2>
 
@@ -140,7 +140,9 @@ const cancel = () => {
                         :auto-posts="autoPosts"
                     ></AutoPost>
                 </VSheet>
+            </div>
 
+            <div class="type-specific">
                 <VSheet
                     class="pa-4 pa-md-6"
                     rounded
@@ -199,9 +201,18 @@ const cancel = () => {
         grid-template-areas:
             "header header"
             "command-response permissions"
+            "auto-post type-specific"
+            "buttons .";
+    }
+
+    .command-form.punishable {
+        grid-template-areas:
+            "header header"
+            "command-response permissions"
             "type-specific ."
             "buttons .";
     }
+
     .header {
         grid-area: header;
         display: grid;
@@ -218,6 +229,10 @@ const cancel = () => {
 
     .type-specific {
         grid-area: type-specific;
+    }
+
+    .auto-post {
+        grid-area: auto-post;
     }
 
     .buttons {
