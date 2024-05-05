@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Quote } from "@/types/Quote";
 import { router } from "@inertiajs/core";
-import { mdiMenu, mdiTrashCan } from "@mdi/js";
+import { mdiMenu, mdiSendVariant, mdiTrashCan } from "@mdi/js";
+import dayjs from "dayjs";
 import { ref } from "vue";
 
 const props = defineProps<{
@@ -24,11 +25,22 @@ const deleteQuote = () => {
         },
     });
 };
+
+const chatQuote = () => {
+    router.post(
+        route("quote.chat", { quote: props.quote }),
+        {},
+        {
+            preserveScroll: true,
+        }
+    );
+};
 </script>
 
 <template>
     <VListItem
         :title="quote.quote"
+        :subtitle="`@${quote.said_by}, ${dayjs(quote.said_at).format('L')}`"
         @click.stop="goToEdit"
     >
         <template #append>
@@ -37,6 +49,12 @@ const deleteQuote = () => {
                 color="red"
                 :icon="mdiTrashCan"
                 @click.stop="showDeleteDialog = true"
+            ></VBtn>
+            <VBtn
+                variant="text"
+                color="success"
+                :icon="mdiSendVariant"
+                @click.stop="chatQuote"
             ></VBtn>
         </template>
 

@@ -28,7 +28,6 @@ const { mdAndUp } = useDisplay();
         <header class="header">
             <div class="mb-2 mb-md-0">
                 <h1 class="mb-2">Quotes</h1>
-          
             </div>
 
             <div class="add-button">
@@ -63,12 +62,6 @@ const { mdAndUp } = useDisplay();
                     v-for="quote in quotes"
                     :quote="quote"
                 ></QuoteListItem>
-
-                <!-- <Draggable v-model="order" item-key="id" id="draggable">
-                    <template #item="{ element }">
-                        <RuleListItem :rule="element" :moveable="true"></RuleListItem>
-                    </template>
-                </Draggable> -->
             </VList>
 
             <p v-else class="my-4">No quotes created yet</p>

@@ -25,7 +25,7 @@ class UpdateQuoteRequest extends FormRequest
         return [
             'quote' => ['required', 'string', 'max:1024'],
             'said_by' => ['required', 'string', 'max:256'],
-            'said_at' => ['required', 'date'],
+            'said_at' => ['required', 'date', 'before_or_equal:now'],
         ];
     }
 }
