@@ -20,7 +20,7 @@ class QuoteController extends Controller
         Gate::authorize("moderate");
 
         return Inertia::render("Quotes/Index", [
-            'quotes' => Quote::query()->latest()->get(),
+            'quotes' => Quote::query()->orderBy('said_at', 'desc')->get(),
         ]);
     }
 
