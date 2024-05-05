@@ -6,6 +6,7 @@ use App\Enums\BotStatus;
 use App\Events\MakeNoiseEvent;
 use App\Models\Command;
 use App\Models\Punish;
+use App\Models\Quote;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
@@ -30,6 +31,10 @@ class SpecialCommandService
         'makeSoundForRendog' => [
             'action' => 'makeSoundForRendog',
             'title' => 'Make noise for Rendog',
+        ],
+        'chatRandomQuote' => [
+            'action' => 'chatRandomQuote',
+            'title' => 'Send a random quote to chat',
         ],
     ];
 
@@ -111,5 +116,14 @@ class SpecialCommandService
         } catch (\Throwable $th) {
             throw new Exception("Something went wrong while making noise for Rendog");
         }
+    }
+
+    public function chatRandomQuote(): string
+    {
+        $quote = Quote::query()->inRandomOrder()->first();
+
+        $chat = "\"{$quote->quote}\" - @{$quote->said_by}, {$quote->said_at->format('d/m/Y')}";
+
+        return $chat;
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\CommandController;
 use App\Http\Controllers\CreatorController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PunishableCommandController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\RendogController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\SpecialCommandController;
@@ -62,6 +63,10 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
 
     Route::name("rules.order.update")->put("/moderators/rules/order/update", [RuleController::class, "updateOrder"]);
     Route::resource("moderators/rules", RuleController::class);
+
+    Route::name("quote.chat")->post("/moderators/quotes/{quote}/chat", [QuoteController::class, "chat"]);
+
+    Route::resource('moderators/quotes', QuoteController::class);
 
     Route::name("rendog.thankyou")->get("/rendog/thankyou", [RendogController::class, "thankyou"]);
 

@@ -9,7 +9,10 @@ import {
     mdiChevronDown,
     mdiClockOutline,
     mdiCog,
+    mdiCommentQuote,
+    mdiCommentQuoteOutline,
     mdiFingerprint,
+    mdiFormatQuoteOpen,
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
@@ -279,6 +282,12 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     :prepend-icon="mdiMonitorAccount"
                     :active="route().current('streamdays.index')"
                     @click="goTo('streamdays.index')"
+                ></VListItem>
+                <VListItem
+                    title="Quotes"
+                    :prepend-icon="mdiCommentQuoteOutline"
+                    :active="route().current('quotes.index')"
+                    @click="goTo('quotes.index')"
                 ></VListItem>
 
                 <VListSubheader>Profile</VListSubheader>
