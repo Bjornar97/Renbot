@@ -296,7 +296,6 @@ class LoginController extends Controller
             $publicKeyCredentialRequestOptions,
             $request->host(),
             null,
-            ['localhost'],
         );
 
         session()->forget('passkey-authenticate-options');
@@ -327,7 +326,7 @@ class LoginController extends Controller
 
         $relyingPartyEntity = PublicKeyCredentialRpEntity::create(
             "Renbot",
-            'localhost',
+            config('auth.passkeys.relying-party-id'),
             $logo,
         );
 

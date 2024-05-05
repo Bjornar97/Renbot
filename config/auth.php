@@ -18,6 +18,10 @@ return [
         'passwords' => 'users',
     ],
 
+    'passkeys' => [
+        'relying-party-id' => env('PASSKEY_RELYING_PARTY_ID'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards
