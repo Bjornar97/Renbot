@@ -9,6 +9,7 @@ import {
     mdiChevronDown,
     mdiClockOutline,
     mdiCog,
+    mdiFingerprint,
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
@@ -278,6 +279,14 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     :prepend-icon="mdiMonitorAccount"
                     :active="route().current('streamdays.index')"
                     @click="goTo('streamdays.index')"
+                ></VListItem>
+
+                <VListSubheader>Profile</VListSubheader>
+                <VListItem
+                    title="Activate biometry"
+                    :prepend-icon="mdiFingerprint"
+                    :active="route().current('passkeys.create')"
+                    @click="goTo('passkeys.create')"
                 ></VListItem>
             </VList>
         </VNavigationDrawer>

@@ -33,11 +33,16 @@ Route::name("welcome")->get("/", [WelcomeController::class, "welcome"]);
 Route::middleware("guest")->group(function () {
     Route::name("login.redirect")->get("/auth/twitch/redirect", [LoginController::class, "redirect"]);
     Route::name("login.callback")->get("/auth/twitch/callback", [LoginController::class, "callback"]);
+
+    Route::name("passkeys.authenticate")->post("/passkey/authenticate", [LoginController::class, 'authenticatePasskey']);
 });
 
 Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
+    Route::name("passkeys.create")->get("/passkey/create", [LoginController::class, 'createPasskey']);
+    Route::name("passkeys.verify")->post("/passkey/verify", [LoginController::class, 'verifyPasskey']);
+
     Route::resource("moderators/auto-posts", AutoPostController::class);
 
     Route::resource("moderators/commands", CommandController::class);
