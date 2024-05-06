@@ -28,6 +28,7 @@ class UpdateBotSettingsRequest extends FormRequest
             'punishableTimeoutsEnabled'     => ['boolean'],
             'punishDebugEnabled'            => ['boolean'],
             'autoCapsEnabled'               => ['boolean'],
+            'autoBanBots'                   => ['boolean'],
             'autoCapsCommand'               => ['nullable', 'integer', 'exists:commands,id', 'required_if:autoCapsEnabled,true'],
             'autoCapsTotalCapsThreshold'    => ['numeric', 'min:0', 'max:1'],
             'autoCapsTotalLengthThreshold'  => ['integer', 'min:0'],

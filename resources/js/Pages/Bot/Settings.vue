@@ -15,6 +15,7 @@ const props = defineProps<{
     punishableBansEnabled: boolean;
     punishableTimeoutsEnabled: boolean;
     autoCapsEnabled: boolean;
+    autoBanBots: boolean;
     punishDebugEnabled: boolean;
     punishableCommands: Command[];
     autoCapsCommand: number | null;
@@ -30,6 +31,7 @@ const form = useForm({
     punishableTimeoutsEnabled: props.punishableTimeoutsEnabled,
     autoCapsEnabled: props.autoCapsEnabled,
     autoCapsCommand: props.autoCapsCommand,
+    autoBanBots: props.autoBanBots,
     punishDebugEnabled: props.punishDebugEnabled,
     autoCapsTotalCapsThreshold: props.autoCapsTotalCapsThreshold,
     autoCapsTotalLengthThreshold: props.autoCapsTotalLengthThreshold,
@@ -57,6 +59,16 @@ const form = useForm({
                     :error-messages="form.errors.announceRestart"
                     color="primary"
                     messages="If enabled, the bot will tell chat that it is restarting"
+                ></VSwitch>
+
+                <VSwitch
+                    v-model="form.autoBanBots"
+                    class="mb-4"
+                    label="Auto ban bots"
+                    :disabled="form.processing"
+                    :error-messages="form.errors.autoBanBots"
+                    color="primary"
+                    messages="If enabled, Renbot will get bots from Twitch Insights and automatically ban all bots that are in Rendogs chat every 30 minutes, excluding some bots (RenTheBot, Moobot, StreamElements)"
                 ></VSwitch>
             </section>
 

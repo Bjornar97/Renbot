@@ -41,5 +41,7 @@ class AppServiceProvider extends ServiceProvider
         Feature::define("announce-restart", fn () => config("app.features.announce_restart"));
 
         Feature::define("auto-caps-punishment", fn () => config("app.features.auto_caps_punishment"));
+
+        Feature::define("auto-ban-bots", fn () => config("app.features.auto_ban_bots"));
     }
 }

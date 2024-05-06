@@ -40,6 +40,7 @@ class BotController extends Controller
             'punishableTimeoutsEnabled' => Feature::active("timeouts"),
             'punishDebugEnabled' => Feature::active("punish-debug"),
             'autoCapsEnabled' => Feature::active("auto-caps-punishment"),
+            'autoBanBots' => Feature::active("auto-ban-bots"),
             'punishableCommands' => Command::punishable()->select(['id', 'command', 'response'])->get(),
             'autoCapsCommand' => $autoCapsCommand ? ((int) $autoCapsCommand->value) : null,
             'autoCapsTotalCapsThreshold' => (float) (Setting::key("punishment.totalCapsThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT),
@@ -83,6 +84,12 @@ class BotController extends Controller
             Feature::activate("auto-caps-punishment");
         } else {
             Feature::deactivate("auto-caps-punishment", false);
+        }
+
+        if ($validated['autoBanBots'] ?? null) {
+            Feature::activate("auto-ban-bots");
+        } else {
+            Feature::deactivate("auto-ban-bots", false);
         }
 
         if (isset($validated['autoCapsCommand'])) {
