@@ -74,7 +74,7 @@ class BanBotsFromBotList implements ShouldQueue
 
                 if ($bots->contains($chatter->user_login)) {
                     // Ban
-                    BanTwitchUserJob::dispatch((int) $chatter->user_id, 'You are banned because you are an unwelcome bot. If this is a mistake, send an unban request, and we will review it.');
+                    BanTwitchUserJob::dispatch((int) $chatter->user_id, 'You are banned because you are an unwelcome bot. If this is a mistake, send an unban request, and we will review it.', $renbotUser);
                 }
             }
 
