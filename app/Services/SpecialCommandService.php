@@ -10,8 +10,6 @@ use App\Models\Quote;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
-use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Log;
 
 class SpecialCommandService
 {
@@ -44,12 +42,12 @@ class SpecialCommandService
 
     public string $channel = "rendogtv";
 
-    public function __construct(public Command $command, public Client $bot)
+    public function __construct(public Command $command, public ?Client $bot = null)
     {
         $this->channel = config("services.twitch.channel", "rendogtv");
     }
 
-    public static function command(Command $command, Client $bot): self
+    public static function command(Command $command, ?Client $bot = null): self
     {
         return new self($command, $bot);
     }
@@ -102,7 +100,7 @@ class SpecialCommandService
     public function stopBot(): void
     {
         try {
-            $this->bot->say($this->channel, "Stopping bot");
+            $this->bot?->say($this->channel, "Stopping bot");
             BotManagerService::stop();
         } catch (\Throwable $th) {
             throw new Exception("Failed to stop bot. Moderators, check the dashboard.");
