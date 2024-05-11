@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\BotStatus;
 use App\Http\Requests\UpdateBotSettingsRequest;
 use App\Jobs\Analysis\AnalyzeCapsJob;
+use App\Jobs\Analysis\AnalyzeEmotesJob;
 use App\Models\Command;
 use App\Models\Setting;
 use App\Services\BotManagerService;
@@ -33,20 +34,27 @@ class BotController extends Controller
         Gate::authorize("moderate");
 
         $autoCapsCommand = Setting::key("punishment.autoCapsCommand")->first();
+        $autoMaxEmotesCommand = Setting::key("punishment.maxEmotesCommand")->first();
 
         return Inertia::render("Bot/Settings", [
             'announceRestart' => Feature::active("announce-restart"),
             'punishableBansEnabled' => Feature::active("bans"),
             'punishableTimeoutsEnabled' => Feature::active("timeouts"),
             'punishDebugEnabled' => Feature::active("punish-debug"),
+
             'autoCapsEnabled' => Feature::active("auto-caps-punishment"),
             'autoBanBots' => Feature::active("auto-ban-bots"),
             'punishableCommands' => Command::punishable()->select(['id', 'command', 'response'])->get(),
+
             'autoCapsCommand' => $autoCapsCommand ? ((int) $autoCapsCommand->value) : null,
             'autoCapsTotalCapsThreshold' => (float) (Setting::key("punishment.totalCapsThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT),
             'autoCapsTotalLengthThreshold' => (int) (Setting::key("punishment.totalLengthThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT),
             'autoCapsWordCapsThreshold' => (float) (Setting::key("punishment.wordCapsThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT),
             'autoCapsWordLengthThreshold' => (int) (Setting::key("punishment.wordLengthThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_LENGTH_THRESHOLD_DEFAULT),
+
+            'autoMaxEmotesEnabled' => Feature::active('auto-max-emotes-punishment'),
+            'autoMaxEmotesCommand' => $autoMaxEmotesCommand ? ((int) $autoMaxEmotesCommand->value) : null,
+            'autoMaxEmotes' => (int) (Setting::key("punishment.maxEmotes")->first()?->value ?? AnalyzeEmotesJob::MAX_EMOTES_DEFAULT),
         ]);
     }
 
@@ -110,6 +118,20 @@ class BotController extends Controller
 
         if (isset($validated['autoCapsWordLengthThreshold'])) {
             Setting::updateOrCreate(['key' => 'punishment.wordLengthThreshold'], ['value' => $validated['autoCapsWordLengthThreshold']]);
+        }
+
+        if ($validated['autoMaxEmotesEnabled'] ?? null) {
+            Feature::activate("auto-max-emotes-punishment");
+        } else {
+            Feature::deactivate("auto-max-emotes-punishment", false);
+        }
+
+        if (isset($validated['autoMaxEmotesCommand'])) {
+            Setting::updateOrCreate(['key' => 'punishment.maxEmotesCommand'], ['value' => $validated['autoMaxEmotesCommand']]);
+        }
+
+        if (isset($validated['autoMaxEmotes'])) {
+            Setting::updateOrCreate(['key' => 'punishment.maxEmotes'], ['value' => $validated['autoMaxEmotes']]);
         }
 
         return back()->with("success", "Bot settings updated");

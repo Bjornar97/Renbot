@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Analysis\AnalyzeCapsJob;
+use App\Jobs\Analysis\AnalyzeEmotesJob;
 use App\Jobs\AutoPostCheckJob;
 use App\Models\Message;
 use App\Services\BotService;
@@ -161,6 +162,11 @@ class BotCommand extends Command
         Feature::when(
             "auto-caps-punishment",
             whenActive: fn () => AnalyzeCapsJob::dispatch($message),
+        );
+
+        Feature::when(
+            "auto-max-emotes-punishment",
+            whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
         );
     }
 }
