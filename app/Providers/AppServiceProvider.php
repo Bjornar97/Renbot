@@ -42,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
 
         Feature::define("auto-caps-punishment", fn () => config("app.features.auto_caps_punishment"));
 
+        Feature::define("auto-max-emotes-punishment", fn () => config("app.features.auto_max_emotes_punishment"));
+
         Feature::define("auto-ban-bots", fn () => config("app.features.auto_ban_bots"));
     }
 }

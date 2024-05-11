@@ -34,6 +34,10 @@ class UpdateBotSettingsRequest extends FormRequest
             'autoCapsTotalLengthThreshold'  => ['integer', 'min:0'],
             'autoCapsWordCapsThreshold'     => ['numeric', 'min:0', 'max:1'],
             'autoCapsWordLengthThreshold'   => ['integer', 'min:0'],
+
+            'autoMaxEmotesEnabled'          => ['boolean'],
+            'autoMaxEmotes'                 => ['integer', 'min:0', 'max:30'],
+            'autoMaxEmotesCommand'          => ['nullable', 'integer', 'exists:commands,id', 'required_if:autoMaxEmotesEnabled,true'],
         ];
     }
 }
