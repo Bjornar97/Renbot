@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class AnalyzeEmotesJob implements ShouldQueue
 {
@@ -20,7 +21,7 @@ class AnalyzeEmotesJob implements ShouldQueue
 
     public const MAX_EMOTES_DEFAULT = 5;
 
-    private float $maxEmotes = self::MAX_EMOTES_DEFAULT;
+    private int $maxEmotes = self::MAX_EMOTES_DEFAULT;
 
     public string $string;
     private MessageService $messageService;
@@ -75,7 +76,7 @@ class AnalyzeEmotesJob implements ShouldQueue
             return true;
         }
 
-        return true;
+        return false;
     }
 
     protected function hasTooManyEmotes(): bool
@@ -87,8 +88,13 @@ class AnalyzeEmotesJob implements ShouldQueue
         }
 
         $emotes = explode("/", $emotes);
+        $emotesCount = 0;
 
-        if (count($emotes) > $this->maxEmotes) {
+        foreach ($emotes as $emote) {
+            $emotesCount += count(explode(',', $emote));
+        }
+
+        if ($emotesCount > $this->maxEmotes) {
             return true;
         }
 
