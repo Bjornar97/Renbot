@@ -40,7 +40,9 @@ const chatQuote = () => {
 <template>
     <VListItem
         :title="quote.quote"
-        :subtitle="`@${quote.said_by}, ${dayjs(quote.said_at).format('L')}`"
+        :subtitle="`@${quote.said_by}, ${dayjs(quote.said_at)
+            .utc()
+            .format('L')}`"
         @click.stop="goToEdit"
     >
         <template #append>

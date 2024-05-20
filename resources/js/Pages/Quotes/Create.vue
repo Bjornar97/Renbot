@@ -11,7 +11,7 @@ defineOptions({
 const form = useForm("CreateCommand", {
     quote: "",
     said_by: "rendogtv",
-    said_at: dayjs().format("YYYY-MM-DD"),
+    said_at: dayjs().utc().format("YYYY-MM-DD"),
 });
 
 const submit = () => {

@@ -18,14 +18,16 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    start_date: props.streamday.start_date,
-    end_date: props.streamday.end_date,
+    start_date: dayjs(props.streamday.start_date).utc().format("YYYY-MM-DD"),
+    end_date: dayjs(props.streamday.end_date).utc().format("YYYY-MM-DD"),
 });
 
 const save = () => {
     form.transform((data) => {
         data.start_date = dayjs(data.start_date).format("YYYY-MM-DD");
         data.end_date = dayjs(data.end_date).format("YYYY-MM-DD");
+
+        console.log({ data });
 
         return data;
     }).put(route("streamdays.update", { streamday: props.streamday }));
@@ -53,6 +55,7 @@ const save = () => {
                     <div>
                         <VLabel>Start date</VLabel>
                         <VDatePicker
+                            timezone
                             color="primary"
                             show-adjacent-months
                             v-model="form.start_date"

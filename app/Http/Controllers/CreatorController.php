@@ -39,7 +39,7 @@ class CreatorController extends Controller
     {
         $creator = Creator::query()->create($request->except('image'));
 
-        $image = $request->validated('image')[0] ?? null;
+        $image = $request->validated('image') ?? null;
 
         if ($image) {
             $path = $image->store('public/creators');
@@ -76,7 +76,7 @@ class CreatorController extends Controller
     {
         $creator->update($request->except('image'));
 
-        $image = $request->validated('image')[0] ?? null;
+        $image = $request->validated('image') ?? null;
 
         if ($image) {
             if ($creator->image) {

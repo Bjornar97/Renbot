@@ -28,7 +28,7 @@ const deleteQuote = () => {
 };
 
 const date = computed(() => {
-    return dayjs(props.quote.said_at).format("L");
+    return dayjs(props.quote.said_at).utc().format("L");
 });
 
 const chatQuote = () => {

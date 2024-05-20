@@ -28,8 +28,7 @@ class UpdateCreatorRequest extends FormRequest
             'youtube_url' => ['nullable', 'string', 'max:191'],
             'twitch_url' => ['nullable', 'string', 'max:191'],
             'x_url' => ['nullable', 'string', 'max:191'],
-            'image' => ['nullable', 'array', 'max:1'],
-            'image.*' => [File::image()->max('4mb')],
+            'image' => ['nullable', File::image()->max('4mb')],
         ];
     }
 }

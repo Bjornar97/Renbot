@@ -61,9 +61,11 @@ const deleteStreamday = () => {
                 <VListItem
                     v-for="streamday in streamdays"
                     :key="streamday.id"
-                    :title="`${dayjs(streamday.start_date).format(
+                    :title="`${dayjs(streamday.start_date)
+                        .utc()
+                        .format('LL')} - ${dayjs(streamday.end_date).format(
                         'LL'
-                    )} - ${dayjs(streamday.end_date).format('LL')}`"
+                    )}`"
                 >
                     <template #append>
                         <div>
@@ -92,7 +94,9 @@ const deleteStreamday = () => {
                 <VCardTitle>Are you sure?</VCardTitle>
                 <VCardText>
                     Are you sure you want to delete the streamday starting at
-                    "{{ dayjs(streamdayToDelete?.start_date).format("LL") }}"?
+                    "{{
+                        dayjs(streamdayToDelete?.start_date).utc().format("LL")
+                    }}"?
                 </VCardText>
                 <VCardActions>
                     <VBtn color="grey" @click="showDelete = false">Cancel</VBtn>
