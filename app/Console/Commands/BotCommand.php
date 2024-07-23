@@ -134,7 +134,7 @@ class BotCommand extends Command
 
             $this->checkAutoPost($message);
 
-            if (!$messageService->isModerator()) {
+            if (!$messageService->isModerator() && !$messageService->isVIP()) {
                 $this->analyzeForPunishment($message);
             }
         } catch (\Throwable $th) {
