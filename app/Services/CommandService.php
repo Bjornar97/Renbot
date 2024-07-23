@@ -57,9 +57,10 @@ class CommandService
 
     private function isAuthorized()
     {
-        $isModerator = (bool) $this->message->tags['mod'];
+        $isModerator = $this->messageService->isModerator();
+        $isVIP = $this->messageService->isVIP();
 
-        if ($isModerator) {
+        if ($isModerator || $isVIP) {
             return true;
         }
 
