@@ -138,7 +138,8 @@ class CommandService
 
         try {
             $command = SpecialCommandService::command($this->command, $this->bot)
-                ->message($this->message);
+                ->message($this->message)
+                ->basicResponse($this->generateBasicResponse());
 
             if ($target) {
                 $twitchId = TwitchService::getTwitchId($target);

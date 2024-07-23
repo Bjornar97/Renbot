@@ -105,6 +105,8 @@ class CommandController extends Controller
      */
     public function edit(Command $command)
     {
+        $command->append('special_fields');
+
         return Inertia::render("Commands/Edit", [
             'command' => $command->load("autoPost", "children"),
             'actions' => array_values(SpecialCommandService::$functions),
@@ -141,6 +143,19 @@ class CommandController extends Controller
                     'usable_by' => $command->usable_by,
                     'enabled' => true,
                     'type' => $command->type,
+                ]);
+            }
+        }
+
+        if ($command->type === 'special') {
+            $specialFields = $commandData['special_fields'];
+
+            foreach ($specialFields as $key => $field) {
+                $command->commandMetadata()->updateOrCreate([
+                    'type' => 'field',
+                    'key' => $key,
+                ], [
+                    'value' => $field['value'],
                 ]);
             }
         }

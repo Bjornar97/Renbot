@@ -10,6 +10,9 @@ import Punishable from "./Partials/Punishable.vue";
 import SpecialAction from "./Partials/SpecialAction.vue";
 import AutoPost from "./Partials/AutoPost.vue";
 import type { AutoPost as AutoPostType } from "@/types/AutoPost";
+import SpecialFields from "./Partials/SpecialFields.vue";
+import { computed, watch } from "vue";
+import { CommandAction } from "@/types/CommandAction";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -17,7 +20,7 @@ defineOptions({
 
 const props = defineProps<{
     command: Command;
-    actions: { action: string; title: string }[];
+    actions: CommandAction[];
     autoPosts: AutoPostType[];
 }>();
 
@@ -33,6 +36,7 @@ const form = useForm("CreateCommand", {
     type: props.command.type,
     punish_reason: props.command.punish_reason,
     action: props.command.action,
+    special_fields: props.command.special_fields ?? {},
     prepend_sender: props.command.prepend_sender,
     auto_post_enabled: props.command.auto_post_enabled,
     auto_post_id: props.command.auto_post_id ?? null,
@@ -42,6 +46,26 @@ const form = useForm("CreateCommand", {
         min_posts_between: props.command.auto_post?.min_posts_between ?? 100,
     },
 });
+
+const selectedAction = computed(() => {
+    return props.actions?.find((item) => item.action === form.action);
+});
+
+watch(
+    () => form.action,
+    (newValue, oldValue) => {
+        if (!selectedAction.value?.fields) {
+            return;
+        }
+
+        Object.values(selectedAction.value?.fields).forEach((field) => {
+            form.special_fields[field.key] = {
+                key: field.key,
+                value: field.default ?? "",
+            };
+        });
+    }
+);
 
 const submit = () => {
     form.put(route("commands.update", { command: props.command.id }), {
@@ -169,6 +193,12 @@ const cancel = () => {
                         :actions="actions"
                         :errors="form.errors"
                     ></SpecialAction>
+
+                    <SpecialFields
+                        v-if="selectedAction?.fields"
+                        v-model="form.special_fields"
+                        :fields="Object.values(selectedAction?.fields)"
+                    ></SpecialFields>
                 </VSheet>
             </div>
 

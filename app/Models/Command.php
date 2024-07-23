@@ -69,6 +69,16 @@ class Command extends Model
         return $this->belongsTo(AutoPost::class);
     }
 
+    public function commandMetadata(): HasMany
+    {
+        return $this->hasMany(CommandMetadata::class);
+    }
+
+    public function commandMetadataFields(): HasMany
+    {
+        return $this->hasMany(CommandMetadata::class)->where('type', 'field');
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('enabled', true)->whereDoesntHave('parent', function (Builder $query) {
@@ -216,6 +226,28 @@ class Command extends Model
 
                 return (bool) $value;
             },
+        );
+    }
+
+    public function specialFields(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->type !== 'special') {
+                    return [];
+                }
+
+                $fields = [];
+
+                foreach ($this->commandMetadataFields()->get() as $field) {
+                    $fields[$field->key] = [
+                        'key' => $field->key,
+                        'value' => $field->value,
+                    ];
+                }
+
+                return $fields;
+            }
         );
     }
 

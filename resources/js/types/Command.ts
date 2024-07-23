@@ -26,4 +26,6 @@ export interface Command {
 
     parent?: Command;
     children?: Command[];
+
+    special_fields?: { [key: string]: { key: string; value: string | number } };
 }

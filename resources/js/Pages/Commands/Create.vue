@@ -12,6 +12,8 @@ import type { CommandAction } from "@/types/CommandAction";
 import SpecialAction from "./Partials/SpecialAction.vue";
 import AutoPost from "./Partials/AutoPost.vue";
 import type { AutoPost as AutoPostType } from "@/types/AutoPost";
+import SpecialFields from "./Partials/SpecialFields.vue";
+import { computed, watch } from "vue";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -35,6 +37,9 @@ const form = useForm("CreateCommand", {
     severity: 5,
     punish_reason: "",
     action: undefined,
+    special_fields: {} as {
+        [key: string]: { key: string; value: string | number };
+    },
     prepend_sender: false,
     auto_post_enabled: false,
     auto_post_id: null,
@@ -58,6 +63,26 @@ const submit = () => {
 
     form.post(route("commands.store"));
 };
+
+const selectedAction = computed(() => {
+    return props.actions?.find((item) => item.action === form.action);
+});
+
+watch(
+    () => form.action,
+    (newValue, oldValue) => {
+        if (!selectedAction.value?.fields) {
+            return;
+        }
+
+        Object.values(selectedAction.value?.fields).forEach((field) => {
+            form.special_fields[field.key] = {
+                key: field.key,
+                value: field.default ?? "",
+            };
+        });
+    }
+);
 
 const cancel = () => {
     form.reset();
@@ -176,6 +201,12 @@ const cancel = () => {
                         :actions="actions"
                         :errors="form.errors"
                     ></SpecialAction>
+
+                    <SpecialFields
+                        v-if="selectedAction?.fields"
+                        v-model="form.special_fields"
+                        :fields="Object.values(selectedAction?.fields)"
+                    ></SpecialFields>
                 </VSheet>
             </div>
 

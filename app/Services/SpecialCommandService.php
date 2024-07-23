@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\BotStatus;
 use App\Events\MakeNoiseEvent;
 use App\Models\Command;
 use App\Models\Punish;
@@ -10,6 +9,7 @@ use App\Models\Quote;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
+use Illuminate\Support\Facades\Log;
 
 class SpecialCommandService
 {
@@ -34,11 +34,38 @@ class SpecialCommandService
             'action' => 'chatRandomQuote',
             'title' => 'Send a random quote to chat',
         ],
+        'randomNumber' => [
+            'action' => 'randomNumber',
+            'title' => "Add a random number to the response",
+            'tags' => [
+                'random_number' => [
+                    'key' => 'random_number',
+                    'label' => "Random number",
+                ],
+            ],
+            'fields' => [
+                'min' => [
+                    'key' => 'min',
+                    'cols' => 1,
+                    'type' => 'number',
+                    'label' => 'Minimum number',
+                    'default' => 0,
+                ],
+                'max' => [
+                    'key' => 'max',
+                    'cols' => 1,
+                    'type' => 'number',
+                    'label' => 'Maximum number',
+                    'default' => 100,
+                ]
+            ],
+        ],
     ];
 
     public MessageEvent $message;
     public int|null $targetUserId = null;
     public string|null $targetUsername = null;
+    public string|null $basicResponse = null;
 
     public string $channel = "rendogtv";
 
@@ -66,6 +93,12 @@ class SpecialCommandService
         return $this;
     }
 
+    public function basicResponse(string $response): self
+    {
+        $this->basicResponse = $response;
+        return $this;
+    }
+
     public function run()
     {
         if (!$this->command->action) {
@@ -76,7 +109,9 @@ class SpecialCommandService
             throw new Exception("The action {$this->command->action} does not exist");
         }
 
-        return $this->{self::$functions[$this->command->action]['action']}();
+        $data = self::$functions[$this->command->action];
+
+        return $this->{$data['action']}($data);
     }
 
     public function resetPunishment(): void
@@ -123,5 +158,30 @@ class SpecialCommandService
         $chat = "\"{$quote->quote}\" - @{$quote->said_by}, {$quote->said_at->format('d/m/Y')}";
 
         return $chat;
+    }
+
+    public function randomNumber($data): string
+    {
+        $response = $this->basicResponse;
+
+        $min = (int) $this->command->commandMetadata()->field()->where('key', 'min')->sole()?->value;
+        $min ??= $data['fields']['min']['default'];
+        $min ??= 0;
+
+        $max = (int) $this->command->commandMetadata()->field()->where('key', 'max')->sole()?->value;
+        $max ??= $data['fields']['max']['default'];
+        $max ??= 100;
+
+        Log::debug([$min, $max]);
+
+        $number = rand($min, $max);
+
+        if (str_contains($response, '{random_number}')) {
+            $response = str_replace("{random_number}", (string) $number, $response);
+        } else {
+            $response .= " " . $number;
+        }
+
+        return $response;
     }
 }

@@ -63,7 +63,18 @@ class SpecialCommandController extends Controller
             ]);
         }
 
-        return redirect()->route("special-commands.index")->with("success", "The punishable command was successfully created!");
+        $specialFields = $data['special_fields'];
+
+        foreach ($specialFields as $key => $field) {
+            $command->commandMetadata()->updateOrCreate([
+                'type' => 'field',
+                'key' => $key,
+            ], [
+                'value' => $field['value'],
+            ]);
+        }
+
+        return redirect()->route("special-commands.index")->with("success", "The special command was successfully created!");
     }
 
     /**
