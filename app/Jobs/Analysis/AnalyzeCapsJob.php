@@ -5,17 +5,14 @@ namespace App\Jobs\Analysis;
 use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
 use App\Models\Setting;
-use App\Services\BotService;
 use App\Services\MessageService;
 use App\Services\PunishService;
-use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class AnalyzeCapsJob implements ShouldQueue
 {
