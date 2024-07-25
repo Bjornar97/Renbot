@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TextAreaWithTags from "@/Components/Commands/TextAreaWithTags.vue";
 import type { CommandType } from "@/types/CommandType";
 import { mdiPlus, mdiTrashCan } from "@mdi/js";
 
@@ -47,7 +48,19 @@ const props = defineProps<{
             >Add alias</VBtn
         >
 
-        <VTextarea
+        <TextAreaWithTags
+            label="Response"
+            v-model="response"
+            :available-tags="[
+                {
+                    type: 'special',
+                    key: 'random_number',
+                    title: 'Random number',
+                },
+            ]"
+        ></TextAreaWithTags>
+
+        <!-- <VTextarea
             v-model="response"
             label="Response"
             :error-messages="props.errors.response"
@@ -56,7 +69,7 @@ const props = defineProps<{
                     ? 'The response might get overriden by the action'
                     : ''
             "
-        ></VTextarea>
+        ></VTextarea> -->
 
         <VSwitch
             v-if="type !== 'punishable'"
