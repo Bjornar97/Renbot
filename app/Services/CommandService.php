@@ -69,6 +69,10 @@ class CommandService
         }
 
         $isSubscriber = (bool) $this->message->tags['subscriber'];
+        $isSubText = $isSubscriber ? 'Yes' : 'No';
+
+        Log::debug("Subscriber: {$isSubText}");
+        Log::debug("Can subscriber use: {$this->command->subscriber_can_use}");
 
         if ($isSubscriber && $this->command->subscriber_can_use) {
             return true;
