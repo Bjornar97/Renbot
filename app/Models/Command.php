@@ -93,7 +93,7 @@ class Command extends Model
 
     public function getSubscriberCanUseAttribute()
     {
-        return $this->usable_by === "subscriber"
+        return $this->usable_by === "subscribers"
             || $this->usable_by === "everyone";
     }
 
