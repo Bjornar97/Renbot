@@ -9,6 +9,7 @@ const props = defineProps<{
 }>();
 
 const segments = computed(() => {
+    console.log("Start segments");
     const input = modelValue.value;
 
     if (!input) {
@@ -22,7 +23,8 @@ const segments = computed(() => {
     );
 
     // Array to store the resulting segments
-    let segments: { type: string; key?: string; text: string }[] = [];
+    let segments: { id: string; type: string; key?: string; text: string }[] =
+        [];
 
     // Variable to keep track of the last match end position
     let lastIndex = 0;
@@ -38,6 +40,7 @@ const segments = computed(() => {
         if (lastIndex !== matchIndex) {
             const segment = {
                 type: "text",
+                id: matchIndex.toString(),
                 text: input.substring(lastIndex, matchIndex),
             };
 
@@ -51,6 +54,7 @@ const segments = computed(() => {
         if (!matchingTag) {
             const segment = {
                 type: "text",
+                id: `unknown-tag-${matchIndex.toString()}`,
                 text: input.substring(lastIndex, matchIndex),
             };
             segments.push(segment);
@@ -59,6 +63,7 @@ const segments = computed(() => {
 
         // Add the matched tag as a segment
         segments.push({
+            id: `${matchingTag.key}-${matchIndex}`,
             type: `${matchingTag.type}-chip`,
             key: matchingTag.key,
             text: matchingTag.title,
@@ -72,6 +77,7 @@ const segments = computed(() => {
     if (lastIndex < input.length) {
         const segment = {
             type: "text",
+            id: `after`,
             text: input.substring(lastIndex),
         };
 
@@ -79,21 +85,29 @@ const segments = computed(() => {
     } else {
         const segment = {
             type: "text",
+            id: "after",
             text: "",
         };
 
         segments.push(segment);
     }
 
+    console.log("End segments");
+
     return segments;
 });
 
 const isFocused = ref(false);
 
+const renderTest = ref(true);
+
 const handleInput = (e: Event) => {
+    console.log("Start handleInput");
     const div = e.target as HTMLElement;
 
     const children = div.childNodes;
+
+    console.log({ children });
 
     let newValue = "";
 
@@ -103,7 +117,8 @@ const handleInput = (e: Event) => {
                 const element = child as Text;
                 if (element.wholeText !== "") {
                     console.log(`Adding ${element.wholeText}`);
-                    newValue += element.wholeText;
+                    console.log({ element });
+                    newValue += element.textContent;
                 }
             }
             return;
@@ -137,15 +152,15 @@ const handleInput = (e: Event) => {
                 variant="outlined"
                 :dirty="inputProps.isDirty.value"
                 :focused="isFocused"
-                @input="handleInput"
             >
                 <div
                     class="textarea"
                     contenteditable="true"
                     @focusin="isFocused = true"
                     @focusout="isFocused = false"
+                    @input="handleInput"
                 >
-                    <template v-for="segment in segments">
+                    <template v-for="segment in segments" :key="segment.key">
                         <span
                             data-type="chip"
                             :data-chipkey="segment.key"
