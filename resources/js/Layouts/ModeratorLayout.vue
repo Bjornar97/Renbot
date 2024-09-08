@@ -9,10 +9,7 @@ import {
     mdiChevronDown,
     mdiClockOutline,
     mdiCog,
-    mdiCommentQuote,
     mdiCommentQuoteOutline,
-    mdiFingerprint,
-    mdiFormatQuoteOpen,
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
@@ -288,14 +285,6 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     :prepend-icon="mdiCommentQuoteOutline"
                     :active="route().current('quotes.index')"
                     @click="goTo('quotes.index')"
-                ></VListItem>
-
-                <VListSubheader>Profile</VListSubheader>
-                <VListItem
-                    title="Activate biometry"
-                    :prepend-icon="mdiFingerprint"
-                    :active="route().current('passkeys.create')"
-                    @click="goTo('passkeys.create')"
                 ></VListItem>
             </VList>
         </VNavigationDrawer>

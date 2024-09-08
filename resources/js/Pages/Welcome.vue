@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import Messages from "@/Components/Shared/Messages.vue";
 import { router } from "@inertiajs/core";
-import { mdiAccount, mdiFingerprint } from "@mdi/js";
-import { startAuthentication } from "@simplewebauthn/browser";
+import { mdiAccount } from "@mdi/js";
 import { ref } from "vue";
 
 const loading = ref(false);
@@ -17,39 +16,14 @@ const login = (role: string) => {
 
     loadingRole.value = role;
 
-    const skipped = localStorage.getItem('passkeySkip');
-
     window.location.href = route("login.redirect", {
         role,
-        skipBiometry: skipped ?? 'no',
     });
 };
 
 const goToRules = () => {
     router.get(route("rules"));
 };
-
-const passkeyUsername = localStorage.getItem("passkeyUsername");
-
-const authenticate = async () => {
-    try {
-        const response: any = await startAuthentication(props.passkeyOptions);
-
-        router.post(route("passkeys.authenticate"), response);
-    } catch (error) {}
-};
-
-if (passkeyUsername) {
-    router.reload({
-        data: {
-            username: passkeyUsername,
-        },
-        only: ["passkeyOptions"],
-        onSuccess: () => {
-            authenticate();
-        },
-    });
-}
 </script>
 
 <template>
@@ -60,15 +34,7 @@ if (passkeyUsername) {
 
                 <h1 class="text-md-h1">Welcome to RenBot</h1>
 
-                <div class="mt-8" v-if="passkeyUsername">
-                    <p class="mb-2">Log in fast</p>
-                    <VBtn color="silver" stacked size="large" :prepend-icon="mdiFingerprint" @click="authenticate">Biometry</VBtn>
-                </div>
-
-
-
-                <p v-if="passkeyUsername" class="mt-8">Or log in with Twitch</p>
-                <p v-else class="mt-8">Who are you?</p>
+                <p class="mt-8">Who are you?</p>
 
                 <div class="buttons d-flex mt-2">
                     <VBtn
@@ -120,8 +86,6 @@ if (passkeyUsername) {
                         Ren-Diggity-Dog himself
                     </VBtn>
                 </div>
-
-
             </div>
         </div>
     </VApp>
