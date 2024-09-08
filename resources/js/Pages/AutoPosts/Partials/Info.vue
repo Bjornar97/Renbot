@@ -140,7 +140,9 @@ setInterval(() => {
 const deleteOpen = ref(false);
 
 const deleteQueue = () => {
-    router.delete(route("auto-posts.destroy", { auto_post: autoPost.id }));
+    router.delete(route("auto-posts.destroy", { auto_post: autoPost.id }), {
+        preserveScroll: true,
+    });
 };
 
 const enabled = computed({
@@ -148,9 +150,15 @@ const enabled = computed({
     set: async (v: boolean) => {
         autoPost.enabled = v;
 
-        router.patch(route("auto-posts.update", { auto_post: autoPost.id }), {
-            enabled: v,
-        });
+        router.patch(
+            route("auto-posts.update", { auto_post: autoPost.id }),
+            {
+                enabled: v,
+            },
+            {
+                preserveScroll: true,
+            }
+        );
     },
 });
 </script>

@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Events\AutoPostUpdated;
 use App\Models\AutoPost;
 use App\Models\Message;
-use App\Services\SpecialCommandService;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -86,14 +85,9 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
                     continue;
                 }
 
-                $chatMessage = $command->response;
+                $message = $command->general_response;
 
-                if ($command->type === 'special') {
-                    $commandService = SpecialCommandService::command($command);
-                    $chatMessage = $commandService->run();
-                }
-
-                SingleChatMessageJob::dispatch($chatMessage);
+                SingleChatMessageJob::dispatch($message);
 
                 $queue->lastCommand()->associate($command);
                 $queue->last_post = now();

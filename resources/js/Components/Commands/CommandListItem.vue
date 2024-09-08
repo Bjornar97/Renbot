@@ -6,7 +6,7 @@ import SubscriberIcon from "../../../images/icons/subscriber.png";
 import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
 import { computed } from "vue";
-import { mdiClockOutline } from "@mdi/js";
+import { mdiClockOutline, mdiSendVariant } from "@mdi/js";
 import { websocket } from "@/echo";
 import { reactive } from "vue";
 import { ref } from "vue";
@@ -77,7 +77,13 @@ const commandName = computed(() => {
     return result;
 });
 
-console.log(commandName.value);
+const chatCommand = () => {
+    router.post(
+        route("commands.chat", { command: command.value.id }),
+        undefined,
+        { preserveScroll: true }
+    );
+};
 </script>
 
 <template>
@@ -117,7 +123,19 @@ console.log(commandName.value);
         </template>
 
         <template #append>
-            <div @click.stop>
+            <div @click.stop class="d-flex align-center ga-2">
+                <VTooltip open-on-hover text="Send to chat" location="top">
+                    <template #activator="{ props }">
+                        <VBtn
+                            @click="chatCommand"
+                            v-bind="props"
+                            color="green"
+                            variant="text"
+                            :icon="mdiSendVariant"
+                        ></VBtn>
+                    </template>
+                </VTooltip>
+
                 <VSwitch
                     v-model="enabled"
                     color="primary"

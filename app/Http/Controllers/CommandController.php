@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommandRequest;
 use App\Http\Requests\UpdateCommandRequest;
+use App\Jobs\SingleChatMessageJob;
 use App\Models\AutoPost;
 use App\Models\Command;
 use App\Services\SpecialCommandService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class CommandController extends Controller
@@ -24,8 +26,6 @@ class CommandController extends Controller
      */
     public function index()
     {
-        // dd(Command::regular()->where('parent_id', null)->with('children')->orderBy('command')->get());
-
         return Inertia::render("Commands/Index", [
             'commands' => Command::regular()->where('parent_id', null)->with('children')->orderBy('command')->get(),
             'type' => 'regular',
@@ -146,6 +146,20 @@ class CommandController extends Controller
         }
 
         return back()->with("success", "Successfully updated command");
+    }
+
+    public function chat(Command $command)
+    {
+        Gate::authorize("moderate");
+
+        try {
+            $message = $command->general_response;
+            SingleChatMessageJob::dispatch($message);
+        } catch (\Throwable $th) {
+            return back()->with('error', "Something went wrong: {$th->getMessage()}");
+        }
+
+        return back()->with("success", "Sending command to chat!");
     }
 
     /**

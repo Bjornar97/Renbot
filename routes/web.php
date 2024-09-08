@@ -52,6 +52,7 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::resource("moderators/creators", CreatorController::class);
     Route::resource("moderators/streamdays", StreamdayController::class);
     Route::resource("moderators/streamdays.slots", StreamdaySlotController::class)->except(['show']);
+    Route::name("commands.chat")->post("/moderators/commands/{command}/chat", [CommandController::class, "chat"]);
 
     Route::name("bot")->get("moderators/bot", [BotController::class, "bot"]);
     Route::name("bot.restart")->post("moderators/bot/restart", [BotController::class, "restart"]);

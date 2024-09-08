@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\SpecialCommandService;
 use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
@@ -221,6 +222,22 @@ class Command extends Model
                 }
 
                 return (bool) $value;
+            },
+        );
+    }
+
+    public function generalResponse(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $chatMessage = $this->response;
+
+                if ($this->type === 'special') {
+                    $commandService = SpecialCommandService::command($this);
+                    $chatMessage = $commandService->run();
+                }
+
+                return $chatMessage;
             },
         );
     }
