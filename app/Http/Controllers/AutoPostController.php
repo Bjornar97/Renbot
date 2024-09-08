@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AutoPostUpdated;
 use App\Http\Requests\StoreAutoPostRequest;
 use App\Http\Requests\UpdateAutoPostRequest;
 use App\Models\AutoPost;
@@ -31,6 +32,8 @@ class AutoPostController extends Controller
     public function update(UpdateAutoPostRequest $request, AutoPost $autoPost)
     {
         $autoPost->update($request->validated());
+
+        AutoPostUpdated::dispatch($autoPost);
 
         return back()->with("success", "Successfully updated auto post queue");
     }

@@ -16,6 +16,7 @@ class AutoPost extends Model
 
     public $fillable = [
         'title',
+        'enabled',
         'interval',
         'interval_type',
         'min_posts_between',
@@ -26,6 +27,7 @@ class AutoPost extends Model
         'interval' => 'integer',
         'min_posts_between' => 'integer',
         'last_post' => 'datetime',
+        'enabled' => 'boolean',
     ];
 
     public $appends = [

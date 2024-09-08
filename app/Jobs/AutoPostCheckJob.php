@@ -33,21 +33,16 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        $queues = AutoPost::query()->whereRelation("commands", "auto_post_enabled", true)->get();
+        $queues = AutoPost::query()
+            ->where('enabled', true)
+            ->whereRelation("commands", "auto_post_enabled", true)
+            ->get();
 
         foreach ($queues as $queue) {
             AutoPostUpdated::dispatch($queue);
         }
 
         DB::transaction(function () {
-            // $lastRun = Cache::get("autoPostRun", now()->subHour());
-
-            // if ($lastRun->diffInSeconds() < 60) {
-            //     return;
-            // }
-
-            // Cache::put("autoPostRun", now());
-
             $queues = AutoPost::query()
                 ->whereRelation("commands", "auto_post_enabled", true)
                 ->orderBy('last_post', 'desc')

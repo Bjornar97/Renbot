@@ -25,7 +25,8 @@ class UpdateAutoPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['string', 'required', 'max:191', Rule::unique(AutoPost::class)->ignore($this->route("auto_post"))],
+            'title' => ['string', 'max:191', Rule::unique(AutoPost::class)->ignore($this->route("auto_post"))],
+            'enabled' => ['boolean'],
             'interval' => ['integer'],
             'interval_type' => ['string', 'in:seconds,minutes,hours,days'],
             'min_posts_between' => ['integer'],
