@@ -37,6 +37,7 @@ class LoginController extends Controller
         "moderator:read:shoutouts",
         "moderator:manage:shoutouts",
         "chat:edit",
+        "user:write:chat",
         "chat:read"
     ];
 
