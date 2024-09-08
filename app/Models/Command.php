@@ -69,6 +69,12 @@ class Command extends Model
         return $this->belongsTo(AutoPost::class);
     }
 
+    public function commandMetadata(): HasMany
+    {
+        return $this->hasMany(CommandMetadata::class);
+    }
+
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('enabled', true)->whereDoesntHave('parent', function (Builder $query) {

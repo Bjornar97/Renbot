@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\DeleteTwitchMessageJob;
 use App\Models\Command;
+use Carbon\Carbon;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
@@ -47,6 +48,27 @@ class CommandService
             throw new Exception("Unauthorized");
         }
 
+        if ($this->isGlobalCooldown()) {
+            if ($this->shouldCalloutCooldown()) {
+                $message = "@{$this->messageService->getSenderDisplayName()} The !{$this->command->command} command is under global cooldown, please try again later.";
+                return $message;
+            }
+
+            throw new Exception("Global cooldown");
+        }
+
+        if ($this->isUserCooldown()) {
+            if ($this->shouldCalloutCooldown()) {
+                $message = "@{$this->messageService->getSenderDisplayName()} The !{$this->command->command} command is under cooldown for you, please try again later.";
+                return $message;
+            }
+
+            throw new Exception("User cooldown");
+        }
+
+        $this->setCooldownData();
+
+
         return match ($this->command->type) {
             "regular" => $this->regular(),
             "punishable" => $this->punishable(),
@@ -86,6 +108,93 @@ class CommandService
         }
 
         return false;
+    }
+
+    private function isGlobalCooldown()
+    {
+        $isGlobalCooldown = $this->command
+            ->commandMetadata()
+            ->where('type', 'data')
+            ->where('key', 'globallyUsed')
+            ->where(
+                'updated_at',
+                '>',
+                now()->subSeconds($this->command->global_cooldown)
+            )
+            ->exists();
+
+        return $isGlobalCooldown;
+    }
+
+    private function isUserCooldown()
+    {
+        $isUserCooldown = $this->command
+            ->commandMetadata()
+            ->where('type', 'data')
+            ->where('key', "usedBy{$this->messageService->getSenderTwitchId()}")
+            ->where(
+                'updated_at',
+                '>',
+                now()->subSeconds($this->command->cooldown)
+            )
+            ->exists();
+
+        return $isUserCooldown;
+    }
+
+    private function shouldCalloutCooldown()
+    {
+        $lastCalloutData = $this->command
+            ->commandMetadata()
+            ->where('type', 'data')
+            ->where('key', "lastCooldownCallout")
+            ->first();
+
+        if ($lastCalloutData) {
+            $lastCallout = Carbon::parse($lastCalloutData->value);
+
+            if ($lastCallout->isAfter(now()->subMinute())) {
+                return false;
+            }
+        }
+
+        $this->command->commandMetadata()
+            ->updateOrCreate(
+                [
+                    'type' => 'data',
+                    'key' => "lastCooldownCallout",
+                ],
+                [
+                    'value' => now(),
+                ],
+            );
+
+        return true;
+    }
+
+    private function setCooldownData()
+    {
+        $this->command->commandMetadata()
+            ->updateOrCreate(
+                [
+                    'type' => 'data',
+                    'key' => 'globallyUsed',
+                ],
+                [
+                    'value' => now(),
+                ],
+            );
+
+        $this->command->commandMetadata()
+            ->updateOrCreate(
+                [
+                    'type' => 'data',
+                    'key' => "usedBy{$this->messageService->getSenderTwitchId()}",
+                ],
+                [
+                    'value' => now(),
+                ],
+            );
     }
 
     private function generateBasicResponse(): string
