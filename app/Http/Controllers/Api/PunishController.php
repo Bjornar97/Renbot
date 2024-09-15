@@ -36,7 +36,9 @@ class PunishController extends Controller
             ->command($command)
             ->punish();
 
-        SingleChatMessageJob::dispatch($response);
+        if ($response) {
+            SingleChatMessageJob::dispatch($response);
+        }
 
         return response()->json([
             "success" => true,

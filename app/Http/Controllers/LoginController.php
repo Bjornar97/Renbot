@@ -12,10 +12,6 @@ use romanzipp\Twitch\Twitch;
 
 class LoginController extends Controller
 {
-    // We use this key across several methods, so we're going to define it here
-    const CREDENTIAL_REQUEST_OPTIONS_SESSION_KEY = 'publicKeyCredentialRequestOptions';
-
-
     public array $regularScopes = [
         'user:read:follows',
         'user:read:subscriptions',
@@ -36,6 +32,7 @@ class LoginController extends Controller
         "moderator:manage:shield_mode",
         "moderator:read:shoutouts",
         "moderator:manage:shoutouts",
+        "moderator:manage:warnings",
         "chat:edit",
         "user:write:chat",
         "chat:read"

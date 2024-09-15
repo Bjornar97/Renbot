@@ -5,13 +5,13 @@ namespace App\Services;
 use App\Jobs\BanTwitchUserJob;
 use App\Jobs\SingleChatMessageJob;
 use App\Jobs\TimeoutTwitchUserJob;
+use App\Jobs\WarnTwitchUserJob;
 use App\Models\Command;
 use App\Models\Punish;
 use App\Models\User;
 use Carbon\CarbonInterval;
 use Exception;
 use GhostZero\Tmi\Client;
-use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
 
 class PunishService
@@ -80,7 +80,7 @@ class PunishService
         return $this;
     }
 
-    public function punish(): string
+    public function punish(): string|null
     {
         if ($this->isJustPunished($this->targetUserId)) {
             return "";
@@ -106,6 +106,10 @@ class PunishService
             return $this->ban($this->targetUserId, $response, $this->moderator);
         }
 
+        if ($this->isFirstTimeOffense($this->targetUserId)) {
+            return $this->warn($this->targetUserId, $seconds, $response, $this->moderator);
+        }
+
         if (Feature::active("timeouts")) {
             return $this->timeout($this->targetUserId, $seconds, $response, $this->moderator);
         }
@@ -127,8 +131,8 @@ class PunishService
 
         Feature::when(
             "punish-debug",
-            whenActive: fn () => $this->say("Would ban @{$this->targetUsername}"),
-            whenInactive: fn () => BanTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
+            whenActive: fn() => $this->say("Would ban @{$this->targetUsername}"),
+            whenInactive: fn() => BanTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
         );
 
         return $response;
@@ -142,8 +146,8 @@ class PunishService
 
         Feature::when(
             "punish-debug",
-            whenActive: fn () => $this->say("Would timeout @{$this->targetUsername} with {$seconds} seconds"),
-            whenInactive: fn () => TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator),
+            whenActive: fn() => $this->say("Would timeout @{$this->targetUsername} with {$seconds} seconds"),
+            whenInactive: fn() => TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator),
         );
 
         $punish = $this->command->punishes()->create([
@@ -157,15 +161,33 @@ class PunishService
         return $response;
     }
 
+    private function warn(int $twitchId, int $wouldBeSeconds, string $response,  User|null $moderator)
+    {
+        Feature::when(
+            "punish-debug",
+            whenActive: fn() => $this->say("Would warn @{$this->targetUsername}"),
+            whenInactive: fn() => WarnTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
+        );
+
+        $punish = $this->command->punishes()->create([
+            'twitch_user_id' => $twitchId,
+            'type' => "warning",
+            'seconds' => $wouldBeSeconds,
+        ]);
+
+        activity()->on($punish)->by($moderator)->log("created");
+    }
+
+    private function isFirstTimeOffense(int $twitchId): bool
+    {
+        return !Punish::where('twitch_user_id', $twitchId)->exists();
+    }
+
     private function isJustPunished(int $twitchId): bool
     {
-        $exists = Punish::where('twitch_user_id', $twitchId)->where('created_at', '>', now()->subSeconds(10))->exists();
-
-        if ($exists) {
-            return true;
-        }
-
-        return false;
+        return Punish::where('twitch_user_id', $twitchId)
+            ->where('created_at', '>', now()->subSeconds(10))
+            ->exists();
     }
 
     private function getPunishSeconds(int $twitchId): int

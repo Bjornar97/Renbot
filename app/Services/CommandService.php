@@ -226,8 +226,7 @@ class CommandService
         $moderator = $this->messageService->getModerator();
 
         if (!$target) {
-            $this->bot->say($this->channel, "@{$this->messageService->getSenderDisplayName()} You need to specify which user to punish. Example: !{$this->command->command} @username");
-            throw new Exception("Did not supply target for punishment");
+            return $this->generateBasicResponse();
         }
 
         try {
