@@ -3,6 +3,7 @@ import { Command } from "./Command";
 export interface AutoPost {
     id: number;
     title: string;
+    enabled: boolean;
     interval: number;
     interval_type: "seconds" | "minutes" | "hours" | "days";
     min_posts_between: number;

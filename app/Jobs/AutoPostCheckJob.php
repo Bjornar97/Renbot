@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Events\AutoPostUpdated;
 use App\Models\AutoPost;
 use App\Models\Message;
-use App\Services\SpecialCommandService;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -33,21 +32,16 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        $queues = AutoPost::query()->whereRelation("commands", "auto_post_enabled", true)->get();
+        $queues = AutoPost::query()
+            ->where('enabled', true)
+            ->whereRelation("commands", "auto_post_enabled", true)
+            ->get();
 
         foreach ($queues as $queue) {
             AutoPostUpdated::dispatch($queue);
         }
 
         DB::transaction(function () {
-            // $lastRun = Cache::get("autoPostRun", now()->subHour());
-
-            // if ($lastRun->diffInSeconds() < 60) {
-            //     return;
-            // }
-
-            // Cache::put("autoPostRun", now());
-
             $queues = AutoPost::query()
                 ->whereRelation("commands", "auto_post_enabled", true)
                 ->orderBy('last_post', 'desc')
@@ -91,14 +85,9 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
                     continue;
                 }
 
-                $chatMessage = $command->response;
+                $message = $command->general_response;
 
-                if ($command->type === 'special') {
-                    $commandService = SpecialCommandService::command($command);
-                    $chatMessage = $commandService->run();
-                }
-
-                SingleChatMessageJob::dispatch($chatMessage);
+                SingleChatMessageJob::dispatch($message);
 
                 $queue->lastCommand()->associate($command);
                 $queue->last_post = now();

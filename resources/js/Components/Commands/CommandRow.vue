@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Command } from "@/types/Command";
 import { router } from "@inertiajs/vue3";
-import { mdiClockOutline, mdiTrashCan } from "@mdi/js";
+import { mdiClockOutline, mdiSendVariant, mdiTrashCan } from "@mdi/js";
 import { computed, ref } from "vue";
 import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
@@ -62,6 +62,14 @@ const enabled = computed({
 
 const goToEdit = () => {
     router.get(route("commands.edit", { command: command.value.id }));
+};
+
+const chatCommand = () => {
+    router.post(
+        route("commands.chat", { command: command.value.id }),
+        undefined,
+        { preserveScroll: true }
+    );
 };
 
 const showDelete = ref(false);
@@ -140,6 +148,18 @@ const deleteCommand = () => {
                 :icon="mdiTrashCan"
                 @click="showDelete = true"
             ></VBtn>
+
+            <VTooltip open-on-hover text="Send to chat" location="top">
+                <template #activator="{ props }">
+                    <VBtn
+                        @click="chatCommand"
+                        v-bind="props"
+                        color="green"
+                        variant="text"
+                        :icon="mdiSendVariant"
+                    ></VBtn>
+                </template>
+            </VTooltip>
         </td>
 
         <VDialog v-model="showDelete">

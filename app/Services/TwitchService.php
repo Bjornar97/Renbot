@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use romanzipp\Twitch\Twitch;
 
 class TwitchService

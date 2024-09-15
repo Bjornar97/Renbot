@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { websocket } from "@/echo";
 import { AutoPost as AutoPostType } from "@/types/AutoPost";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import dayjs from "dayjs";
 import { reactive } from "vue";
 import { watch } from "vue";
@@ -16,6 +16,24 @@ const props = defineProps<{
 
 const autoPost = reactive(props.autoPost);
 
+const updateAutoPost = (model: AutoPostType) => {
+    autoPost.chats_to_next = model.chats_to_next;
+    autoPost.title = model.title;
+    autoPost.enabled = model.enabled;
+    autoPost.interval = model.interval;
+    autoPost.interval_type = model.interval_type;
+    autoPost.last_command_id = model.last_command_id;
+    autoPost.min_posts_between = model.min_posts_between;
+    autoPost.last_post = model.last_post;
+};
+
+watch(
+    () => props.autoPost,
+    (newValue) => {
+        updateAutoPost(newValue);
+    }
+);
+
 websocket
     .private(`App.Models.AutoPost.${autoPost.id}`)
     .listen(
@@ -27,13 +45,7 @@ websocket
             model: AutoPostType;
             afterCommit: boolean;
         }) => {
-            autoPost.chats_to_next = model.chats_to_next;
-            autoPost.title = model.title;
-            autoPost.interval = model.interval;
-            autoPost.interval_type = model.interval_type;
-            autoPost.last_command_id = model.last_command_id;
-            autoPost.min_posts_between = model.min_posts_between;
-            autoPost.last_post = model.last_post;
+            updateAutoPost(model);
         }
     );
 
@@ -65,6 +77,11 @@ const getNextPosts = () => {
         )
     );
 
+    const nextPostTime = dayjs(autoPost.last_post).add(
+        autoPost.interval,
+        autoPost.interval_type
+    );
+
     const posts = commands.map((command, index) => {
         const chatsToNext =
             Math.max(autoPost.chats_to_next, 0) +
@@ -77,10 +94,10 @@ const getNextPosts = () => {
 
         if (
             index > 0 &&
-            timeToPost.diff(dayjs(), autoPost.interval_type) < autoPost.interval
+            nextPostTime.diff(dayjs(), autoPost.interval_type) < 0
         ) {
             timeToPost = dayjs().add(
-                autoPost.interval * (index + 1),
+                autoPost.interval * index,
                 autoPost.interval_type
             );
         }
@@ -123,8 +140,27 @@ setInterval(() => {
 const deleteOpen = ref(false);
 
 const deleteQueue = () => {
-    router.delete(route("auto-posts.destroy", { auto_post: autoPost.id }));
+    router.delete(route("auto-posts.destroy", { auto_post: autoPost.id }), {
+        preserveScroll: true,
+    });
 };
+
+const enabled = computed({
+    get: (): boolean => autoPost.enabled,
+    set: async (v: boolean) => {
+        autoPost.enabled = v;
+
+        router.patch(
+            route("auto-posts.update", { auto_post: autoPost.id }),
+            {
+                enabled: v,
+            },
+            {
+                preserveScroll: true,
+            }
+        );
+    },
+});
 </script>
 
 <template>
@@ -140,6 +176,13 @@ const deleteQueue = () => {
         </div>
 
         <p>Last posted {{ lastPosted }}</p>
+
+        <VSwitch
+            hide-details
+            label="Enabled"
+            v-model="enabled"
+            color="primary"
+        ></VSwitch>
 
         <VExpansionPanels class="my-4" color="primary-darken-2">
             <VExpansionPanel title="Edit">
@@ -174,11 +217,19 @@ const deleteQueue = () => {
                 </div>
 
                 <div class="chips">
-                    <VChip color="green">{{
-                        command.timeToPostText.charAt(0).toUpperCase() +
-                        command.timeToPostText.slice(1)
-                    }}</VChip>
-                    <VChip>Chats needed: {{ command.chatsToNext }}</VChip>
+                    <VChip color="green">
+                        <template v-if="enabled">
+                            {{
+                                command.timeToPostText.charAt(0).toUpperCase() +
+                                command.timeToPostText.slice(1)
+                            }}
+                        </template>
+                        <template v-else> ∞ </template>
+                    </VChip>
+                    <VChip
+                        >Chats needed:
+                        {{ enabled ? command.chatsToNext : "∞" }}</VChip
+                    >
                 </div>
 
                 <VDivider

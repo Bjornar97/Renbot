@@ -2,13 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Services\BotService;
-use GhostZero\Tmi\Events\Irc\WelcomeEvent;
+use App\Models\User;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use romanzipp\Twitch\Twitch;
 
 class SingleChatMessageJob implements ShouldQueue
 {
@@ -27,14 +28,28 @@ class SingleChatMessageJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $client = BotService::bot();
+        $messages = [$this->message];
 
-        $client->on(WelcomeEvent::class, function () use ($client) {
-            $client->say(config("services.twitch.channel"), $this->message);
+        // Split string into chunks with max 500 characters. Splits by space, so it doesnt cut words.
+        if (strlen($this->message) > 500) {
+            $messages = explode("\n", wordwrap($this->message, 500));
+        }
 
-            $client->getLoop()->addTimer(3, fn () => $client->close());
-        });
+        $renbotUser = User::query()->where('username', 'RenTheBot')->first();
 
-        $client->connect();
+        $twitch = new Twitch();
+        $twitch->setToken($renbotUser->twitch_access_token);
+
+        foreach ($messages as $message) {
+            $response = $twitch->post('chat/messages', [
+                'broadcaster_id' => config("services.twitch.channel_id"),
+                'sender_id' => $renbotUser->twitch_id,
+                'message' => $message,
+            ]);
+
+            if ($response->getStatus() !== 200) {
+                throw new Exception("Something went wrong sending message to chat. ", $response->getStatus());
+            }
+        }
     }
 }

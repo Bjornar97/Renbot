@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\DeleteTwitchMessageJob;
 use App\Models\Command;
+use Carbon\Carbon;
 use Exception;
 use GhostZero\Tmi\Client;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
@@ -47,6 +48,27 @@ class CommandService
             throw new Exception("Unauthorized");
         }
 
+        if ($this->isGlobalCooldown()) {
+            if ($this->shouldCalloutCooldown()) {
+                $message = "@{$this->messageService->getSenderDisplayName()} The !{$this->command->command} command is under global cooldown, please try again later.";
+                return $message;
+            }
+
+            throw new Exception("Global cooldown");
+        }
+
+        if ($this->isUserCooldown()) {
+            if ($this->shouldCalloutCooldown()) {
+                $message = "@{$this->messageService->getSenderDisplayName()} The !{$this->command->command} command is under cooldown for you, please try again later.";
+                return $message;
+            }
+
+            throw new Exception("User cooldown");
+        }
+
+        $this->setCooldownData();
+
+
         return match ($this->command->type) {
             "regular" => $this->regular(),
             "punishable" => $this->punishable(),
@@ -57,9 +79,10 @@ class CommandService
 
     private function isAuthorized()
     {
-        $isModerator = (bool) $this->message->tags['mod'];
+        $isModerator = $this->messageService->isModerator();
+        $isVIP = $this->messageService->isVIP();
 
-        if ($isModerator) {
+        if ($isModerator || $isVIP) {
             return true;
         }
 
@@ -68,6 +91,10 @@ class CommandService
         }
 
         $isSubscriber = (bool) $this->message->tags['subscriber'];
+        $isSubText = $isSubscriber ? 'Yes' : 'No';
+
+        Log::debug("Subscriber: {$isSubText}");
+        Log::debug("Can subscriber use: {$this->command->subscriber_can_use}");
 
         if ($isSubscriber && $this->command->subscriber_can_use) {
             return true;
@@ -81,6 +108,93 @@ class CommandService
         }
 
         return false;
+    }
+
+    private function isGlobalCooldown()
+    {
+        $isGlobalCooldown = $this->command
+            ->commandMetadata()
+            ->where('type', 'data')
+            ->where('key', 'globallyUsed')
+            ->where(
+                'updated_at',
+                '>',
+                now()->subSeconds($this->command->global_cooldown)
+            )
+            ->exists();
+
+        return $isGlobalCooldown;
+    }
+
+    private function isUserCooldown()
+    {
+        $isUserCooldown = $this->command
+            ->commandMetadata()
+            ->where('type', 'data')
+            ->where('key', "usedBy{$this->messageService->getSenderTwitchId()}")
+            ->where(
+                'updated_at',
+                '>',
+                now()->subSeconds($this->command->cooldown)
+            )
+            ->exists();
+
+        return $isUserCooldown;
+    }
+
+    private function shouldCalloutCooldown()
+    {
+        $lastCalloutData = $this->command
+            ->commandMetadata()
+            ->where('type', 'data')
+            ->where('key', "lastCooldownCallout")
+            ->first();
+
+        if ($lastCalloutData) {
+            $lastCallout = Carbon::parse($lastCalloutData->value);
+
+            if ($lastCallout->isAfter(now()->subMinute())) {
+                return false;
+            }
+        }
+
+        $this->command->commandMetadata()
+            ->updateOrCreate(
+                [
+                    'type' => 'data',
+                    'key' => "lastCooldownCallout",
+                ],
+                [
+                    'value' => now(),
+                ],
+            );
+
+        return true;
+    }
+
+    private function setCooldownData()
+    {
+        $this->command->commandMetadata()
+            ->updateOrCreate(
+                [
+                    'type' => 'data',
+                    'key' => 'globallyUsed',
+                ],
+                [
+                    'value' => now(),
+                ],
+            );
+
+        $this->command->commandMetadata()
+            ->updateOrCreate(
+                [
+                    'type' => 'data',
+                    'key' => "usedBy{$this->messageService->getSenderTwitchId()}",
+                ],
+                [
+                    'value' => now(),
+                ],
+            );
     }
 
     private function generateBasicResponse(): string
@@ -112,8 +226,7 @@ class CommandService
         $moderator = $this->messageService->getModerator();
 
         if (!$target) {
-            $this->bot->say($this->channel, "@{$this->messageService->getSenderDisplayName()} You need to specify which user to punish. Example: !{$this->command->command} @username");
-            throw new Exception("Did not supply target for punishment");
+            return $this->generateBasicResponse();
         }
 
         try {
