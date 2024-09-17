@@ -4,6 +4,7 @@ import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 import {
     mdiAccountStar,
+    mdiApplicationParenthesesOutline,
     mdiArrowDecisionAuto,
     mdiBell,
     mdiChevronDown,
@@ -259,6 +260,14 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     :active="route().current('auto-posts.index')"
                     @click="goTo('auto-posts.index')"
                     :prepend-icon="mdiClockOutline"
+                ></VListItem>
+
+                <VListSubheader>Tools</VListSubheader>
+                <VListItem
+                    title="Blocked Terms"
+                    :prepend-icon="mdiApplicationParenthesesOutline"
+                    :active="route().current('blocked-terms.index')"
+                    @click="goTo('blocked-terms.index')"
                 ></VListItem>
 
                 <VListSubheader>Information</VListSubheader>
