@@ -67,7 +67,9 @@ class AnalyzeEmotesJob implements ShouldQueue
             ->command($this->command)
             ->punish();
 
-        SingleChatMessageJob::dispatch($response);
+        if ($response) {
+            SingleChatMessageJob::dispatch($response);
+        }
     }
 
     public function isPunishable(): bool
