@@ -23,7 +23,6 @@ class StoreBlockedTermRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['string', 'in:blocked,permitted'],
             'term' => ['required', 'string', 'max:500'],
             'comment' => ['string', 'nullable', 'max:4096'],
         ];

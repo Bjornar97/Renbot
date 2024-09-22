@@ -4,13 +4,13 @@ import { router } from "@inertiajs/core";
 import { usePage } from "@inertiajs/vue3";
 import {
     mdiAccountStar,
-    mdiApplicationParenthesesOutline,
     mdiArrowDecisionAuto,
     mdiBell,
     mdiChevronDown,
     mdiClockOutline,
     mdiCog,
     mdiCommentQuoteOutline,
+    mdiFormatStrikethrough,
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
@@ -265,7 +265,7 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                 <VListSubheader>Tools</VListSubheader>
                 <VListItem
                     title="Blocked Terms"
-                    :prepend-icon="mdiApplicationParenthesesOutline"
+                    :prepend-icon="mdiFormatStrikethrough"
                     :active="route().current('blocked-terms.index')"
                     @click="goTo('blocked-terms.index')"
                 ></VListItem>

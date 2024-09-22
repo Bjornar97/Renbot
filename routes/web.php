@@ -68,7 +68,9 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
 
     Route::resource('moderators/quotes', QuoteController::class);
 
-    Route::resource("moderators/blocked-terms", BlockedTermController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource("moderators/blocked-terms", BlockedTermController::class)
+        ->scoped(['blocked_term' => 'twitch_id'])
+        ->only(['index', 'store', 'update', 'destroy']);
 
     Route::name("rendog.thankyou")->get("/rendog/thankyou", [RendogController::class, "thankyou"]);
 
