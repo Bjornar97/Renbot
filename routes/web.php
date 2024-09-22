@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\AutoPostController;
+use App\Http\Controllers\BlockedTermController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\CreatorController;
@@ -14,8 +15,6 @@ use App\Http\Controllers\SpecialCommandController;
 use App\Http\Controllers\StreamdayController;
 use App\Http\Controllers\StreamdaySlotController;
 use App\Http\Controllers\WelcomeController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,6 +67,10 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::name("quote.chat")->post("/moderators/quotes/{quote}/chat", [QuoteController::class, "chat"]);
 
     Route::resource('moderators/quotes', QuoteController::class);
+
+    Route::resource("moderators/blocked-terms", BlockedTermController::class)
+        ->scoped(['blocked_term' => 'twitch_id'])
+        ->only(['index', 'store', 'update', 'destroy']);
 
     Route::name("rendog.thankyou")->get("/rendog/thankyou", [RendogController::class, "thankyou"]);
 

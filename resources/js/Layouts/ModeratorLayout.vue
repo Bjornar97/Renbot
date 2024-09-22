@@ -10,6 +10,7 @@ import {
     mdiClockOutline,
     mdiCog,
     mdiCommentQuoteOutline,
+    mdiFormatStrikethrough,
     mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
@@ -259,6 +260,14 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     :active="route().current('auto-posts.index')"
                     @click="goTo('auto-posts.index')"
                     :prepend-icon="mdiClockOutline"
+                ></VListItem>
+
+                <VListSubheader>Tools</VListSubheader>
+                <VListItem
+                    title="Blocked Terms"
+                    :prepend-icon="mdiFormatStrikethrough"
+                    :active="route().current('blocked-terms.index')"
+                    @click="goTo('blocked-terms.index')"
                 ></VListItem>
 
                 <VListSubheader>Information</VListSubheader>
