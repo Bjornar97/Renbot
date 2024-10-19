@@ -26,8 +26,12 @@ const newQuote = () => {
 const searchedQuotes = computed(() => {
     return props.quotes.filter(
         (quote) =>
-            quote.quote.includes(search.value) ||
-            quote.said_by.includes(search.value)
+            quote.quote
+                .toLocaleLowerCase()
+                .includes(search.value.toLocaleLowerCase()) ||
+            quote.said_by
+                .toLocaleLowerCase()
+                .includes(search.value.toLocaleLowerCase())
     );
 });
 
