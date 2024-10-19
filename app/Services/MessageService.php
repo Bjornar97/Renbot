@@ -7,9 +7,7 @@ use GhostZero\Tmi\Events\Twitch\MessageEvent;
 
 class MessageService
 {
-    public function __construct(protected MessageEvent $message)
-    {
-    }
+    public function __construct(protected MessageEvent $message) {}
 
     public static function message(MessageEvent $message): self
     {
@@ -19,6 +17,11 @@ class MessageService
     public function getModerator(): User|null
     {
         return User::where('twitch_id', $this->message->tags['user-id'])->first();
+    }
+
+    public function getMessageId(): string
+    {
+        return $this->message->tags['id'];
     }
 
     public function getTarget(): string|null

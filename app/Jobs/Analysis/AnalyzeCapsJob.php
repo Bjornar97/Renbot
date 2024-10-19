@@ -75,6 +75,7 @@ class AnalyzeCapsJob implements ShouldQueue
     protected function punish()
     {
         $response = PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
+            ->messageId($this->messageService->getMessageId())
             ->command($this->command)
             ->punish();
 

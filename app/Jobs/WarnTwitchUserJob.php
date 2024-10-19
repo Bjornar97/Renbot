@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +20,7 @@ class WarnTwitchUserJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public int $twitchUserId, public string $reason, public ?User $moderator)
+    public function __construct(public int $twitchUserId, public string $reason, public ?User $moderator, public ?string $messageId)
     {
         //
     }
@@ -59,6 +60,18 @@ class WarnTwitchUserJob implements ShouldQueue
         $twitch = new Twitch();
         $twitch->setToken($moderator->twitch_access_token);
 
+        if ($this->messageId) {
+            $deleteMessageResult = $twitch->deleteChatMessages([
+                'broadcaster_id' => config("services.twitch.channel_id"),
+                'moderator_id' => $moderator->twitch_id,
+                'message_id' => $this->messageId,
+            ]);
+
+            if ($deleteMessageResult->getStatus() >= 400) {
+                throw new Exception("Something went wrong while sending delete message request to twitch");
+            }
+        }
+
         $result = $twitch->post(
             'moderation/warnings',
             [
@@ -72,6 +85,10 @@ class WarnTwitchUserJob implements ShouldQueue
                 ],
             ]
         );
+
+        if ($result->getStatus() >= 400) {
+            throw new Exception("Something went wrong while sending warning request to twitch");
+        }
 
         return $result;
     }

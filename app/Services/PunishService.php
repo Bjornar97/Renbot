@@ -39,6 +39,8 @@ class PunishService
 
     private Client $bot;
 
+    private string|null $messageId = null;
+
     public function __construct(protected int $targetUserId, protected $targetUsername)
     {
         $this->channel = config("services.twitch.channel", "rendogtv");
@@ -77,6 +79,12 @@ class PunishService
     public function bot(Client $bot): self
     {
         $this->bot = $bot;
+        return $this;
+    }
+
+    public function messageId(string $messageId): self
+    {
+        $this->messageId = $messageId;
         return $this;
     }
 
@@ -166,7 +174,7 @@ class PunishService
         Feature::when(
             "punish-debug",
             whenActive: fn() => $this->say("Would warn @{$this->targetUsername}"),
-            whenInactive: fn() => WarnTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
+            whenInactive: fn() => WarnTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator, $this->messageId),
         );
 
         $punish = $this->command->punishes()->create([

@@ -13,7 +13,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class AnalyzeEmotesJob implements ShouldQueue
 {
@@ -64,6 +63,7 @@ class AnalyzeEmotesJob implements ShouldQueue
     protected function punish()
     {
         $response = PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
+            ->messageId($this->messageService->getMessageId())
             ->command($this->command)
             ->punish();
 
