@@ -24,19 +24,12 @@ class BotController extends Controller
 
         $status = BotManagerService::getStatus();
 
-        return Inertia::render("Bot/Health", [
-            'status' => $status
-        ]);
-    }
-
-    public function settings()
-    {
-        Gate::authorize("moderate");
-
         $autoCapsCommand = Setting::key("punishment.autoCapsCommand")->first();
         $autoMaxEmotesCommand = Setting::key("punishment.maxEmotesCommand")->first();
 
         return Inertia::render("Bot/Settings", [
+            'botStatus' => $status,
+
             'announceRestart' => Feature::active("announce-restart"),
             'punishableBansEnabled' => Feature::active("bans"),
             'punishableTimeoutsEnabled' => Feature::active("timeouts"),

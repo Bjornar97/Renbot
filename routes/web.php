@@ -43,6 +43,12 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::name("passkeys.create")->get("/passkey/create", [LoginController::class, 'createPasskey']);
     Route::name("passkeys.verify")->post("/passkey/verify", [LoginController::class, 'verifyPasskey']);
 
+    Route::name("bot")->get("moderators/bot", [BotController::class, "bot"]);
+    Route::name("bot.restart")->post("moderators/bot/restart", [BotController::class, "restart"]);
+    Route::name("bot.start")->post("moderators/bot/start", [BotController::class, "start"]);
+    Route::name("bot.stop")->post("moderators/bot/stop", [BotController::class, "stop"]);
+    Route::name("bot.settings.update")->put("moderators/bot/settings/update", [BotController::class, "updateSettings"]);
+
     Route::resource("moderators/auto-posts", AutoPostController::class);
 
     Route::resource("moderators/commands", CommandController::class);
@@ -52,14 +58,6 @@ Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::resource("moderators/streamdays", StreamdayController::class);
     Route::resource("moderators/streamdays.slots", StreamdaySlotController::class)->except(['show']);
     Route::name("commands.chat")->post("/moderators/commands/{command}/chat", [CommandController::class, "chat"]);
-
-    Route::name("bot")->get("moderators/bot", [BotController::class, "bot"]);
-    Route::name("bot.restart")->post("moderators/bot/restart", [BotController::class, "restart"]);
-    Route::name("bot.start")->post("moderators/bot/start", [BotController::class, "start"]);
-    Route::name("bot.stop")->post("moderators/bot/stop", [BotController::class, "stop"]);
-
-    Route::name("bot.settings")->get("moderators/bot/settings", [BotController::class, "settings"]);
-    Route::name("bot.settings.update")->put("moderators/bot/settings/update", [BotController::class, "updateSettings"]);
 
     Route::name("rules.order.update")->put("/moderators/rules/order/update", [RuleController::class, "updateOrder"]);
     Route::resource("moderators/rules", RuleController::class);

@@ -69,6 +69,10 @@ const bottomNav = computed({
             return "bot";
         }
 
+        if (currentRoute.value?.includes("quotes")) {
+            return "quotes";
+        }
+
         return null;
     },
     set: (v) => {
@@ -82,6 +86,10 @@ const bottomNav = computed({
 
         if (v === "bot") {
             return router.get(route("bot"));
+        }
+
+        if (v === "quotes") {
+            return router.get(route("quotes.index"));
         }
     },
 });
@@ -221,16 +229,10 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
             <VList color="primary">
                 <VListSubheader>Bot</VListSubheader>
                 <VListItem
-                    title="Health"
-                    :active="route().current('bot')"
-                    @click="goTo('bot')"
-                    :prepend-icon="mdiHeartPulse"
-                ></VListItem>
-                <VListItem
-                    title="Settings"
+                    title="Bot Settings"
                     :active="route().current('bot.settings')"
                     @click="goTo('bot.settings')"
-                    :prepend-icon="mdiCog"
+                    :prepend-icon="mdiRobotExcited"
                 >
                 </VListItem>
 
@@ -317,6 +319,11 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
             <VBtn value="rules">
                 <VIcon :icon="mdiScaleBalance"></VIcon>
                 Rules
+            </VBtn>
+
+            <VBtn value="quotes">
+                <VIcon :icon="mdiCommentQuoteOutline"></VIcon>
+                Quotes
             </VBtn>
         </VBottomNavigation>
 

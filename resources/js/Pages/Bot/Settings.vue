@@ -1,9 +1,17 @@
 <script setup lang="ts">
+import BotStatus from "@/Components/Bot/BotStatus.vue";
 import ModeratorLayout from "@/Layouts/ModeratorLayout.vue";
+import { BotStatus as BotStatusType } from "@/types/BotStatus";
 import type { Command } from "@/types/Command";
-import { useForm } from "@inertiajs/vue3";
-import { mdiContentSave, mdiRestore } from "@mdi/js";
-import { computed, ref } from "vue";
+import { router, useForm } from "@inertiajs/vue3";
+import {
+    mdiContentSave,
+    mdiRestart,
+    mdiRestore,
+    mdiRobotExcited,
+    mdiRobotOff,
+} from "@mdi/js";
+import { ref } from "vue";
 import { route } from "ziggy-js";
 
 defineOptions({
@@ -11,6 +19,7 @@ defineOptions({
 });
 
 const props = defineProps<{
+    botStatus: BotStatusType;
     announceRestart: boolean;
     punishableBansEnabled: boolean;
     punishableTimeoutsEnabled: boolean;
@@ -46,14 +55,106 @@ const form = useForm({
 });
 
 const openPanels = ref([0]);
+
+const restartLoading = ref(false);
+const switchPowerLoading = ref(false);
+const actionsDisabled = ref(false);
+
+const startBot = () => {
+    switchPowerLoading.value = true;
+    actionsDisabled.value = true;
+
+    router.post(
+        route("bot.start"),
+        {},
+        {
+            onFinish: () => {
+                switchPowerLoading.value = false;
+                actionsDisabled.value = false;
+            },
+        }
+    );
+};
+
+const stopBot = () => {
+    switchPowerLoading.value = true;
+    actionsDisabled.value = true;
+
+    router.post(
+        route("bot.stop"),
+        {},
+        {
+            onFinish: () => {
+                switchPowerLoading.value = false;
+                actionsDisabled.value = false;
+            },
+        }
+    );
+};
+
+const restartBot = () => {
+    restartLoading.value = true;
+    actionsDisabled.value = true;
+
+    router.post(
+        route("bot.restart"),
+        {},
+        {
+            onFinish: () => {
+                restartLoading.value = false;
+                actionsDisabled.value = false;
+            },
+        }
+    );
+};
 </script>
 
 <template>
     <div class="pa-2 pa-md-4">
-        <div class="mb-8">
-            <h1 class="text-h3 font-weight-bold mb-2">Bot Settings</h1>
-            <p>Settings for the bot</p>
+        <div class="mb-4">
+            <h1 class="text-h3 font-weight-bold mb-2">RenBot</h1>
         </div>
+
+        <div class="mb-4 d-flex ga-2">
+            <VBtn
+                v-if="botStatus === BotStatusType.STOPPED"
+                color="success"
+                :prepend-icon="mdiRobotExcited"
+                @click="startBot"
+                :loading="
+                    botStatus === BotStatusType.STOPPED && switchPowerLoading
+                "
+                :disabled="actionsDisabled"
+            >
+                Start bot
+            </VBtn>
+            <VBtn
+                v-if="botStatus === BotStatusType.RUNNING"
+                color="error"
+                :prepend-icon="mdiRobotOff"
+                @click="stopBot"
+                :loading="
+                    botStatus === BotStatusType.RUNNING && switchPowerLoading
+                "
+                :disabled="actionsDisabled"
+            >
+                Stop bot
+            </VBtn>
+
+            <VBtn
+                color="primary-darken-2"
+                @click="restartBot"
+                :loading="restartLoading"
+                :disabled="actionsDisabled"
+                :prepend-icon="mdiRestart"
+                >Restart</VBtn
+            >
+        </div>
+
+        <h2>Status</h2>
+        <BotStatus class="mb-4" :status="botStatus" size="x-large"></BotStatus>
+
+        <h2 class="mb-2">Settings</h2>
 
         <div class="sections">
             <section class="general">
@@ -357,6 +458,12 @@ const openPanels = ref([0]);
 </template>
 
 <style scoped>
+.sections {
+    display: grid;
+    gap: 1rem;
+    max-width: 100rem;
+}
+
 @media screen and (min-width: 768px) {
     .sections {
         display: grid;
@@ -378,6 +485,6 @@ const openPanels = ref([0]);
 
 .buttons {
     display: flex;
-    justify-content: space-between;
+    gap: 1rem;
 }
 </style>
