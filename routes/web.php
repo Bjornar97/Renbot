@@ -6,6 +6,7 @@ use App\Http\Controllers\BlockedTermController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\CreatorController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PunishableCommandController;
 use App\Http\Controllers\QuoteController;
@@ -38,6 +39,8 @@ Route::middleware("guest")->group(function () {
 });
 
 Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
+
+Route::resource('events', EventController::class);
 
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::name("passkeys.create")->get("/passkey/create", [LoginController::class, 'createPasskey']);
