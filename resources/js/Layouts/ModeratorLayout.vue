@@ -8,10 +8,8 @@ import {
     mdiBell,
     mdiChevronDown,
     mdiClockOutline,
-    mdiCog,
     mdiCommentQuoteOutline,
     mdiFormatStrikethrough,
-    mdiHeartPulse,
     mdiMenu,
     mdiMessageReplyText,
     mdiMonitorAccount,
@@ -230,8 +228,8 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                 <VListSubheader>Bot</VListSubheader>
                 <VListItem
                     title="Bot Settings"
-                    :active="route().current('bot.settings')"
-                    @click="goTo('bot.settings')"
+                    :active="route().current('bot')"
+                    @click="goTo('bot')"
                     :prepend-icon="mdiRobotExcited"
                 >
                 </VListItem>
