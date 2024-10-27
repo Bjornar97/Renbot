@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\EventType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,10 +21,13 @@ class EventFactory extends Factory
         $start = $this->faker->dateTimeBetween('-1 month', '+1 year');
         $end = $this->faker->dateTimeBetween($start, Carbon::parse($start)->addHours(6));
 
+        $type = $this->faker->randomElement(EventType::cases());
+
         return [
+            'type' => $type,
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraphs(3, true),
-            'is_teams' => $this->faker->boolean(),
+            'event_url' => $type === EventType::MCC ? 'https://mcc.live' : null,
             'start' => $start,
             'end' => $end,
         ];

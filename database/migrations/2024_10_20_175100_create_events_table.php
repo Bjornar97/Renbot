@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('type', array_column(EventType::cases(), 'value'));
             $table->string("title")->index();
             $table->text('description')->nullable();
-            $table->boolean('is_teams')->default(false);
+            $table->text('event_url')->nullable();
             $table->dateTime('start')->index();
             $table->dateTime('end')->index();
 

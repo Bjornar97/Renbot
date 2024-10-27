@@ -22,6 +22,7 @@ class EventController extends Controller
     {
         return Inertia::render('Events/Index', [
             'events' => Event::all(),
+            'userType' => 'moderator',
         ]);
     }
 
