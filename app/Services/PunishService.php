@@ -174,7 +174,7 @@ class PunishService
         Feature::when(
             "punish-debug",
             whenActive: fn() => $this->say("Would warn @{$this->targetUsername}"),
-            whenInactive: fn() => WarnTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator, $this->messageId),
+            whenInactive: fn() => WarnTwitchUserJob::dispatch($twitchId, $this->command->response, $moderator, $this->messageId),
         );
 
         $punish = $this->command->punishes()->create([

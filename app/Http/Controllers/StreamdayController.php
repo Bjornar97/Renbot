@@ -85,6 +85,8 @@ class StreamdayController extends Controller
      */
     public function destroy(Streamday $streamday)
     {
-        //
+        $streamday->delete();
+
+        return back()->with('success', "Successfully deleted streamday");
     }
 }
