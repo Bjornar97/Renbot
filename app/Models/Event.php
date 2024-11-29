@@ -19,7 +19,7 @@ class Event extends Model
 
     public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(Creator::class, 'event_participants');
+        return $this->belongsToMany(Creator::class, 'event_participants')->withPivot('event_team_id');
     }
 
     public function teams(): HasMany

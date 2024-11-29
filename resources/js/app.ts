@@ -9,12 +9,15 @@ import timezone from "dayjs/plugin/timezone";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
+import isoWeek from "dayjs/plugin/isoWeek";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+dayjs.extend(isoWeek);
 
 dayjs.extend(updateLocale);
 dayjs.locale("en-gb");

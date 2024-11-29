@@ -332,7 +332,7 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
     </VApp>
 </template>
 
-<style>
+<style scoped>
 .moderator-icon {
     object-fit: contain;
     width: 1.3rem;

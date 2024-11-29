@@ -7,6 +7,7 @@ use App\Http\Controllers\BotController;
 use App\Http\Controllers\CommandController;
 use App\Http\Controllers\CreatorController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PunishableCommandController;
 use App\Http\Controllers\QuoteController;
@@ -29,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::name("welcome")->get("/", [WelcomeController::class, "welcome"]);
+Route::name("welcome")->get("/login", [WelcomeController::class, "welcome"]);
 
 Route::middleware("guest")->group(function () {
     Route::name("login.redirect")->get("/auth/twitch/redirect", [LoginController::class, "redirect"]);
@@ -37,6 +38,8 @@ Route::middleware("guest")->group(function () {
 
     Route::name("passkeys.authenticate")->post("/passkey/authenticate", [LoginController::class, 'authenticatePasskey']);
 });
+
+Route::name('home')->get("/", HomeController::class);
 
 Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 

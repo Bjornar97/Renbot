@@ -3,6 +3,11 @@ import type { Rule } from "@/types/Rule";
 import RendogLogo from "../../../images/rendog-logo.png";
 import { computed } from "vue";
 import { mdiChevronRight, mdiChevronRightCircle, mdiMinecraft } from "@mdi/js";
+import ViewerLayout from "@/Layouts/ViewerLayout.vue";
+
+defineOptions({
+    layout: ViewerLayout,
+});
 
 const props = defineProps<{
     rules: Rule[];
@@ -20,36 +25,32 @@ const cssGridRowsString = computed(() => {
 </script>
 
 <template>
-    <VApp>
-        <VMain>
-            <div class="page px-4 mt-8">
-                <img class="logo mb-4" :src="RendogLogo" alt="Rendog logo" />
+    <div class="page px-4 mt-8">
+        <img class="logo mb-4" :src="RendogLogo" alt="Rendog logo" />
 
-                <h1 class="text-md-h2 mb-8 title">RendogTV Rules</h1>
+        <h1 class="text-md-h2 mb-8 title">RendogTV Rules</h1>
 
-                <div
-                    class="rules"
-                    :style="{
-                        gridTemplateRows: cssGridRowsString,
-                    }"
-                >
-                    <div class="rule" v-for="rule in rules">
-                        <div class="order-number">
-                            <div class="center">
-                                <VIcon :icon="mdiMinecraft"></VIcon>
-                            </div>
-                        </div>
-
-                        <p class="text">{{ rule.text }}</p>
+        <div
+            class="rules"
+            :style="{
+                gridTemplateRows: cssGridRowsString,
+            }"
+        >
+            <div class="rule" v-for="rule in rules">
+                <div class="order-number">
+                    <div class="center">
+                        <VIcon :icon="mdiMinecraft"></VIcon>
                     </div>
                 </div>
-            </div>
-        </VMain>
 
-        <VFooter class="footer">
-            <p class="mx-auto">Kind regards from the moderators on RendogTV</p>
-        </VFooter>
-    </VApp>
+                <p class="text">{{ rule.text }}</p>
+            </div>
+        </div>
+    </div>
+
+    <VFooter class="footer">
+        <p class="mx-auto">Kind regards from the moderators on RendogTV</p>
+    </VFooter>
 </template>
 
 <style scoped>

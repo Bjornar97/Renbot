@@ -7,8 +7,14 @@ export interface Event {
     title: string;
     description: string | null;
     event_url: string | null;
+    start: string;
+    end: string;
 
-    participants?: Creator[];
+    participants?: (Creator & {
+        pivot?: {
+            event_team_id: number;
+        };
+    })[];
     teams?: EventTeam[];
 
     created_at: string;

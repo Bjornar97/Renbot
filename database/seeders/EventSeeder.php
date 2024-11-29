@@ -25,7 +25,9 @@ class EventSeeder extends Seeder
                 ->limit($numberOfParticipants)
                 ->get();
 
-            $teams = EventTeam::factory()->count(random_int(0, $numberOfParticipants))->create();
+            $teams = EventTeam::factory()->count(random_int(0, $numberOfParticipants))->create([
+                'event_id' => $event->id,
+            ]);
 
             if (count($teams) > 0) {
                 foreach ($creators as $creator) {
