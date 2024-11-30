@@ -10,9 +10,11 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import isoWeek from "dayjs/plugin/isoWeek";
+import calendar from "dayjs/plugin/calendar";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
+dayjs.extend(calendar);
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

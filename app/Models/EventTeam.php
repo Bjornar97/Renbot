@@ -10,6 +10,11 @@ class EventTeam extends Model
 {
     use HasFactory;
 
+    public $fillable = [
+        'name',
+        'color',
+    ];
+
     public function team(): BelongsTo
     {
         return $this->belongsTo(Event::class);

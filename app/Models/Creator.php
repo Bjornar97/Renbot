@@ -33,6 +33,10 @@ class Creator extends Model
                 return null;
             }
 
+            if (str_starts_with($this->image, 'https://')) {
+                return $this->image;
+            }
+
             return Storage::url($this->image);
         });
     }
