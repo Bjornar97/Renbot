@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(RestartBotJob::class)->everySixHours();
         $schedule->job(BanBotsFromBotList::class)->everyThirtyMinutes();
 
-        $schedule->job(GetNextMcc::class)->daily();
+        $schedule->job(GetNextMcc::class)->dailyAt("10:00");
 
         $schedule->command('telescope:prune --hours=72')->daily();
     }
