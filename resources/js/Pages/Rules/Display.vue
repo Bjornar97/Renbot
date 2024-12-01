@@ -2,7 +2,7 @@
 import type { Rule } from "@/types/Rule";
 import RendogLogo from "../../../images/rendog-logo.png";
 import { computed } from "vue";
-import { mdiChevronRight, mdiChevronRightCircle, mdiMinecraft } from "@mdi/js";
+import { mdiMinecraft } from "@mdi/js";
 import ViewerLayout from "@/Layouts/ViewerLayout.vue";
 
 defineOptions({
@@ -47,10 +47,6 @@ const cssGridRowsString = computed(() => {
             </div>
         </div>
     </div>
-
-    <VFooter class="footer">
-        <p class="mx-auto">Kind regards from the moderators on RendogTV</p>
-    </VFooter>
 </template>
 
 <style scoped>

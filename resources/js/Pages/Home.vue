@@ -44,9 +44,9 @@ const props = defineProps<{
         <div>
             <h2>Chat Rules</h2>
             <p class="mb-2">
-                In order to keep the chat family friendly and welcoming, we have
-                some rules. Please read them carefully and follow them while
-                chatting in Rendog's Twitch channel.
+                To keep Rendog's Twitch channel family-friendly and welcoming,
+                we kindly ask that you follow the rules. Please read them
+                carefully before participating in the chat.
             </p>
             <Link :href="route('rules')">
                 <VBtn :prepend-icon="mdiScaleBalance">Read the rules</VBtn>

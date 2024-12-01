@@ -42,18 +42,23 @@ class GetNextMcc implements ShouldQueue
     public function handle(): void
     {
         $mcc = Http::get('https://api.mcchampionship.com/v1/event')->json();
-        $mcc = $mcc['data'];
+        $teams = Http::get('https://api.mcchampionship.com/v1/participants')->json();
 
-        $dateTime = Carbon::parse($mcc['date']);
+        $mcc = (object) $mcc['data'];
+        $teams = collect($teams['data']);
+
+        if (!$teams->flatten(1)->contains('username', 'Renthedog')) {
+            return;
+        }
+
+        $start = Carbon::parse($mcc->date);
 
         $event = Event::query()
             ->where('type', 'mcc')
-            ->whereBetween('start', [$dateTime->subDay(), $dateTime->addDay()])
+            ->whereBetween('start', [$start->subDay(), $start->addDay()])
             ->first();
 
-        $start = Carbon::parse($mcc['date']);
-
-        $title = "MC Championship - {$mcc['event']}";
+        $title = "MC Championship - {$mcc->event}";
 
         if (!$event) {
             $event = Event::query()->create([
@@ -66,36 +71,44 @@ class GetNextMcc implements ShouldQueue
             ]);
         }
 
-        $teams = Http::get('https://api.mcchampionship.com/v1/participants')->json();
-        $teams = $teams['data'];
         $creators = [];
 
-        foreach ($teams as $key => $value) {
-            if ($key === 'SPECTATORS' || $key === 'NONE') {
+        foreach ($teams as $teamName => $participants) {
+            if ($teamName === 'SPECTATORS' || $teamName === 'NONE') {
                 continue;
             }
 
-            $imageUrl = asset(Storage::url("mcc-teams/" . strtolower($key) . ".webp"));
+            $imageUrl = asset(Storage::url("mcc-teams/" . strtolower($teamName) . ".webp"));
 
             $team = $event->teams()->updateOrCreate(
                 [
-                    'name' => $this->teamNameMap[$key] ?? $key,
+                    'name' => $this->teamNameMap[$teamName] ?? $teamName,
                 ],
                 [
-                    'color' => Str::lower($key),
+                    'color' => Str::lower($teamName),
                     'image_url' => $imageUrl,
                 ]
             );
 
-            foreach ($value as $participant) {
-                $creator = Creator::query()->updateOrCreate([
-                    'name' => $participant['username'],
-
-                ], [
-                    'twitch_url' => $participant['platform'] === 'twitch' ? $participant['stream'] : null,
-                    'youtube_url' => $participant['platform'] === 'youtube' || $participant['platform'] === 'other' ? $participant['stream'] : null,
+            foreach ($participants as $participant) {
+                $data = [
                     'image' => $participant['icon'],
-                ]);
+                ];
+
+                // Set twitch_url only if the platform is 'twitch'
+                if ($participant['platform'] === 'twitch') {
+                    $data['twitch_url'] = $participant['stream'];
+                }
+
+                // Set youtube_url only if the platform is 'youtube' or 'other'
+                if (in_array($participant['platform'], ['youtube', 'other'])) {
+                    $data['youtube_url'] = $participant['stream'];
+                }
+
+                $creator = Creator::query()->updateOrCreate(
+                    ['name' => $participant['username']],
+                    $data
+                );
 
                 $creators[$creator->id] = ['event_team_id' => $team->id];
             }

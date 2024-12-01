@@ -5,7 +5,13 @@ import { computed, h as vueH } from "vue";
 import { Page } from "@inertiajs/core";
 import { Event } from "@/types/Event";
 import dayjs from "dayjs";
-import { mdiCalendar, mdiClock, mdiCrown, mdiTwitch } from "@mdi/js";
+import {
+    mdiCalendar,
+    mdiClock,
+    mdiCrown,
+    mdiStarCircle,
+    mdiTwitch,
+} from "@mdi/js";
 import Participant from "@/Components/Events/Participant.vue";
 import Countdown from "@/Components/Events/Countdown.vue";
 
@@ -71,6 +77,16 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
                         <VChip size="large" :prepend-icon="mdiClock">{{
                             dayjs(event.start).format("LT")
                         }}</VChip>
+                    </div>
+
+                    <div v-if="event.event_url" class="event-page">
+                        <VBtn
+                            :color="bgColor"
+                            :href="event.event_url"
+                            target="_blank"
+                            :prepend-icon="mdiStarCircle"
+                            >Official event page</VBtn
+                        >
                     </div>
                 </div>
             </VParallax>

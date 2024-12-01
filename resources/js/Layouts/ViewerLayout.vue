@@ -2,13 +2,7 @@
 import Messages from "@/Components/Shared/Messages.vue";
 import { router } from "@inertiajs/core";
 import { Link, usePage } from "@inertiajs/vue3";
-import {
-    mdiCalendarStar,
-    mdiCommentQuoteOutline,
-    mdiHome,
-    mdiMenu,
-    mdiScaleBalance,
-} from "@mdi/js";
+import { mdiCalendarStar, mdiHome, mdiScaleBalance } from "@mdi/js";
 import { route } from "ziggy-js";
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify/lib/framework.mjs";

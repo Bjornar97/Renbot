@@ -13,7 +13,7 @@ class HomeController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $events = Event::query()->where('end', '>', now()->subDay())
+        $events = Event::query()->upcoming()
             ->orderBy('start')
             ->limit(3)
             ->get();

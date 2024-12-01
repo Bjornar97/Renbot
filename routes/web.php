@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\EventType;
 use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\AutoPostController;
 use App\Http\Controllers\BlockedTermController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\SpecialCommandController;
 use App\Http\Controllers\StreamdayController;
 use App\Http\Controllers\StreamdaySlotController;
 use App\Http\Controllers\WelcomeController;
+use App\Models\Event;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +48,12 @@ Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 Route::resource('events', EventController::class)->scoped([
     'event' => 'slug',
 ]);
+
+Route::get('mcc', function () {
+    $event = Event::query()->upcoming()->where('type', EventType::MCC)->orderBy('start')->first();
+
+    return redirect()->route('events.show', ['event' => $event]);
+});
 
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::name("passkeys.create")->get("/passkey/create", [LoginController::class, 'createPasskey']);

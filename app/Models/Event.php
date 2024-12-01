@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -79,6 +80,11 @@ class Event extends Model
             END
         ")
             ->orderBy('name');
+    }
+
+    public function scopeUpcoming(Builder $query)
+    {
+        return $query->where('end', '>', now()->subDay());
     }
 
     public function getActivitylogOptions(): LogOptions

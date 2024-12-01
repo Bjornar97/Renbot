@@ -23,7 +23,7 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $events = Event::select(DB::raw('DATE(start) as date'), 'id', 'title', 'slug', 'start', 'end', 'description', 'type')
-            ->where('end', '>', now()->subDay())
+            ->upcoming()
             ->orderBy('start')
             ->get()
             ->groupBy(function ($event) {
