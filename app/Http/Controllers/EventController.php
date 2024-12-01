@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -19,9 +20,10 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::select(DB::raw('DATE(start) as date'), 'id', 'title', 'start', 'end', 'description', 'type')
+        $events = Event::select(DB::raw('DATE(start) as date'), 'id', 'title', 'slug', 'start', 'end', 'description', 'type')
+            ->where('end', '>', now()->subDay())
             ->orderBy('start')
             ->get()
             ->groupBy(function ($event) {
@@ -38,7 +40,7 @@ class EventController extends Controller
 
         return Inertia::render('Events/Index', [
             'days' => $days,
-            'userType' => 'viewer',
+            'userType' => $request->user()?->type ?? 'viewer',
         ]);
     }
 
@@ -63,10 +65,11 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Event $event)
+    public function show(Request $request, Event $event)
     {
         return Inertia::render('Events/Show', [
             'event' => $event->load('participants', 'teams'),
+            'userType' => $request->user()?->type ?? 'viewer',
         ]);
     }
 

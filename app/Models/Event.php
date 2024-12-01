@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Str;
 
 class Event extends Model
 {
@@ -30,6 +31,29 @@ class Event extends Model
         'start' => 'datetime:Y-m-d\TH:i:s.uP',
         'end' => 'datetime:Y-m-d\TH:i:s.uP',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($event) {
+            $event->slug = self::generateUniqueSlug($event->title);
+        });
+    }
+
+    public static function generateUniqueSlug($title)
+    {
+        $slug = Str::slug($title);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (self::where('slug', $slug)->exists()) {
+            $slug = "{$originalSlug}-{$count}";
+            $count++;
+        }
+
+        return $slug;
+    }
 
     public function participants(): BelongsToMany
     {

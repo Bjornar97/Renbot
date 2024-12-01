@@ -86,13 +86,6 @@ const moderatorIcon = new URL(
     <VApp>
         <VAppBar>
             <div class="d-flex align-center ml-4">
-                <VBtn
-                    v-if="!mdAndUp"
-                    variant="text"
-                    :icon="mdiMenu"
-                    @click="showMenu = !showMenu"
-                ></VBtn>
-
                 <img
                     class="mx-2 mx-md-0 rendog-icon"
                     src="../../images/icons/rendog.png"
@@ -139,7 +132,7 @@ const moderatorIcon = new URL(
                         >
                     </Link>
 
-                    <Link class="link" :href="route('quotes.index')">
+                    <!-- <Link class="link" :href="route('quotes.index')">
                         <VBtn
                             :active="route().current('quotes.index')"
                             :color="
@@ -150,7 +143,7 @@ const moderatorIcon = new URL(
                             :prepend-icon="mdiCommentQuoteOutline"
                             >Quotes</VBtn
                         >
-                    </Link>
+                    </Link> -->
                 </div>
             </div>
 
@@ -173,7 +166,7 @@ const moderatorIcon = new URL(
             class="bottom-nav"
         >
             <VBtn value="home">
-                <VIcon :icon="mdiScaleBalance"></VIcon>
+                <VIcon :icon="mdiHome"></VIcon>
                 Home
             </VBtn>
 
@@ -187,10 +180,10 @@ const moderatorIcon = new URL(
                 Events
             </VBtn>
 
-            <VBtn value="quotes">
+            <!-- <VBtn value="quotes">
                 <VIcon :icon="mdiCommentQuoteOutline"></VIcon>
                 Quotes
-            </VBtn>
+            </VBtn> -->
         </VBottomNavigation>
 
         <VMain class="app-main">
@@ -215,6 +208,6 @@ const moderatorIcon = new URL(
 
 .link {
     text-decoration: none;
-    color: initial;
+    color: rgb(var(--v-theme-on-surface));
 }
 </style>

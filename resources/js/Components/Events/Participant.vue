@@ -15,7 +15,6 @@ const props = defineProps<{
         <VBtn
             v-if="participant.twitch_url"
             :href="participant.twitch_url"
-            size="small"
             class="watch"
             :prepend-icon="mdiTwitch"
             color="grey-darken-4"
@@ -24,7 +23,6 @@ const props = defineProps<{
         <VBtn
             v-else-if="participant.youtube_url"
             :href="participant.youtube_url"
-            size="small"
             class="watch"
             :prepend-icon="mdiYoutube"
             color="grey-darken-4"
@@ -43,7 +41,6 @@ const props = defineProps<{
         "watch watch";
     align-items: center;
     gap: 0.5rem 1rem;
-    max-width: 15rem;
 }
 
 .avatar {
@@ -53,6 +50,9 @@ const props = defineProps<{
 .name {
     grid-area: name;
     font-size: 1.5rem;
+    word-break: break-word;
+    hyphens: auto;
+    line-height: 1;
 }
 
 .watch {

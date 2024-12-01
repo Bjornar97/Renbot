@@ -5,6 +5,7 @@ export interface Event {
     id: number;
     type: "mcc" | "charity-fundraising" | "twitch-rivals" | "other";
     title: string;
+    slug: string;
     description: string | null;
     event_url: string | null;
     start: string;

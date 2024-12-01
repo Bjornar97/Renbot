@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::name("welcome")->get("/login", [WelcomeController::class, "welcome"]);
+Route::name("login")->get("/login", [LoginController::class, "login"]);
 
 Route::middleware("guest")->group(function () {
     Route::name("login.redirect")->get("/auth/twitch/redirect", [LoginController::class, "redirect"]);
@@ -43,7 +43,9 @@ Route::name('home')->get("/", HomeController::class);
 
 Route::name("logout")->post("/logout", [LoginController::class, "logout"]);
 
-Route::resource('events', EventController::class);
+Route::resource('events', EventController::class)->scoped([
+    'event' => 'slug',
+]);
 
 Route::middleware(["auth:sanctum", "check.disabled"])->group(function () {
     Route::name("passkeys.create")->get("/passkey/create", [LoginController::class, 'createPasskey']);

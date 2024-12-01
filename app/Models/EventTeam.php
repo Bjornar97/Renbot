@@ -13,6 +13,7 @@ class EventTeam extends Model
     public $fillable = [
         'name',
         'color',
+        'image_url',
     ];
 
     public function team(): BelongsTo

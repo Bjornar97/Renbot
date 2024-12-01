@@ -5,13 +5,15 @@ import { computed, h as vueH } from "vue";
 import { Page } from "@inertiajs/core";
 import { Event } from "@/types/Event";
 import dayjs from "dayjs";
-import { mdiCalendar, mdiClock, mdiCrown } from "@mdi/js";
+import { mdiCalendar, mdiClock, mdiCrown, mdiTwitch } from "@mdi/js";
 import Participant from "@/Components/Events/Participant.vue";
+import Countdown from "@/Components/Events/Countdown.vue";
 
 defineOptions({
     layout: (h: typeof vueH, page: Page) =>
         h(
-            page.props.userType === "moderator"
+            page.props.userType === "moderator" ||
+                page.props.userType === "rendog"
                 ? ModeratorLayout
                 : ViewerLayout,
             () => page
@@ -74,6 +76,15 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
             </VParallax>
 
             <div class="below-fold">
+                <div class="countdown">
+                    <Countdown :start-date="event.start" :end-date="event.end">
+                        <VBtn :prepend-icon="mdiTwitch" size="x-large"
+                            >Watch Rendog</VBtn
+                        >
+                    </Countdown>
+                    <VDivider></VDivider>
+                </div>
+
                 <h2 class="teams-header mt-8 mb-4" v-if="event.teams">Teams</h2>
                 <div class="teams" v-if="event.teams">
                     <div
@@ -99,9 +110,13 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
                             </h3>
                         </VSheet>
 
-                        <ul class="team-participants">
+                        <div class="team-image">
+                            <img v-if="team.image_url" :src="team.image_url" />
+                        </div>
+
+                        <ul class="participants">
                             <li
-                                class="team-participant"
+                                class="participant"
                                 v-for="participant in event.participants?.filter(
                                     (p) => p.pivot?.event_team_id === team.id
                                 )"
@@ -120,13 +135,15 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
                     {{ event.teams ? "All" : "" }} Participants
                 </h2>
 
-                <div class="participants">
-                    <Participant
+                <ul class="participants">
+                    <li
+                        class="participant"
                         v-for="participant in event.participants"
                         :key="participant.id"
-                        :participant="participant"
-                    ></Participant>
-                </div>
+                    >
+                        <Participant :participant="participant"></Participant>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -144,13 +161,21 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
 
 .below-fold {
     display: grid;
-    gap: 0.5rem 2rem;
+    gap: 0.5rem 4rem;
     padding-inline: var(--page-padding-inline);
+}
+
+.countdown {
+    display: grid;
+    gap: 2rem;
+    margin-top: 1rem;
 }
 
 @container (min-width: 60rem) {
     .below-fold {
         grid-template-areas:
+            "hero"
+            "countdown"
             "participants-header"
             "participants";
     }
@@ -158,6 +183,7 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
         grid-template-columns: 1fr auto;
         grid-template-areas:
             "hero hero"
+            "countdown countdown"
             "teams-header participants-header"
             "teams participants";
     }
@@ -181,6 +207,10 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
 
     .participants {
         grid-area: participants;
+    }
+
+    .countdown {
+        grid-area: countdown;
     }
 }
 
@@ -207,7 +237,7 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
 
 .teams {
     display: grid;
-    gap: 2rem;
+    gap: 4rem;
     height: fit-content;
 }
 
@@ -229,24 +259,43 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
     border-width: 1px;
     border-style: solid;
     box-shadow: 0px 0px 5px #ccc;
+    z-index: 2;
 }
 
-.team-participants {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-    gap: 2rem;
+.team-image {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: 100%;
+
+    text-align: center;
+    z-index: 1;
+    filter: blur(10px) brightness(0.3) opacity(0.6);
+}
+
+.team-image img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    padding: 1rem;
 }
 
 .participants {
+    position: relative;
+    list-style: none;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    place-items: center;
+    gap: 3rem 4rem;
+    z-index: 2;
 }
 
-.below-fold:has(.teams) .participants {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.participant {
+    width: 100%;
 }
 
 @container (min-width: 60rem) {
