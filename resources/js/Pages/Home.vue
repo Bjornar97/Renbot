@@ -46,7 +46,7 @@ const props = defineProps<{
             <p class="mb-2">
                 In order to keep the chat family friendly and welcoming, we have
                 some rules. Please read them carefully and follow them while
-                chatting in Rendog's Twitch channel
+                chatting in Rendog's Twitch channel.
             </p>
             <Link :href="route('rules')">
                 <VBtn :prepend-icon="mdiScaleBalance">Read the rules</VBtn>
