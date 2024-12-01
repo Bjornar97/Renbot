@@ -9,9 +9,11 @@ import timezone from "dayjs/plugin/timezone";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
+import duration from "dayjs/plugin/duration";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
+dayjs.extend(duration);
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

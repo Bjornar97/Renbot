@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 use Laravel\Socialite\Contracts\User as ContractsUser;
 use Laravel\Socialite\Facades\Socialite;
 use romanzipp\Twitch\Twitch;
@@ -56,6 +57,19 @@ class LoginController extends Controller
         "channel:manage:schedule",
     ];
 
+    public function login(Request $request)
+    {
+        if (!auth()->check()) {
+            return Inertia::render("Login");
+        }
+
+        if (Gate::allows("moderate")) {
+            return redirect()->route("commands.index");
+        }
+
+        return redirect()->route("home");
+    }
+
     public function redirect(Request $request)
     {
         $data = $request->validate([
@@ -100,7 +114,7 @@ class LoginController extends Controller
 
         if ($user->disabled_at) {
             return redirect()
-                ->route("welcome")
+                ->route("login")
                 ->with("error", "Your account is unfortunately deactivated, contact Bjornar97 if this is a mistake");
         }
 

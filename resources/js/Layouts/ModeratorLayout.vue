@@ -6,13 +6,13 @@ import {
     mdiAccountStar,
     mdiArrowDecisionAuto,
     mdiBell,
+    mdiCalendarStar,
     mdiChevronDown,
     mdiClockOutline,
     mdiCommentQuoteOutline,
     mdiFormatStrikethrough,
     mdiMenu,
     mdiMessageReplyText,
-    mdiMonitorAccount,
     mdiRobotExcited,
     mdiScaleBalance,
     mdiTargetAccount,
@@ -284,10 +284,10 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                     @click="goTo('creators.index')"
                 ></VListItem>
                 <VListItem
-                    title="Stream days"
-                    :prepend-icon="mdiMonitorAccount"
-                    :active="route().current('streamdays.index')"
-                    @click="goTo('streamdays.index')"
+                    title="Events"
+                    :prepend-icon="mdiCalendarStar"
+                    :active="route().current('events.index')"
+                    @click="goTo('events.index')"
                 ></VListItem>
                 <VListItem
                     title="Quotes"
@@ -314,9 +314,9 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
                 Commands
             </VBtn>
 
-            <VBtn value="rules">
-                <VIcon :icon="mdiScaleBalance"></VIcon>
-                Rules
+            <VBtn value="events">
+                <VIcon :icon="mdiCalendarStar"></VIcon>
+                Events
             </VBtn>
 
             <VBtn value="quotes">
@@ -326,13 +326,13 @@ websocket.private("App.MakeNoise").listen(".makeNoise", () => {
         </VBottomNavigation>
 
         <VMain class="app-main">
-            <Messages class="global-messages ma-4"></Messages>
+            <Messages class="global-messages"></Messages>
             <slot></slot>
         </VMain>
     </VApp>
 </template>
 
-<style>
+<style scoped>
 .moderator-icon {
     object-fit: contain;
     width: 1.3rem;

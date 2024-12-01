@@ -20,7 +20,7 @@ class CheckDisabledUser
 
         if (auth()->check() && $user?->disabled_at) {
             auth()->guard("web")->logout();
-            return redirect()->route("welcome")->with("error", "Your account has been disabled. If this is a mistake, contact Bjornar97.");
+            return redirect()->route("login")->with("error", "Your account has been disabled. If this is a mistake, contact Bjornar97.");
         }
 
         return $next($request);
