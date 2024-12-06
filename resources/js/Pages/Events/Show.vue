@@ -14,6 +14,7 @@ import {
 } from "@mdi/js";
 import Participant from "@/Components/Events/Participant.vue";
 import Countdown from "@/Components/Events/Countdown.vue";
+import { EventTeam } from "@/types/EventTeam";
 
 defineOptions({
     layout: (h: typeof vueH, page: Page) =>
@@ -44,6 +45,27 @@ const props = defineProps<{
 }>();
 
 const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
+
+const generateMultiStreamLink = (team: EventTeam) => {
+    let url = "https://multistre.am/";
+
+    props.event.participants
+        ?.filter(
+            (creator) =>
+                creator.twitch_url && creator.pivot?.event_team_id === team.id
+        )
+        .forEach((creator) => {
+            const twitchUsername = creator.twitch_url?.replace(
+                "https://twitch.tv/",
+                ""
+            );
+            url += `${twitchUsername}/`;
+        });
+
+    url += "layout10/";
+
+    return url;
+};
 </script>
 
 <template>
@@ -142,6 +164,22 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
                                 ></Participant>
                             </li>
                         </ul>
+
+                        <VBtn
+                            v-if="
+                                event.participants?.some(
+                                    (creator) =>
+                                        creator.twitch_url &&
+                                        creator.pivot?.event_team_id === team.id
+                                )
+                            "
+                            class="multistream"
+                            color="grey-darken-3"
+                            :prepend-icon="mdiTwitch"
+                            :href="generateMultiStreamLink(team)"
+                            target="_blank"
+                            >Multistream</VBtn
+                        >
                     </div>
                 </div>
 
@@ -264,6 +302,12 @@ const mccImageUrl = new URL("../../../images/mcc.png", import.meta.url).href;
     border-style: solid;
     padding: 2rem 1rem;
     box-shadow: 0px 0px 5px #ccc;
+}
+
+.multistream {
+    width: 100%;
+    margin-top: 3rem;
+    z-index: 1;
 }
 
 .team-name {

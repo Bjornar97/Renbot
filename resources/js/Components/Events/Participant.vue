@@ -15,6 +15,7 @@ const props = defineProps<{
         <VBtn
             v-if="participant.twitch_url"
             :href="participant.twitch_url"
+            target="_blank"
             class="watch"
             :prepend-icon="mdiTwitch"
             color="grey-darken-4"
@@ -23,6 +24,7 @@ const props = defineProps<{
         <VBtn
             v-else-if="participant.youtube_url"
             :href="participant.youtube_url"
+            target="_blank"
             class="watch"
             :prepend-icon="mdiYoutube"
             color="grey-darken-4"
