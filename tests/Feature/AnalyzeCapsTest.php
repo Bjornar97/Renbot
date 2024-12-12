@@ -24,6 +24,8 @@ it('is punishable caps', function (string $message) {
     'this is not that many caps, but has a long caps word GUTENTAG',
     "GUTEN Morgen",
     'GUTEN',
+    'its giving "BAM ME IN THE"',
+    'this is mostly lower case BUT HAS SOME caps words'
 ]);
 
 it("is not punishable caps", function (string $message) {
@@ -45,6 +47,7 @@ it("is not punishable caps", function (string $message) {
     'This Has One Caps Per Word',
     'OMG That is an acronym',
     'FOAF is an acronym',
+    'This is a normal message ACRO 1 and ACRO 2 and then ACRO 3 should be fine',
 ]);
 
 

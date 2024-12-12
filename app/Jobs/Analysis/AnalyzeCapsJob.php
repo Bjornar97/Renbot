@@ -23,6 +23,7 @@ class AnalyzeCapsJob implements ShouldQueue
 
     public const TOTAL_LENGTH_THRESHOLD_DEFAULT = 4;
     public const WORD_LENGTH_THRESHOLD_DEFAULT = 4;
+    public const ALL_CAPS_WORD_THRESHOLD_DEFAULT = 3;
 
     public string $string;
     private MessageService $messageService;
@@ -32,6 +33,7 @@ class AnalyzeCapsJob implements ShouldQueue
 
     private int $totalLengthThreshold = self::TOTAL_LENGTH_THRESHOLD_DEFAULT;
     private int $wordLengthThreshold = self::WORD_LENGTH_THRESHOLD_DEFAULT;
+    private int $allCapsWordThreshold = self::ALL_CAPS_WORD_THRESHOLD_DEFAULT;
 
     private Command|null $command;
 
@@ -94,6 +96,10 @@ class AnalyzeCapsJob implements ShouldQueue
             return true;
         }
 
+        if ($this->allCapsWordsInARow() >= $this->allCapsWordThreshold) {
+            return true;
+        }
+
         if (!$this->hasPunishableWord()) {
             return false;
         }
@@ -104,7 +110,8 @@ class AnalyzeCapsJob implements ShouldQueue
     protected function hasTooManyCaps(): bool
     {
         $caps = preg_match_all("/[A-Z]/", $this->string);
-        $total = strlen($this->string);
+        $total = strlen(preg_replace('/[^a-zA-Z]/', '', $this->string));
+
         $ratio = $caps / $total;
 
         if ($ratio > $this->totalCapsThreshold && $caps > $this->totalLengthThreshold) {
@@ -112,6 +119,27 @@ class AnalyzeCapsJob implements ShouldQueue
         }
 
         return false;
+    }
+
+    protected function allCapsWordsInARow(): int
+    {
+        $maxCount = 0;
+        $words = explode(' ', preg_replace('/[^a-zA-Z\s]/', '', $this->string));
+
+        $currentCount = 0;
+        foreach ($words as $word) {
+            if (strlen($word) > 2 && preg_match('/^[A-Z]+$/', $word)) {
+                $currentCount++;
+            } else {
+                $currentCount = 0;
+            }
+
+            if ($currentCount > $maxCount) {
+                $maxCount = $currentCount;
+            }
+        }
+
+        return $maxCount;
     }
 
     protected function hasEnoughCharacters(): bool
