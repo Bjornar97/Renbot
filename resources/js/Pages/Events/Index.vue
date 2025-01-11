@@ -28,6 +28,11 @@ defineOptions({
     <div class="pa-4 events-page">
         <h1 class="text-h2 mb-4">Events</h1>
 
+        <p v-if="days.length === 0">
+            No upcoming events registered in Renbot. Currently only MCC events
+            show up here.
+        </p>
+
         <div class="events-list">
             <template v-for="day in days" :key="day.date">
                 <div class="date-heading mt-4">
