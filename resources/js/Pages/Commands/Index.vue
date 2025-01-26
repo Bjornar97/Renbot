@@ -22,7 +22,7 @@ const props = defineProps<{
     type: "regular" | "punishable" | "special";
 }>();
 
-const { mdAndUp, smAndUp } = useDisplay();
+const { mdAndUp, lgAndUp } = useDisplay();
 
 const newCommand = () => {
     if (props.type === "punishable") {
@@ -137,7 +137,7 @@ const visibleCommands = computed(() => {
         </header>
 
         <main>
-            <VTable class="commands-table" hover v-if="mdAndUp">
+            <VTable class="commands-table" hover v-if="lgAndUp">
                 <thead>
                     <tr>
                         <th>

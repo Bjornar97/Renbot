@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { Command } from "@/types/Command";
 import { router } from "@inertiajs/core";
-import ModeratorIcon from "../../../images/icons/moderator.png";
-import SubscriberIcon from "../../../images/icons/subscriber.png";
 import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
 import { computed } from "vue";
-import { mdiClockOutline, mdiSendVariant } from "@mdi/js";
+import {
+    mdiBullhornVariant,
+    mdiChat,
+    mdiClockOutline,
+    mdiDotsVertical,
+} from "@mdi/js";
 import { websocket } from "@/echo";
-import { reactive } from "vue";
 import { ref } from "vue";
 import { watch } from "vue";
 
@@ -39,18 +41,6 @@ const goToCommand = () => {
     router.get(route("commands.edit", { command: props.command.id }));
 };
 
-const getCommandUsableByIcon = () => {
-    if (props.command.usable_by === "moderators") {
-        return ModeratorIcon;
-    }
-
-    if (props.command.usable_by === "subscribers") {
-        return SubscriberIcon;
-    }
-
-    return null;
-};
-
 const enabled = computed({
     get: () => command.value.enabled,
     set: (v: boolean) => {
@@ -67,21 +57,27 @@ const enabled = computed({
     },
 });
 
-const commandName = computed(() => {
-    let result = `!${command.value.command}`;
+type ChatType = "chat" | "announcement";
+type AnnouncementColor = "blue" | "green" | "orange" | "purple" | "primary";
 
-    command.value.children?.forEach((child) => {
-        result += ` | !${child.command}`;
-    });
+const chatLoading = ref(false);
 
-    return result;
-});
+const chatCommand = (
+    type?: ChatType,
+    announcement_color?: AnnouncementColor
+) => {
+    chatLoading.value = true;
 
-const chatCommand = () => {
     router.post(
         route("commands.chat", { command: command.value.id }),
-        undefined,
-        { preserveScroll: true }
+        {
+            type,
+            announcement_color,
+        },
+        {
+            preserveScroll: true,
+            onFinish: () => (chatLoading.value = false),
+        }
     );
 };
 </script>
@@ -124,24 +120,75 @@ const chatCommand = () => {
 
         <template #append>
             <div @click.stop class="d-flex align-center ga-2">
-                <VTooltip open-on-hover text="Send to chat" location="top">
-                    <template #activator="{ props }">
-                        <VBtn
-                            @click="chatCommand"
-                            v-bind="props"
-                            color="green"
-                            variant="text"
-                            :icon="mdiSendVariant"
-                        ></VBtn>
-                    </template>
-                </VTooltip>
-
                 <VSwitch
                     v-model="enabled"
                     color="primary"
                     class="ml-2"
                     hide-details
                 ></VSwitch>
+
+                <VMenu>
+                    <template #activator="{ props }">
+                        <VBtn
+                            variant="text"
+                            color="green"
+                            v-bind="props"
+                            :loading="chatLoading"
+                            :icon="mdiDotsVertical"
+                        ></VBtn>
+                    </template>
+                    <VList>
+                        <VListItem
+                            :prepend-icon="mdiChat"
+                            @click="() => chatCommand('chat')"
+                        >
+                            <VListItemTitle>Chat</VListItemTitle>
+                        </VListItem>
+                        <VDivider></VDivider>
+                        <VListItem
+                            color="primary"
+                            base-color="primary"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="
+                                () => chatCommand('announcement', 'primary')
+                            "
+                        >
+                            <VListItemTitle>Announce Primary</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="blue"
+                            base-color="blue"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'blue')"
+                        >
+                            <VListItemTitle>Announce Blue</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="green"
+                            base-color="green"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'green')"
+                        >
+                            <VListItemTitle>Announce Green</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="orange"
+                            base-color="orange"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'orange')"
+                        >
+                            <VListItemTitle>Announce Orange</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="purple"
+                            base-color="purple"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'purple')"
+                        >
+                            <VListItemTitle>Announce Purple</VListItemTitle>
+                        </VListItem>
+                    </VList>
+                </VMenu>
             </div>
         </template>
     </VListItem>

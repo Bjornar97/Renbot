@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import type { Command } from "@/types/Command";
 import { router } from "@inertiajs/vue3";
-import { mdiClockOutline, mdiSendVariant, mdiTrashCan } from "@mdi/js";
+import {
+    mdiBullhornVariant,
+    mdiClockOutline,
+    mdiMenuDown,
+    mdiSendVariant,
+    mdiTrashCan,
+} from "@mdi/js";
 import { computed, ref } from "vue";
 import CommandUsableByIcon from "./CommandUsableByIcon.vue";
 import SeverityChip from "./SeverityChip.vue";
@@ -64,11 +70,27 @@ const goToEdit = () => {
     router.get(route("commands.edit", { command: command.value.id }));
 };
 
-const chatCommand = () => {
+type ChatType = "chat" | "announcement";
+type AnnouncementColor = "blue" | "green" | "orange" | "purple" | "primary";
+
+const chatLoading = ref(false);
+
+const chatCommand = (
+    type?: ChatType,
+    announcement_color?: AnnouncementColor
+) => {
+    chatLoading.value = true;
+
     router.post(
         route("commands.chat", { command: command.value.id }),
-        undefined,
-        { preserveScroll: true }
+        {
+            type,
+            announcement_color,
+        },
+        {
+            preserveScroll: true,
+            onFinish: () => (chatLoading.value = false),
+        }
     );
 };
 
@@ -142,24 +164,81 @@ const deleteCommand = () => {
         </td>
 
         <td @click.stop>
-            <VBtn
-                color="red"
-                variant="text"
-                :icon="mdiTrashCan"
-                @click="showDelete = true"
-            ></VBtn>
+            <VBtnGroup divided rounded="md" variant="outlined" color="green">
+                <VBtn
+                    color="red"
+                    variant="outlined"
+                    rounded="md"
+                    @click="showDelete = true"
+                >
+                    <VIcon :icon="mdiTrashCan"></VIcon>
+                </VBtn>
 
-            <VTooltip open-on-hover text="Send to chat" location="top">
-                <template #activator="{ props }">
-                    <VBtn
-                        @click="chatCommand"
-                        v-bind="props"
-                        color="green"
-                        variant="text"
-                        :icon="mdiSendVariant"
-                    ></VBtn>
-                </template>
-            </VTooltip>
+                <VBtn
+                    @click="chatCommand"
+                    :prepend-icon="mdiSendVariant"
+                    text="Chat"
+                    :loading="chatLoading"
+                    :disabled="chatLoading"
+                >
+                </VBtn>
+
+                <VMenu>
+                    <template #activator="{ props }">
+                        <VBtn
+                            variant="outlined"
+                            v-bind="props"
+                            :icon="mdiMenuDown"
+                            :loading="chatLoading"
+                            :disabled="chatLoading"
+                        ></VBtn>
+                    </template>
+                    <VList>
+                        <VListItem
+                            color="primary"
+                            base-color="primary"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="
+                                () => chatCommand('announcement', 'primary')
+                            "
+                        >
+                            <VListItemTitle>Announce Primary</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="blue"
+                            base-color="blue"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'blue')"
+                        >
+                            <VListItemTitle>Announce Blue</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="green"
+                            base-color="green"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'green')"
+                        >
+                            <VListItemTitle>Announce Green</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="orange"
+                            base-color="orange"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'orange')"
+                        >
+                            <VListItemTitle>Announce Orange</VListItemTitle>
+                        </VListItem>
+                        <VListItem
+                            color="purple"
+                            base-color="purple"
+                            :prepend-icon="mdiBullhornVariant"
+                            @click="() => chatCommand('announcement', 'purple')"
+                        >
+                            <VListItemTitle>Announce Purple</VListItemTitle>
+                        </VListItem>
+                    </VList>
+                </VMenu>
+            </VBtnGroup>
         </td>
 
         <VDialog v-model="showDelete">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SendCommandToChatRequest;
 use App\Http\Requests\StoreCommandRequest;
 use App\Http\Requests\UpdateCommandRequest;
 use App\Jobs\SingleChatMessageJob;
@@ -148,13 +149,13 @@ class CommandController extends Controller
         return back()->with("success", "Successfully updated command");
     }
 
-    public function chat(Command $command)
+    public function chat(SendCommandToChatRequest $request, Command $command)
     {
-        Gate::authorize("moderate");
+        $data = $request->validated();
 
         try {
             $message = $command->general_response;
-            SingleChatMessageJob::dispatch($message);
+            SingleChatMessageJob::dispatch($data['type'] ?? 'chat', $message, null, $data['announcement_color'] ?? null);
         } catch (\Throwable $th) {
             return back()->with('error', "Something went wrong: {$th->getMessage()}");
         }
