@@ -9,16 +9,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use romanzipp\Twitch\Twitch;
 
 class SingleChatMessageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private User $renbotUser;
+    private Twitch $twitch;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(private string $message)
+    public function __construct(private string $type, private string $message, private ?string $replyToId = null, private ?string $announcementColor = null)
     {
         //
     }
@@ -35,21 +39,45 @@ class SingleChatMessageJob implements ShouldQueue
             $messages = explode("\n", wordwrap($this->message, 500));
         }
 
-        $renbotUser = User::query()->where('username', 'RenTheBot')->first();
+        $this->renbotUser = User::query()->where('username', config('services.twitch.username'))->first();
 
-        $twitch = new Twitch();
-        $twitch->setToken($renbotUser->twitch_access_token);
+        $this->twitch = new Twitch();
+        $this->twitch->setToken($this->renbotUser->twitch_access_token);
 
         foreach ($messages as $message) {
-            $response = $twitch->post('chat/messages', [
-                'broadcaster_id' => config("services.twitch.channel_id"),
-                'sender_id' => $renbotUser->twitch_id,
-                'message' => $message,
-            ]);
-
-            if ($response->getStatus() !== 200) {
-                throw new Exception("Something went wrong sending message to chat. ", $response->getStatus());
+            if ($this->type === 'chat') {
+                $this->sendChatMessage($message);
+            } elseif ($this->type === 'announcement') {
+                $this->sendAnnouncement($message, $this->announcementColor);
             }
+        }
+    }
+
+    private function sendChatMessage(string $message): void
+    {
+        $response = $this->twitch->post('chat/messages', [
+            'broadcaster_id' => config("services.twitch.channel_id"),
+            'sender_id' => $this->renbotUser->twitch_id,
+            'message' => $message,
+        ]);
+
+        if ($response->getStatus() !== 200) {
+            throw new Exception("Something went wrong sending message to chat. ", $response->getStatus());
+        }
+    }
+
+    private function sendAnnouncement(string $message, string $color): void
+    {
+        $response = $this->twitch->post('chat/announcements', [
+            'broadcaster_id' => config("services.twitch.channel_id"),
+            'message' => $message,
+            'moderator_id' => $this->renbotUser->twitch_id,
+            'color' => $color,
+        ]);
+
+        if ($response->getStatus() !== 204) {
+            Log::error($response->getStatus());
+            throw new Exception("Something went wrong sending announcement to chat. ", $response->getStatus());
         }
     }
 }
