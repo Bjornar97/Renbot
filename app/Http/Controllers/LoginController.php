@@ -36,7 +36,8 @@ class LoginController extends Controller
         "moderator:manage:warnings",
         "chat:edit",
         "user:write:chat",
-        "chat:read"
+        "chat:read",
+        'user:read:moderated_channels',
     ];
 
     public array $rendogScopes = [
@@ -135,15 +136,16 @@ class LoginController extends Controller
 
         $twitch->withToken($user->token);
 
-        $result = $twitch->getChatters([
-            'broadcaster_id' => 30600786,
-            'moderator_id' => $user->id,
-            'first' => 1,
+        $result = $twitch->get('moderation/channels', [
+            'user_id' => $user->id,
+            'first' => 100,
         ]);
+
+        $channels = collect($result->data());
 
         $type = "viewer";
 
-        if ($result->success() && count($result->data()) > 0) {
+        if ($channels->where('broadcaster_id', config('services.twitch.channel_id'))->isNotEmpty()) {
             $type = "moderator";
         }
 
