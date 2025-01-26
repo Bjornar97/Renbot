@@ -183,7 +183,7 @@ const deleteCommand = () => {
                 >
                 </VBtn>
 
-                <VMenu>
+                <VMenu location="bottom right">
                     <template #activator="{ props }">
                         <VBtn
                             variant="outlined"
