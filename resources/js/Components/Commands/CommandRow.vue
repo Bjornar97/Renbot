@@ -175,7 +175,7 @@ const deleteCommand = () => {
                 </VBtn>
 
                 <VBtn
-                    @click="() => chatCommand("chat")"
+                    @click="() => chatCommand('chat')"
                     :prepend-icon="mdiSendVariant"
                     text="Chat"
                     :loading="chatLoading"
