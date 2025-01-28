@@ -84,7 +84,7 @@ class QuoteController extends Controller
 
         $chat = "\"{$quote->quote}\" - @{$quote->said_by}, {$quote->said_at->format('d/m/Y')}";
 
-        SingleChatMessageJob::dispatch($chat);
+        SingleChatMessageJob::dispatch("chat", $chat);
 
         return back()->with("success", "Sending to chat");
     }

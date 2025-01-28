@@ -65,7 +65,7 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function ($value) {
-                if ((!$this->twitch_access_token_expipres_at) || now()->addSeconds(30)->isAfter($this->twitch_access_token_expipres_at)) {
+                if ((!$this->twitch_access_token_expipres_at) || now()->addSeconds(30)->isAfter($this->twitch_access_token_expires_at)) {
                     $value = $this->renewAccessToken();
                 }
 

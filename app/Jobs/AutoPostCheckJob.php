@@ -87,7 +87,7 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
 
                 $message = $command->general_response;
 
-                SingleChatMessageJob::dispatch($message);
+                SingleChatMessageJob::dispatch("chat", $message);
 
                 $queue->lastCommand()->associate($command);
                 $queue->last_post = now();

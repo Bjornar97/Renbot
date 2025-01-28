@@ -224,7 +224,7 @@ class PunishService
     private function say(string $message)
     {
         if (!isset($this->bot)) {
-            SingleChatMessageJob::dispatch($message);
+            SingleChatMessageJob::dispatch("chat", $message);
             return;
         }
 

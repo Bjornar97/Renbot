@@ -68,7 +68,7 @@ class AnalyzeEmotesJob implements ShouldQueue
             ->punish();
 
         if ($response) {
-            SingleChatMessageJob::dispatch($response);
+            SingleChatMessageJob::dispatch("chat", $response);
         }
     }
 
