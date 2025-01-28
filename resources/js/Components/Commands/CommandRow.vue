@@ -76,7 +76,7 @@ type AnnouncementColor = "blue" | "green" | "orange" | "purple" | "primary";
 const chatLoading = ref(false);
 
 const chatCommand = (
-    type?: ChatType,
+    type: ChatType,
     announcement_color?: AnnouncementColor
 ) => {
     chatLoading.value = true;
@@ -175,7 +175,7 @@ const deleteCommand = () => {
                 </VBtn>
 
                 <VBtn
-                    @click="chatCommand"
+                    @click="() => chatCommand("chat")"
                     :prepend-icon="mdiSendVariant"
                     text="Chat"
                     :loading="chatLoading"

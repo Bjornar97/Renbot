@@ -63,7 +63,7 @@ type AnnouncementColor = "blue" | "green" | "orange" | "purple" | "primary";
 const chatLoading = ref(false);
 
 const chatCommand = (
-    type?: ChatType,
+    type: ChatType,
     announcement_color?: AnnouncementColor
 ) => {
     chatLoading.value = true;
