@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('rules', function (Blueprint $table) {
             $table->id();
 
-            $table->tinyInteger("order");
-            $table->text("text");
+            $table->tinyInteger('order');
+            $table->text('text');
 
             $table->softDeletes();
             $table->timestamps();

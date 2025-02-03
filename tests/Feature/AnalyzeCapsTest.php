@@ -6,12 +6,12 @@ use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use GhostZero\Tmi\Tags;
 
 it('is punishable caps', function (string $message) {
-    $channel = new Channel("rendogtv");
+    $channel = new Channel('rendogtv');
     $tags = new Tags([]);
     $messageEvent = new MessageEvent(
         $channel,
         $tags,
-        "testuser",
+        'testuser',
         $message,
         false
     );
@@ -22,19 +22,19 @@ it('is punishable caps', function (string $message) {
 })->with([
     'I AM CAPS',
     'this is not that many caps, but has a long caps word GUTENTAG',
-    "GUTEN Morgen",
+    'GUTEN Morgen',
     'GUTEN',
     'its giving "BAM ME IN THE"',
-    'this is mostly lower case BUT HAS SOME caps words'
+    'this is mostly lower case BUT HAS SOME caps words',
 ]);
 
-it("is not punishable caps", function (string $message) {
-    $channel = new Channel("rendogtv");
+it('is not punishable caps', function (string $message) {
+    $channel = new Channel('rendogtv');
     $tags = new Tags([]);
     $messageEvent = new MessageEvent(
         $channel,
         $tags,
-        "testuser",
+        'testuser',
         $message,
         false
     );
@@ -50,9 +50,8 @@ it("is not punishable caps", function (string $message) {
     'This is a normal message ACRO 1 and ACRO 2 and then ACRO 3 should be fine',
 ]);
 
-
-test("emotes doesnt count", function () {
-    $channel = new Channel("rendogtv");
+test('emotes doesnt count', function () {
+    $channel = new Channel('rendogtv');
 
     $tags = new Tags([
         'emotes' => '425618:0-2,4-6/425618:8-14',
@@ -61,8 +60,8 @@ test("emotes doesnt count", function () {
     $messageEvent = new MessageEvent(
         $channel,
         $tags,
-        "testuser",
-        "LUL LUL LULULUL",
+        'testuser',
+        'LUL LUL LULULUL',
         false
     );
 

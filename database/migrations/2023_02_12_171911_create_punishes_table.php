@@ -18,9 +18,9 @@ return new class extends Migration
             $table->id();
 
             $table->foreignIdFor(Command::class);
-            $table->bigInteger("twitch_user_id");
-            $table->string("type")->comment("ban if the user is banned, timeout if timeout");
-            $table->integer("seconds");
+            $table->bigInteger('twitch_user_id');
+            $table->string('type')->comment('ban if the user is banned, timeout if timeout');
+            $table->integer('seconds');
 
             $table->timestamps();
         });

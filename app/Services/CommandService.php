@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\DeleteTwitchMessageJob;
 use App\Models\Command;
+use App\Models\CommandMetadata;
 use Carbon\Carbon;
 use Exception;
 use GhostZero\Tmi\Client;
@@ -18,16 +19,16 @@ class CommandService
 
     private MessageService $messageService;
 
-    public string $channel = "rendogtv";
+    public string $channel = 'rendogtv';
 
     public function __construct(public MessageEvent $message, private Client $bot)
     {
-        $this->channel = config("services.twitch.channel", "rendogtv");
+        $this->channel = config('services.twitch.channel', 'rendogtv');
 
         $command = $this->getCommandFromMessage($message->message);
 
-        if (!$command) {
-            throw new Exception("No command found");
+        if (! $command) {
+            throw new Exception('No command found');
         }
 
         $this->messageService = MessageService::message($message);
@@ -42,38 +43,39 @@ class CommandService
 
     public function getResponse(): string
     {
-        if (!$this->isAuthorized()) {
+        if (! $this->isAuthorized()) {
             DeleteTwitchMessageJob::dispatch($this->message->tags['id']);
 
-            throw new Exception("Unauthorized");
+            throw new Exception('Unauthorized');
         }
 
         if ($this->isGlobalCooldown()) {
             if ($this->shouldCalloutCooldown()) {
                 $message = "@{$this->messageService->getSenderDisplayName()} The !{$this->command->command} command is under global cooldown, please try again later.";
+
                 return $message;
             }
 
-            throw new Exception("Global cooldown");
+            throw new Exception('Global cooldown');
         }
 
         if ($this->isUserCooldown()) {
             if ($this->shouldCalloutCooldown()) {
                 $message = "@{$this->messageService->getSenderDisplayName()} The !{$this->command->command} command is under cooldown for you, please try again later.";
+
                 return $message;
             }
 
-            throw new Exception("User cooldown");
+            throw new Exception('User cooldown');
         }
 
         $this->setCooldownData();
 
-
         return match ($this->command->type) {
-            "regular" => $this->regular(),
-            "punishable" => $this->punishable(),
-            "special" => $this->special(),
-            default => "Invalid command type",
+            'regular' => $this->regular(),
+            'punishable' => $this->punishable(),
+            'special' => $this->special(),
+            default => 'Invalid command type',
         };
     }
 
@@ -101,9 +103,9 @@ class CommandService
         }
 
         // If user is broadcaster, user is authorized
-        $badges = $this->message->tags['badges'] ?? "";
-        $badges = explode(",", $badges);
-        if (in_array("broadcaster/1", $badges)) {
+        $badges = $this->message->tags['badges'] ?? '';
+        $badges = explode(',', $badges);
+        if (in_array('broadcaster/1', $badges)) {
             return true;
         }
 
@@ -144,10 +146,11 @@ class CommandService
 
     private function shouldCalloutCooldown()
     {
+        /** @var CommandMetadata $lastCalloutData */
         $lastCalloutData = $this->command
             ->commandMetadata()
             ->where('type', 'data')
-            ->where('key', "lastCooldownCallout")
+            ->where('key', 'lastCooldownCallout')
             ->first();
 
         if ($lastCalloutData) {
@@ -162,7 +165,7 @@ class CommandService
             ->updateOrCreate(
                 [
                     'type' => 'data',
-                    'key' => "lastCooldownCallout",
+                    'key' => 'lastCooldownCallout',
                 ],
                 [
                     'value' => now(),
@@ -199,13 +202,13 @@ class CommandService
 
     private function generateBasicResponse(): string
     {
-        $response = "";
+        $response = '';
 
-        $target = $this->messageService->getTarget($this->message->message);
+        $target = $this->messageService->getTarget();
 
         if ($target) {
             $response .= "@{$target} ";
-        } else if ($this->command->prepend_sender) {
+        } elseif ($this->command->prepend_sender) {
             $response .= "@{$this->messageService->getSenderDisplayName()} ";
         }
 
@@ -221,11 +224,11 @@ class CommandService
 
     private function punishable(): string
     {
-        $target = $this->messageService->getTarget($this->message->message);
+        $target = $this->messageService->getTarget();
 
         $moderator = $this->messageService->getModerator();
 
-        if (!$target) {
+        if (! $target) {
             return $this->generateBasicResponse();
         }
 
@@ -247,7 +250,7 @@ class CommandService
 
     public function special(): string
     {
-        $target = $this->messageService->getTarget($this->message->message);
+        $target = $this->messageService->getTarget();
 
         try {
             $command = SpecialCommandService::command($this->command, $this->bot)
@@ -261,8 +264,8 @@ class CommandService
             $response = $command->run();
         } catch (Throwable $th) {
             Log::error($th->getMessage());
-            if (Feature::active("special-debug")) {
-                return "@{$this->messageService->getSenderDisplayName()} " . $th->getMessage();
+            if (Feature::active('special-debug')) {
+                return "@{$this->messageService->getSenderDisplayName()} ".$th->getMessage();
             }
 
             return "@{$this->messageService->getSenderDisplayName()} Something went wrong";
@@ -275,19 +278,19 @@ class CommandService
         return $this->generateBasicResponse();
     }
 
-    private function getCommandFromMessage(string $message): Command|null
+    private function getCommandFromMessage(string $message): ?Command
     {
         $message = trim($message);
 
-        $words = explode(" ", $message);
+        $words = explode(' ', $message);
 
         $command = $words[0] ?? null;
 
-        if (!str_starts_with($command, "!")) {
+        if (! str_starts_with($command, '!')) {
             return null;
         }
 
-        $command = str_replace("!", "", $command);
+        $command = str_replace('!', '', $command);
 
         $command = Command::active()->where('command', $command)->first();
 

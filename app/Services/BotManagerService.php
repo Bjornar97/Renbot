@@ -4,30 +4,27 @@ namespace App\Services;
 
 use App\Enums\BotStatus;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 
 class BotManagerService
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public static function getStatus(): BotStatus
     {
-        $result = Process::run("supervisorctl status renbot");
+        $result = Process::run('supervisorctl status renbot');
 
         $output = $result->output();
 
-        if (str_contains($output, "RUNNING")) {
+        if (str_contains($output, 'RUNNING')) {
             return BotStatus::RUNNING;
         }
 
-        if (str_contains($output, "STOPPED")) {
+        if (str_contains($output, 'STOPPED')) {
             return BotStatus::STOPPED;
         }
 
-        if (str_contains($output, "FAILED")) {
+        if (str_contains($output, 'FAILED')) {
             return BotStatus::FAILED;
         }
 
@@ -36,7 +33,7 @@ class BotManagerService
 
     public static function restart(): void
     {
-        $result = Process::run("supervisorctl restart renbot");
+        $result = Process::run('supervisorctl restart renbot');
 
         if ($result->failed()) {
             throw new Exception("Failed to restart bot: {$result->output()}");
@@ -45,7 +42,7 @@ class BotManagerService
 
     public static function start(): void
     {
-        $result = Process::run("supervisorctl start renbot");
+        $result = Process::run('supervisorctl start renbot');
 
         if ($result->failed()) {
             throw new Exception("Failed to start bot: {$result->output()}");
@@ -54,7 +51,7 @@ class BotManagerService
 
     public static function stop(): void
     {
-        $result = Process::run("supervisorctl stop renbot");
+        $result = Process::run('supervisorctl stop renbot');
 
         if ($result->failed()) {
             throw new Exception("Failed to stop bot: {$result->output()}");

@@ -9,9 +9,10 @@ use App\Jobs\SingleChatMessageJob;
 use App\Models\AutoPost;
 use App\Models\Command;
 use App\Services\SpecialCommandService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CommandController extends Controller
 {
@@ -22,12 +23,10 @@ class CommandController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response
     {
-        return Inertia::render("Commands/Index", [
+        return Inertia::render('Commands/Index', [
             'commands' => Command::regular()->where('parent_id', null)->with('children')->orderBy('command')->get(),
             'type' => 'regular',
         ]);
@@ -35,12 +34,10 @@ class CommandController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): Response
     {
-        return Inertia::render("Commands/Create", [
+        return Inertia::render('Commands/Create', [
             'type' => 'regular',
             'autoPosts' => AutoPost::all(),
         ]);
@@ -48,18 +45,15 @@ class CommandController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreCommandRequest  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(StoreCommandRequest $request)
+    public function store(StoreCommandRequest $request): RedirectResponse
     {
-        $commandName = "";
+        $commandName = '';
 
-        DB::transaction(function ()  use ($request, &$commandName) {
-            $commandData = $request->safe()->except(["auto_post", "aliases"]);
-            $autoPostData = $request->validated("auto_post");
-            $aliases = $request->validated("aliases");
+        DB::transaction(function () use ($request, &$commandName) {
+            $commandData = $request->safe()->except(['auto_post', 'aliases']);
+            $autoPostData = $request->validated('auto_post');
+            $aliases = $request->validated('aliases');
 
             /** @var Command $command */
             $command = Command::create($commandData);
@@ -83,31 +77,17 @@ class CommandController extends Controller
         });
 
         return redirect()
-            ->route("commands.index")
-            ->with("success", "The new command {$commandName} was saved");
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Command $command)
-    {
-        //
+            ->route('commands.index')
+            ->with('success', "The new command {$commandName} was saved");
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
      */
-    public function edit(Command $command)
+    public function edit(Command $command): Response
     {
-        return Inertia::render("Commands/Edit", [
-            'command' => $command->load("autoPost", "children"),
+        return Inertia::render('Commands/Edit', [
+            'command' => $command->load('autoPost', 'children'),
             'actions' => array_values(SpecialCommandService::$functions),
             'autoPosts' => AutoPost::all(),
         ]);
@@ -115,15 +95,11 @@ class CommandController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateCommandRequest  $request
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCommandRequest $request, Command $command)
+    public function update(UpdateCommandRequest $request, Command $command): RedirectResponse
     {
-        $commandData = $request->safe()->except(["auto_post", "aliases"]);
-        $autoPostData = $request->validated("auto_post");
+        $commandData = $request->safe()->except(['auto_post', 'aliases']);
+        $autoPostData = $request->validated('auto_post');
         $aliases = $request->validated('aliases');
 
         $command->update($commandData);
@@ -146,10 +122,10 @@ class CommandController extends Controller
             }
         }
 
-        return back()->with("success", "Successfully updated command");
+        return back()->with('success', 'Successfully updated command');
     }
 
-    public function chat(SendCommandToChatRequest $request, Command $command)
+    public function chat(SendCommandToChatRequest $request, Command $command): RedirectResponse
     {
         $data = $request->validated();
 
@@ -160,33 +136,25 @@ class CommandController extends Controller
             return back()->with('error', "Something went wrong: {$th->getMessage()}");
         }
 
-        return back()->with("success", "Sending command to chat!");
+        return back()->with('success', 'Sending command to chat!');
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Command $command)
+    public function destroy(Command $command): RedirectResponse
     {
         $type = $command->type;
 
         $command->delete();
 
-        if ($type === "regular") {
-            $route = "commands.index";
-        }
+        $route = match ($type) {
+            'regular' => 'commands.index',
+            'punishable' => 'punishable-commands.index',
+            'special' => 'special-commands.index',
+            default => 'commands.index',
+        };
 
-        if ($type === "punishable") {
-            $route = "punishable-commands.index";
-        }
-
-        if ($type === "special") {
-            $route = "special-commands.index";
-        }
-
-        return redirect()->route($route)->with("success", "Successfully deleted command");
+        return redirect()->route($route)->with('success', 'Successfully deleted command');
     }
 }

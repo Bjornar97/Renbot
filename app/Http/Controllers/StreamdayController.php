@@ -17,6 +17,7 @@ class StreamdayController extends Controller
     public function index()
     {
         Gate::authorize('moderate');
+
         return Inertia::render('Streamdays/Index', [
             'streamdays' => Streamday::query()->where('end_date', '>', now()->subDay())->get(),
         ]);
@@ -28,6 +29,7 @@ class StreamdayController extends Controller
     public function create()
     {
         Gate::authorize('moderate');
+
         return Inertia::render('Streamdays/Create');
     }
 
@@ -52,9 +54,7 @@ class StreamdayController extends Controller
             ->orderBy('start_date')->with('streamdaySlots')
             ->first();
 
-
-
-        return Inertia::render("Streamdays/Show", [
+        return Inertia::render('Streamdays/Show', [
             'streamday' => $currentStreamday,
         ]);
     }
@@ -87,6 +87,6 @@ class StreamdayController extends Controller
     {
         $streamday->delete();
 
-        return back()->with('success', "Successfully deleted streamday");
+        return back()->with('success', 'Successfully deleted streamday');
     }
 }

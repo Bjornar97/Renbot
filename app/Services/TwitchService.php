@@ -9,7 +9,7 @@ use romanzipp\Twitch\Twitch;
 
 class TwitchService
 {
-    public static function getTwitchId(string $username, User $moderator = null): int
+    public static function getTwitchId(string $username, ?User $moderator = null): int
     {
         $twitchId = Cache::remember("twitchId:{$username}", 8 * 60 * 60, function () use ($username, $moderator) {
             $twitch = new Twitch;
@@ -22,7 +22,7 @@ class TwitchService
                 'login' => $username,
             ]);
 
-            if (!$result->success() || count($result->data()) === 0) {
+            if (! $result->success() || count($result->data()) === 0) {
                 throw new Exception("User @{$username} does not exist", 404);
             }
 

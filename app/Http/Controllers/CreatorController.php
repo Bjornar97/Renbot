@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCreatorRequest;
 use App\Http\Requests\UpdateCreatorRequest;
 use App\Models\Creator;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -18,7 +17,8 @@ class CreatorController extends Controller
     public function index()
     {
         Gate::authorize('moderate');
-        return Inertia::render("Creators/Index", [
+
+        return Inertia::render('Creators/Index', [
             'creators' => Creator::all(),
         ]);
     }
@@ -29,6 +29,7 @@ class CreatorController extends Controller
     public function create()
     {
         Gate::authorize('moderate');
+
         return Inertia::render('Creators/Create');
     }
 
@@ -64,7 +65,8 @@ class CreatorController extends Controller
     public function edit(Creator $creator)
     {
         Gate::authorize('moderate');
-        return Inertia::render("Creators/Edit", [
+
+        return Inertia::render('Creators/Edit', [
             'creator' => $creator,
         ]);
     }
@@ -96,10 +98,10 @@ class CreatorController extends Controller
      */
     public function destroy(Creator $creator)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         $creator->delete();
 
-        return back()->with('success', "Creator was successfully deleted");
+        return back()->with('success', 'Creator was successfully deleted');
     }
 }

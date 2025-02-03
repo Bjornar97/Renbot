@@ -9,13 +9,12 @@ use GhostZero\Tmi\Client;
 class AutoPunishmentService
 {
     protected int $userId;
+
     protected string $username;
 
     protected Client $bot;
 
-    public function __construct(protected string $message)
-    {
-    }
+    public function __construct(protected string $message) {}
 
     public static function message(string $message): self
     {
@@ -26,22 +25,22 @@ class AutoPunishmentService
     {
         $this->userId = $userId;
         $this->username = $username;
+
         return $this;
     }
 
     public function bot(Client $bot): self
     {
         $this->bot = $bot;
+
         return $this;
     }
 
-    public function analyze()
-    {
-    }
+    public function analyze() {}
 
     protected function analyzeCaps()
     {
-        $caps = preg_match_all("/[A-Z]/", $this->message);
+        $caps = preg_match_all('/[A-Z]/', $this->message);
         $total = strlen($this->message);
         $ratio = $caps / $total;
 
@@ -55,9 +54,9 @@ class AutoPunishmentService
     protected function punish(string $command)
     {
         $punishService = PunishService::user($this->userId, $this->username)
-            ->command(Command::where("name", $command)->first())
+            ->command(Command::where('name', $command)->first())
             ->basicResponse($this->message)
-            ->moderator(User::where("username", "renthebot")->first());
+            ->moderator(User::where('username', 'renthebot')->first());
 
         if ($this->bot) {
             $punishService->punish();
@@ -68,32 +67,31 @@ class AutoPunishmentService
     {
         $string = $this->message;
 
-        if (!$emotes) {
+        if (! $emotes) {
             return $this->message;
         }
 
-        $emotes = explode("/", $emotes);
+        $emotes = explode('/', $emotes);
 
         foreach ($emotes as $emote) {
-            $emote = explode(":", $emote);
-            $emoteId = $emote[0];
+            $emote = explode(':', $emote);
             $emotePositions = $emote[1];
 
-            $emotePositions = explode(",", $emotePositions);
+            $emotePositions = explode(',', $emotePositions);
 
             foreach ($emotePositions as $emotePosition) {
-                $emotePosition = explode("-", $emotePosition);
+                $emotePosition = explode('-', $emotePosition);
                 $start = $emotePosition[0];
                 $end = $emotePosition[1];
 
-                $length = $end - $start + 1;
+                $length = (int) $end - (int) $start + 1;
 
-                $string = substr_replace($string, str_repeat(" ", $length), $start, $length);
+                $string = substr_replace($string, str_repeat(' ', $length), $start, $length);
             }
         }
 
         // Remove double spaces
-        $string = preg_replace("/\s\s+/", " ", $string);
+        $string = preg_replace("/\s\s+/", ' ', $string);
 
         $this->message = $string;
 

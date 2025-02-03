@@ -2,95 +2,94 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\BotStatus;
 use App\Http\Requests\UpdateBotSettingsRequest;
 use App\Jobs\Analysis\AnalyzeCapsJob;
 use App\Jobs\Analysis\AnalyzeEmotesJob;
 use App\Models\Command;
 use App\Models\Setting;
 use App\Services\BotManagerService;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Process;
 use Inertia\Inertia;
+use Inertia\Response;
 use Laravel\Pennant\Feature;
 use Throwable;
 
 class BotController extends Controller
 {
-    public function bot()
+    public function bot(): Response
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         $status = BotManagerService::getStatus();
 
-        $autoCapsCommand = Setting::key("punishment.autoCapsCommand")->first();
-        $autoMaxEmotesCommand = Setting::key("punishment.maxEmotesCommand")->first();
+        $autoCapsCommand = Setting::key('punishment.autoCapsCommand')->first();
+        $autoMaxEmotesCommand = Setting::key('punishment.maxEmotesCommand')->first();
 
-        return Inertia::render("Bot/Settings", [
+        return Inertia::render('Bot/Settings', [
             'botStatus' => $status,
 
-            'announceRestart' => Feature::active("announce-restart"),
-            'punishableBansEnabled' => Feature::active("bans"),
-            'punishableTimeoutsEnabled' => Feature::active("timeouts"),
-            'punishDebugEnabled' => Feature::active("punish-debug"),
+            'announceRestart' => Feature::active('announce-restart'),
+            'punishableBansEnabled' => Feature::active('bans'),
+            'punishableTimeoutsEnabled' => Feature::active('timeouts'),
+            'punishDebugEnabled' => Feature::active('punish-debug'),
 
-            'autoCapsEnabled' => Feature::active("auto-caps-punishment"),
-            'autoBanBots' => Feature::active("auto-ban-bots"),
+            'autoCapsEnabled' => Feature::active('auto-caps-punishment'),
+            'autoBanBots' => Feature::active('auto-ban-bots'),
             'punishableCommands' => Command::punishable()->select(['id', 'command', 'response'])->get(),
 
             'autoCapsCommand' => $autoCapsCommand ? ((int) $autoCapsCommand->value) : null,
-            'autoCapsTotalCapsThreshold' => (float) (Setting::key("punishment.totalCapsThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT),
-            'autoCapsTotalLengthThreshold' => (int) (Setting::key("punishment.totalLengthThreshold")->first()?->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT),
-            'autoCapsWordCapsThreshold' => (float) (Setting::key("punishment.wordCapsThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT),
-            'autoCapsWordLengthThreshold' => (int) (Setting::key("punishment.wordLengthThreshold")->first()?->value ?? AnalyzeCapsJob::WORD_LENGTH_THRESHOLD_DEFAULT),
+            'autoCapsTotalCapsThreshold' => (float) (Setting::key('punishment.totalCapsThreshold')->first()?->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT),
+            'autoCapsTotalLengthThreshold' => (int) (Setting::key('punishment.totalLengthThreshold')->first()?->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT),
+            'autoCapsWordCapsThreshold' => (float) (Setting::key('punishment.wordCapsThreshold')->first()?->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT),
+            'autoCapsWordLengthThreshold' => (int) (Setting::key('punishment.wordLengthThreshold')->first()?->value ?? AnalyzeCapsJob::WORD_LENGTH_THRESHOLD_DEFAULT),
 
             'autoMaxEmotesEnabled' => Feature::active('auto-max-emotes-punishment'),
             'autoMaxEmotesCommand' => $autoMaxEmotesCommand ? ((int) $autoMaxEmotesCommand->value) : null,
-            'autoMaxEmotes' => (int) (Setting::key("punishment.maxEmotes")->first()?->value ?? AnalyzeEmotesJob::MAX_EMOTES_DEFAULT),
+            'autoMaxEmotes' => (int) (Setting::key('punishment.maxEmotes')->first()?->value ?? AnalyzeEmotesJob::MAX_EMOTES_DEFAULT),
         ]);
     }
 
-    public function updateSettings(UpdateBotSettingsRequest $request)
+    public function updateSettings(UpdateBotSettingsRequest $request): RedirectResponse
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         $validated = $request->validated();
 
         if ($validated['announceRestart'] ?? null) {
-            Feature::activate("announce-restart");
+            Feature::activate('announce-restart');
         } else {
-            Feature::deactivate("announce-restart", false);
+            Feature::deactivate('announce-restart');
         }
 
         if ($validated['punishableBansEnabled'] ?? null) {
-            Feature::activate("bans");
+            Feature::activate('bans');
         } else {
-            Feature::deactivate("bans", false);
+            Feature::deactivate('bans');
         }
 
         if ($validated['punishableTimeoutsEnabled'] ?? null) {
-            Feature::activate("timeouts");
+            Feature::activate('timeouts');
         } else {
-            Feature::deactivate("timeouts", false);
+            Feature::deactivate('timeouts');
         }
 
         if ($validated['punishDebugEnabled'] ?? null) {
-            Feature::activate("punish-debug");
+            Feature::activate('punish-debug');
         } else {
-            Feature::deactivate("punish-debug", false);
+            Feature::deactivate('punish-debug');
         }
 
         if ($validated['autoCapsEnabled'] ?? null) {
-            Feature::activate("auto-caps-punishment");
+            Feature::activate('auto-caps-punishment');
         } else {
-            Feature::deactivate("auto-caps-punishment", false);
+            Feature::deactivate('auto-caps-punishment');
         }
 
         if ($validated['autoBanBots'] ?? null) {
-            Feature::activate("auto-ban-bots");
+            Feature::activate('auto-ban-bots');
         } else {
-            Feature::deactivate("auto-ban-bots", false);
+            Feature::deactivate('auto-ban-bots');
         }
 
         if (isset($validated['autoCapsCommand'])) {
@@ -114,9 +113,9 @@ class BotController extends Controller
         }
 
         if ($validated['autoMaxEmotesEnabled'] ?? null) {
-            Feature::activate("auto-max-emotes-punishment");
+            Feature::activate('auto-max-emotes-punishment');
         } else {
-            Feature::deactivate("auto-max-emotes-punishment", false);
+            Feature::deactivate('auto-max-emotes-punishment');
         }
 
         if (isset($validated['autoMaxEmotesCommand'])) {
@@ -127,48 +126,48 @@ class BotController extends Controller
             Setting::updateOrCreate(['key' => 'punishment.maxEmotes'], ['value' => $validated['autoMaxEmotes']]);
         }
 
-        return back()->with("success", "Bot settings updated");
+        return back()->with('success', 'Bot settings updated');
     }
 
-    public function restart()
+    public function restart(): RedirectResponse
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         try {
             BotManagerService::restart();
-            activity()->log("Restarted bot");
+            activity()->log('Restarted bot');
         } catch (Throwable $th) {
-            return back()->with("error", "Something went wrong when trying to restart the bot. Contact Bjornar97. Error: {$th->getMessage()}");
+            return back()->with('error', "Something went wrong when trying to restart the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
 
-        return back()->with("success", "The bot has been restarted");
+        return back()->with('success', 'The bot has been restarted');
     }
 
-    public function start()
+    public function start(): RedirectResponse
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         try {
             BotManagerService::start();
-            activity()->log("Started bot");
+            activity()->log('Started bot');
         } catch (\Throwable $th) {
-            return back()->with("error", "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
+            return back()->with('error', "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
 
-        return back()->with("success", "The bot has been started");
+        return back()->with('success', 'The bot has been started');
     }
 
-    public function stop()
+    public function stop(): RedirectResponse
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         try {
             BotManagerService::stop();
-            activity()->log("Stopped bot");
+            activity()->log('Stopped bot');
         } catch (\Throwable $th) {
-            return back()->with("error", "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");
+            return back()->with('error', "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
 
-        return back()->with("success", "The bot has been stopped");
+        return back()->with('success', 'The bot has been stopped');
     }
 }

@@ -13,7 +13,7 @@ class UpdateCreatorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Gate::allows("moderate");
+        return Gate::allows('moderate');
     }
 
     /**

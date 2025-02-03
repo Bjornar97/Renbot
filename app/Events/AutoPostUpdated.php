@@ -17,9 +17,7 @@ class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
     /**
      * Create a new event instance.
      */
-    public function __construct(public AutoPost $autoPost)
-    {
-    }
+    public function __construct(public AutoPost $autoPost) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -29,7 +27,7 @@ class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('App.Models.AutoPost.' . $this->autoPost->id),
+            new PrivateChannel('App.Models.AutoPost.'.$this->autoPost->id),
         ];
     }
 
@@ -42,6 +40,6 @@ class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
 
     public function broadcastAs(): string
     {
-        return "AutoPostUpdated";
+        return 'AutoPostUpdated';
     }
 }

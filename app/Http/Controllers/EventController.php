@@ -11,7 +11,6 @@ use Inertia\Inertia;
 
 class EventController extends Controller
 {
-
     public function __construct()
     {
         $this->authorizeResource(Event::class);
@@ -79,7 +78,7 @@ class EventController extends Controller
     public function edit(Event $event)
     {
         return Inertia::render('Events/Edit', [
-            'event' => $event
+            'event' => $event,
         ]);
     }
 

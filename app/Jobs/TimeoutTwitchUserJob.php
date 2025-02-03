@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,26 +34,27 @@ class TimeoutTwitchUserJob implements ShouldQueue
     {
         $moderator = $this->moderator;
 
-        if (!$moderator) {
-            $moderator = User::where('username', config("services.twitch.username"))->first();
-            if (!$moderator) {
-                Log::error("The bot is not registered as a user");
+        if (! $moderator) {
+            $moderator = User::where('username', config('services.twitch.username'))->first();
+            if (! $moderator) {
+                Log::error('The bot is not registered as a user');
+
                 return;
             }
         }
 
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($moderator->twitch_access_token);
 
         $result = $twitch->banUser([
-            'broadcaster_id' => config("services.twitch.channel_id"),
+            'broadcaster_id' => config('services.twitch.channel_id'),
             'moderator_id' => $moderator->twitch_id,
         ], [
             'data' => [
                 'user_id' => $this->twitchUserId,
                 'duration' => $this->seconds,
                 'reason' => $this->reason,
-            ]
+            ],
         ]);
     }
 }

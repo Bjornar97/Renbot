@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('channel_statuses', function (Blueprint $table) {
             $table->id();
 
-            $table->string("channel");
-            $table->dateTime("live_at")->nullable()->comment("When the channel went live. NULL if the channel is offline.");
+            $table->string('channel');
+            $table->dateTime('live_at')->nullable()->comment('When the channel went live. NULL if the channel is offline.');
 
             $table->timestamps();
         });

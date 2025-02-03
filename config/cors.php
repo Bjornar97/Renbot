@@ -22,11 +22,11 @@ return [
     'allowed_origins' => [
         'https://www.twitch.tv',
         // localhost test extension
-        "chrome-extension://komdeaocjociimaeieplaehfieihgcoi",
+        'chrome-extension://komdeaocjociimaeieplaehfieihgcoi',
         // Microsoft edge store
-        "chrome-extension://kfcmniendgehcpinaeofailgmcmmplpf",
+        'chrome-extension://kfcmniendgehcpinaeofailgmcmmplpf',
         // Chrome web store
-        "chrome-extension://aggckhjjebacnbchdepadpkioodiimha",
+        'chrome-extension://aggckhjjebacnbchdepadpkioodiimha',
     ],
 
     'allowed_origins_patterns' => [],

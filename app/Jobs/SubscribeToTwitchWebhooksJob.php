@@ -28,14 +28,15 @@ class SubscribeToTwitchWebhooksJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $renbot = User::where('username', config("services.twitch.username"))->first();
+        $renbot = User::where('username', config('services.twitch.username'))->first();
 
-        if (!$renbot) {
-            Log::error("The bot is not registered as a user");
+        if (! $renbot) {
+            Log::error('The bot is not registered as a user');
+
             return;
         }
 
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($renbot->twitch_access_token);
 
         $twitch->subscribeEventSub([]);

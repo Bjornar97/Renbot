@@ -15,12 +15,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+/**
+ * Class Command
+ *
+ * @property Command|null $parent
+ */
 class Command extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
-    use LogsActivity;
     use BroadcastsEvents;
+    use HasFactory;
+    use LogsActivity;
+    use SoftDeletes;
 
     public $fillable = [
         'command',
@@ -52,12 +57,12 @@ class Command extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class, "parent_id");
+        return $this->belongsTo(self::class, 'parent_id');
     }
 
     public function children(): HasMany
     {
-        return $this->hasMany(self::class, "parent_id");
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function punishes(): HasMany
@@ -75,7 +80,6 @@ class Command extends Model
         return $this->hasMany(CommandMetadata::class);
     }
 
-
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('enabled', true)->whereDoesntHave('parent', function (Builder $query) {
@@ -85,28 +89,28 @@ class Command extends Model
 
     public function scopeRegular(Builder $query): Builder
     {
-        return $query->where("type", "regular");
+        return $query->where('type', 'regular');
     }
 
     public function scopePunishable(Builder $query): Builder
     {
-        return $query->where("type", "punishable");
+        return $query->where('type', 'punishable');
     }
 
     public function scopeSpecial(Builder $query): Builder
     {
-        return $query->where("type", "special");
+        return $query->where('type', 'special');
     }
 
     public function getSubscriberCanUseAttribute()
     {
-        return $this->usable_by === "subscribers"
-            || $this->usable_by === "everyone";
+        return $this->usable_by === 'subscribers'
+            || $this->usable_by === 'everyone';
     }
 
     public function getEveryoneCanUseAttribute()
     {
-        return $this->usable_by === "everyone";
+        return $this->usable_by === 'everyone';
     }
 
     public function enabled(): Attribute

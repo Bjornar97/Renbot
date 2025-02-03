@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,7 +9,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
 use romanzipp\Twitch\Twitch;
 
@@ -49,7 +47,7 @@ class BanBotsFromBotList implements ShouldQueue
 
         $renbotUser = User::query()->where('username', 'RenTheBot')->first();
 
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($renbotUser->twitch_access_token);
 
         do {
@@ -62,7 +60,7 @@ class BanBotsFromBotList implements ShouldQueue
 
             // Query the API with an optional cursor to the next results page
             $result = $twitch->getChatters([
-                'broadcaster_id' => config("services.twitch.channel_id"),
+                'broadcaster_id' => config('services.twitch.channel_id'),
                 'moderator_id' => $renbotUser->twitch_id,
                 'first' => 1000,
             ], $nextCursor);

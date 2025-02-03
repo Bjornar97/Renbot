@@ -12,21 +12,20 @@ class AutoPostController extends Controller
 {
     public function index()
     {
-        return Inertia::render("AutoPosts/Index", [
-            'autoPosts' => AutoPost::with("commands")->get(),
+        return Inertia::render('AutoPosts/Index', [
+            'autoPosts' => AutoPost::with('commands')->get(),
         ]);
     }
 
-
     public function store(StoreAutoPostRequest $request)
     {
-        $this->authorize("create", AutoPost::class);
+        $this->authorize('create', AutoPost::class);
 
         $data = $request->validated();
 
         AutoPost::query()->create($data);
 
-        return back()->with("success", "Queue created");
+        return back()->with('success', 'Queue created');
     }
 
     public function update(UpdateAutoPostRequest $request, AutoPost $autoPost)
@@ -35,12 +34,12 @@ class AutoPostController extends Controller
 
         AutoPostUpdated::dispatch($autoPost);
 
-        return back()->with("success", "Successfully updated auto post queue");
+        return back()->with('success', 'Successfully updated auto post queue');
     }
 
     public function destroy(AutoPost $autoPost)
     {
-        $this->authorize("delete", $autoPost);
+        $this->authorize('delete', $autoPost);
 
         $autoPost->commands()->update([
             'auto_post_enabled' => false,
@@ -48,6 +47,6 @@ class AutoPostController extends Controller
 
         $autoPost->delete();
 
-        return back()->with("success", "Deleted auto post queue");
+        return back()->with('success', 'Deleted auto post queue');
     }
 }

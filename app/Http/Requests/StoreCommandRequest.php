@@ -26,7 +26,7 @@ class StoreCommandRequest extends FormRequest
     public function rules()
     {
         return [
-            'command' => ['required', 'string', 'alpha_num', Rule::unique(Command::class, "command")->whereNull("deleted_at"), 'max:50'],
+            'command' => ['required', 'string', 'alpha_num', Rule::unique(Command::class, 'command')->whereNull('deleted_at'), 'max:50'],
             'aliases' => ['array', 'nullable'],
             'aliases.*' => ['string'],
             'response' => ['required', 'string', 'max:500'],

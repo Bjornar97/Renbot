@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->boolean("prepend_sender")->default(false)->comment("Will prepend the sender's name to the command response");
+            $table->boolean('prepend_sender')->default(false)->comment("Will prepend the sender's name to the command response");
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->dropColumn("prepend_sender");
+            $table->dropColumn('prepend_sender');
         });
     }
 };

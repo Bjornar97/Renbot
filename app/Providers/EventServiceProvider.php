@@ -20,7 +20,7 @@ class EventServiceProvider extends ServiceProvider
 
         \SocialiteProviders\Manager\SocialiteWasCalled::class => [
             // ... other providers
-            \SocialiteProviders\Twitch\TwitchExtendSocialite::class . '@handle',
+            \SocialiteProviders\Twitch\TwitchExtendSocialite::class.'@handle',
         ],
     ];
 
