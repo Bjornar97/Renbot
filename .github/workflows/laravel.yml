@@ -25,14 +25,16 @@ jobs:
         run: ./vendor/bin/phpstan analyse
       - name: Pint
         run: ./vendor/bin/pint --test
-      - name: Create Database
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
       - name: npm install
         run: npm ci
       - name: npm run build
         run: npm run build
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+      - name: Run migrations
+        run: php artisan migrate
       - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
         env:
           DB_CONNECTION: sqlite
