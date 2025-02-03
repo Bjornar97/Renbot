@@ -8,6 +8,7 @@ import { Quote } from "@/types/Quote";
 import QuoteListItem from "@/Components/Quotes/QuoteListItem.vue";
 import QuoteRow from "@/Components/Quotes/QuoteRow.vue";
 import { computed, ref } from "vue";
+import { VAlert } from "vuetify/lib/components/index.mjs";
 
 defineOptions({
     layout: ModeratorLayout,
@@ -51,6 +52,14 @@ const { mdAndUp } = useDisplay();
         </header>
 
         <main>
+            <VAlert
+                text="When adding a new quote, please only include family friendly content. If you would have deleted it if someone said it in chat, dont include it."
+                variant="tonal"
+                type="warning"
+                class="mb-8"
+            >
+            </VAlert>
+
             <VTextField
                 class="search"
                 v-model="search"

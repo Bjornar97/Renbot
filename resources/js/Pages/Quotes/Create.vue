@@ -32,6 +32,14 @@ const cancel = () => {
                     <h1 class="mb-4">Create new quote</h1>
                 </header>
 
+                <VAlert
+                    text="When adding a new quote, please only include family friendly content. If you would have deleted it if someone said it in chat, dont include it."
+                    variant="tonal"
+                    type="warning"
+                    class="mb-8"
+                >
+                </VAlert>
+
                 <VTextarea
                     v-model="form.quote"
                     label="Quote"
