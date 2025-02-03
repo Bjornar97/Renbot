@@ -17,9 +17,9 @@ class QuoteController extends Controller
      */
     public function index()
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
-        return Inertia::render("Quotes/Index", [
+        return Inertia::render('Quotes/Index', [
             'quotes' => Quote::query()->orderBy('said_at', 'desc')->get(),
         ]);
     }
@@ -29,7 +29,7 @@ class QuoteController extends Controller
      */
     public function create()
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         return Inertia::render('Quotes/Create');
     }
@@ -39,7 +39,7 @@ class QuoteController extends Controller
      */
     public function store(StoreQuoteRequest $request)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         Quote::query()->create($request->validated());
 
@@ -59,7 +59,7 @@ class QuoteController extends Controller
      */
     public function edit(Quote $quote)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         return Inertia::render('Quotes/Edit', [
             'quote' => $quote,
@@ -71,7 +71,7 @@ class QuoteController extends Controller
      */
     public function update(UpdateQuoteRequest $request, Quote $quote)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         $quote->update($request->validated());
 
@@ -80,13 +80,13 @@ class QuoteController extends Controller
 
     public function chat(Request $request, Quote $quote)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         $chat = "\"{$quote->quote}\" - @{$quote->said_by}, {$quote->said_at->format('d/m/Y')}";
 
-        SingleChatMessageJob::dispatch("chat", $chat);
+        SingleChatMessageJob::dispatch('chat', $chat);
 
-        return back()->with("success", "Sending to chat");
+        return back()->with('success', 'Sending to chat');
     }
 
     /**

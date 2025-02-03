@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->foreignIdFor(Event::class);
             $table->string('name');
-            $table->string("color")->nullable();
+            $table->string('color')->nullable();
             $table->string('image_url')->nullable();
 
             $table->timestamps();

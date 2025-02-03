@@ -26,10 +26,10 @@ class Creator extends Model
         'image_url',
     ];
 
-    public function imageUrl(): Attribute
+    protected function imageUrl(): Attribute
     {
         return Attribute::get(function () {
-            if (!$this->image) {
+            if (! $this->image) {
                 return null;
             }
 

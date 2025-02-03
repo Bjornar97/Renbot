@@ -14,18 +14,18 @@ class PunishController extends Controller
 {
     public function punishableCommands(Request $request)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
-        return response()->json(Command::punishable()->active()->orderBy("command")->get());
+        return response()->json(Command::punishable()->active()->orderBy('command')->get());
     }
 
     public function punish(Request $request)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         $data = $request->validate([
-            "user" => ["required", "string"],
-            "command" => ["required", "string"],
+            'user' => ['required', 'string'],
+            'command' => ['required', 'string'],
         ]);
 
         $twitchUserId = TwitchService::getTwitchId($data['user'], $request->user());
@@ -37,11 +37,11 @@ class PunishController extends Controller
             ->punish();
 
         if ($response) {
-            SingleChatMessageJob::dispatch("chat", $response);
+            SingleChatMessageJob::dispatch('chat', $response);
         }
 
         return response()->json([
-            "success" => true,
+            'success' => true,
         ]);
     }
 }

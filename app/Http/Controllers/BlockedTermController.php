@@ -22,13 +22,13 @@ class BlockedTermController extends Controller
     {
         $this->authorize('moderate');
 
-        $terms = Cache::remember("blocked-terms", 30, function () use ($request) {
+        $terms = Cache::remember('blocked-terms', 30, function () use ($request) {
             $terms = collect();
 
             /** @var User $user */
             $user = $request->user();
 
-            $twitch = new Twitch();
+            $twitch = new Twitch;
             $twitch->setToken($user->twitch_access_token);
 
             do {
@@ -52,7 +52,7 @@ class BlockedTermController extends Controller
                 // Continue until there are no results left
             } while ($result->hasMoreResults());
 
-            return $terms->filter(fn($item) => $item->expires_at === null);
+            return $terms->filter(fn ($item) => $item->expires_at === null);
         });
 
         $models = BlockedTerm::query()->whereIn('twitch_id', $terms->pluck('id'))->get();
@@ -70,7 +70,7 @@ class BlockedTermController extends Controller
             ];
         });
 
-        return Inertia::render("BlockedTerms/Index", [
+        return Inertia::render('BlockedTerms/Index', [
             'terms' => $terms,
         ]);
     }
@@ -85,7 +85,7 @@ class BlockedTermController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($user->twitch_access_token);
 
         try {
@@ -114,6 +114,7 @@ class BlockedTermController extends Controller
             return back()->with('success', 'Successfully added term to Twitch');
         } catch (\Throwable $th) {
             Log::error($th);
+
             return back()->withErrors(['Something went wrong']);
         }
     }
@@ -137,12 +138,12 @@ class BlockedTermController extends Controller
      */
     public function destroy(string $blockedTerm, Request $request)
     {
-        Gate::authorize("moderate");
+        Gate::authorize('moderate');
 
         /** @var User $user */
         $user = $request->user();
 
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($user->twitch_access_token);
 
         try {
@@ -158,9 +159,10 @@ class BlockedTermController extends Controller
 
             BlockedTerm::query()->where('twitch_id', $blockedTerm)->delete();
 
-            Cache::forget("blocked-terms");
+            Cache::forget('blocked-terms');
         } catch (\Throwable $th) {
             Log::error($th);
+
             return back()->with('error', 'Something went wrong');
         }
 

@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AutoPost extends Model
 {
-    use HasFactory;
     use BroadcastsEvents;
+    use HasFactory;
 
     public $fillable = [
         'title',
@@ -30,7 +30,7 @@ class AutoPost extends Model
         'enabled' => 'boolean',
     ];
 
-    public $appends = [
+    protected $appends = [
         'chats_to_next',
     ];
 
@@ -41,10 +41,10 @@ class AutoPost extends Model
 
     public function lastCommand(): BelongsTo
     {
-        return $this->belongsTo(Command::class, "last_command_id");
+        return $this->belongsTo(Command::class, 'last_command_id');
     }
 
-    public function chatsToNext(): Attribute
+    protected function chatsToNext(): Attribute
     {
         return Attribute::get(function () {
             $messagesSinceLast = Message::query()->where('created_at', '>', $this->last_post ?? now())->count();

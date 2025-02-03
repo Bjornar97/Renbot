@@ -5,13 +5,13 @@ namespace App\Jobs;
 use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use romanzipp\Twitch\Result;
 use romanzipp\Twitch\Twitch;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 
 class WarnTwitchUserJob implements ShouldQueue
 {
@@ -32,10 +32,11 @@ class WarnTwitchUserJob implements ShouldQueue
     {
         $moderator = $this->moderator;
 
-        if (!$moderator) {
-            $moderator = User::where('username', config("services.twitch.username"))->first();
-            if (!$moderator) {
-                Log::error("The bot is not registered as a user");
+        if (! $moderator) {
+            $moderator = User::where('username', config('services.twitch.username'))->first();
+            if (! $moderator) {
+                Log::error('The bot is not registered as a user');
+
                 return;
             }
         }
@@ -50,32 +51,32 @@ class WarnTwitchUserJob implements ShouldQueue
         }
 
         if ($error || $result?->getStatus() !== 200) {
-            $moderator = User::where('username', config("services.twitch.username"))->first();
+            $moderator = User::where('username', config('services.twitch.username'))->first();
             $this->warn($moderator);
         }
     }
 
     private function warn(User $moderator): Result
     {
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($moderator->twitch_access_token);
 
         if ($this->messageId) {
             $deleteMessageResult = $twitch->deleteChatMessages([
-                'broadcaster_id' => config("services.twitch.channel_id"),
+                'broadcaster_id' => config('services.twitch.channel_id'),
                 'moderator_id' => $moderator->twitch_id,
                 'message_id' => $this->messageId,
             ]);
 
             if ($deleteMessageResult->getStatus() >= 400) {
-                throw new Exception("Something went wrong while sending delete message request to twitch");
+                throw new Exception('Something went wrong while sending delete message request to twitch');
             }
         }
 
         $result = $twitch->post(
             'moderation/warnings',
             [
-                'broadcaster_id' => config("services.twitch.channel_id"),
+                'broadcaster_id' => config('services.twitch.channel_id'),
                 'moderator_id' => $moderator->twitch_id,
             ],
             body: [
@@ -87,7 +88,7 @@ class WarnTwitchUserJob implements ShouldQueue
         );
 
         if ($result->getStatus() >= 400) {
-            throw new Exception("Something went wrong while sending warning request to twitch");
+            throw new Exception('Something went wrong while sending warning request to twitch');
         }
 
         return $result;

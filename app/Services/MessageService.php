@@ -14,7 +14,7 @@ class MessageService
         return new self($message);
     }
 
-    public function getModerator(): User|null
+    public function getModerator(): ?User
     {
         return User::where('twitch_id', $this->message->tags['user-id'])->first();
     }
@@ -24,19 +24,19 @@ class MessageService
         return $this->message->tags['id'];
     }
 
-    public function getTarget(): string|null
+    public function getTarget(): ?string
     {
         $message = trim($this->message->message);
 
-        $words = explode(" ", $message);
+        $words = explode(' ', $message);
 
         $target = $words[1] ?? null;
 
-        if (!$target) {
+        if (! $target) {
             return null;
         }
 
-        $target = str_replace("@", "", $target);
+        $target = str_replace('@', '', $target);
 
         return $target;
     }
@@ -63,7 +63,7 @@ class MessageService
 
     public function isThisBot(): bool
     {
-        $botId = config("services.twitch.bot_id");
+        $botId = config('services.twitch.bot_id');
 
         return ((int) $botId) === ((int) $this->getSenderTwitchId());
     }
@@ -74,32 +74,31 @@ class MessageService
 
         $emotes = $this->message->tags['emotes'] ?? null;
 
-        if (!$emotes) {
+        if (! $emotes) {
             return $this->message->message;
         }
 
-        $emotes = explode("/", $emotes);
+        $emotes = explode('/', $emotes);
 
         foreach ($emotes as $emote) {
-            $emote = explode(":", $emote);
-            $emoteId = $emote[0];
+            $emote = explode(':', $emote);
             $emotePositions = $emote[1];
 
-            $emotePositions = explode(",", $emotePositions);
+            $emotePositions = explode(',', $emotePositions);
 
             foreach ($emotePositions as $emotePosition) {
-                $emotePosition = explode("-", $emotePosition);
+                $emotePosition = explode('-', $emotePosition);
                 $start = $emotePosition[0];
                 $end = $emotePosition[1];
 
-                $length = $end - $start + 1;
+                $length = (int) $end - (int) $start + 1;
 
-                $string = substr_replace($string, str_repeat(" ", $length), $start, $length);
+                $string = substr_replace($string, str_repeat(' ', $length), $start, $length);
             }
         }
 
         // Remove double spaces
-        $string = preg_replace("/\s\s+/", " ", $string);
+        $string = preg_replace("/\s\s+/", ' ', $string);
 
         return $string;
     }

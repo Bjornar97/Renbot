@@ -18,7 +18,7 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
-        return Inertia::render("Home", [
+        return Inertia::render('Home', [
             'events' => $events,
         ]);
     }

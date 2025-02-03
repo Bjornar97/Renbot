@@ -28,20 +28,20 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define("rendog", function (User $user) {
-            return $user->type === "rendog";
+        Gate::define('rendog', function (User $user) {
+            return $user->type === 'rendog';
         });
 
-        Gate::define("moderate", function (User $user) {
-            return $user->can("rendog") || $user->type === "moderator";
+        Gate::define('moderate', function (User $user) {
+            return $user->can('rendog') || $user->type === 'moderator';
         });
 
-        Gate::define("admin", function (User $user) {
+        Gate::define('admin', function (User $user) {
             return $user->username === 'Bjornar97';
         });
 
         Gate::define('viewPulse', function (User $user) {
-            return $user->can("admin");
+            return $user->can('admin');
         });
     }
 }

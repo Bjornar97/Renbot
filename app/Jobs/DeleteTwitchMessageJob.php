@@ -32,19 +32,20 @@ class DeleteTwitchMessageJob implements ShouldQueue
      */
     public function handle()
     {
-        $renbot = User::where('username', config("services.twitch.username"))->first();
+        $renbot = User::where('username', config('services.twitch.username'))->first();
 
-        if (!$renbot) {
-            Log::error("The bot is not registered as a user");
+        if (! $renbot) {
+            Log::error('The bot is not registered as a user');
+
             return;
         }
 
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($renbot->twitch_access_token);
 
         $result = $twitch->deleteChatMessages([
-            'broadcaster_id' => config("services.twitch.channel_id"),
-            'moderator_id' => config("services.twitch.bot_id"),
+            'broadcaster_id' => config('services.twitch.channel_id'),
+            'moderator_id' => config('services.twitch.bot_id'),
             'message_id' => $this->messageId,
         ]);
     }

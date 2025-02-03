@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->boolean("auto_post_enabled")->default(false);
+            $table->boolean('auto_post_enabled')->default(false);
             $table->foreignIdFor(AutoPost::class);
         });
     }
@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->dropColumn(["auto_post_id", "auto_post_enabled"]);
+            $table->dropColumn(['auto_post_id', 'auto_post_enabled']);
         });
     }
 };

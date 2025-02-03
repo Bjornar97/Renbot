@@ -15,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
+class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -34,7 +34,7 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
     {
         $queues = AutoPost::query()
             ->where('enabled', true)
-            ->whereRelation("commands", "auto_post_enabled", true)
+            ->whereRelation('commands', 'auto_post_enabled', true)
             ->get();
 
         foreach ($queues as $queue) {
@@ -43,16 +43,17 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
 
         DB::transaction(function () {
             $queues = AutoPost::query()
-                ->whereRelation("commands", "auto_post_enabled", true)
+                ->whereRelation('commands', 'auto_post_enabled', true)
                 ->orderBy('last_post', 'desc')
                 ->get();
 
             foreach ($queues as $queue) {
                 $timeIsRight = now()->sub($queue->interval_type, $queue->interval)->isAfter($queue->last_post);
 
-                if (!$timeIsRight) {
+                if (! $timeIsRight) {
                     Log::debug("Time is not right for {$queue->title}");
                     Log::debug($queue->last_post);
+
                     continue;
                 }
 
@@ -62,6 +63,7 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
 
                 if ($postsBetween < $queue->min_posts_between) {
                     Log::debug("Not enough chats for {$queue->title}");
+
                     continue;
                 }
 
@@ -72,7 +74,7 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
                     ->orderBy('id')
                     ->first();
 
-                if (!$command) {
+                if (! $command) {
                     $command = $queue->commands()
                         ->active()
                         ->where('auto_post_enabled', true)
@@ -80,14 +82,15 @@ class AutoPostCheckJob implements ShouldQueue, ShouldBeUnique
                         ->first();
                 }
 
-                if (!$command) {
-                    Log::debug("No command found");
+                if (! $command) {
+                    Log::debug('No command found');
+
                     continue;
                 }
 
                 $message = $command->general_response;
 
-                SingleChatMessageJob::dispatch("chat", $message);
+                SingleChatMessageJob::dispatch('chat', $message);
 
                 $queue->lastCommand()->associate($command);
                 $queue->last_post = now();

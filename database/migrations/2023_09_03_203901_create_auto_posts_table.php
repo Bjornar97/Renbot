@@ -15,12 +15,12 @@ return new class extends Migration
         Schema::create('auto_posts', function (Blueprint $table) {
             $table->id();
 
-            $table->string("title");
-            $table->integer("interval")->nullable();
-            $table->string("interval_type")->nullable()->comment("seconds/minutes/hours/days");
-            $table->integer("min_posts_between")->nullable();
-            $table->dateTime("last_post")->useCurrent();
-            $table->foreignIdFor(Command::class, "last_command_id")->nullable();
+            $table->string('title');
+            $table->integer('interval')->nullable();
+            $table->string('interval_type')->nullable()->comment('seconds/minutes/hours/days');
+            $table->integer('min_posts_between')->nullable();
+            $table->dateTime('last_post')->useCurrent();
+            $table->foreignIdFor(Command::class, 'last_command_id')->nullable();
 
             $table->timestamps();
         });
