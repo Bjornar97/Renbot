@@ -10,7 +10,6 @@ class CheckDisabledUser
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
@@ -19,8 +18,9 @@ class CheckDisabledUser
         $user = auth()?->user();
 
         if (auth()->check() && $user?->disabled_at) {
-            auth()->guard("web")->logout();
-            return redirect()->route("login")->with("error", "Your account has been disabled. If this is a mistake, contact Bjornar97.");
+            auth()->guard('web')->logout();
+
+            return redirect()->route('login')->with('error', 'Your account has been disabled. If this is a mistake, contact Bjornar97.');
         }
 
         return $next($request);

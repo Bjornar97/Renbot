@@ -19,56 +19,56 @@ class LoginController extends Controller
     ];
 
     public array $moderatorScopes = [
-        "moderator:manage:announcements",
-        "moderator:manage:automod",
-        "moderator:read:automod_settings",
-        "moderator:manage:banned_users",
-        "moderator:read:blocked_terms",
-        "moderator:manage:blocked_terms",
-        "moderator:manage:chat_messages",
-        "moderator:manage:chat_settings",
-        "moderator:read:chatters",
-        "moderator:read:followers",
-        "moderator:read:shield_mode",
-        "moderator:manage:shield_mode",
-        "moderator:read:shoutouts",
-        "moderator:manage:shoutouts",
-        "moderator:manage:warnings",
-        "chat:edit",
-        "user:write:chat",
-        "chat:read",
+        'moderator:manage:announcements',
+        'moderator:manage:automod',
+        'moderator:read:automod_settings',
+        'moderator:manage:banned_users',
+        'moderator:read:blocked_terms',
+        'moderator:manage:blocked_terms',
+        'moderator:manage:chat_messages',
+        'moderator:manage:chat_settings',
+        'moderator:read:chatters',
+        'moderator:read:followers',
+        'moderator:read:shield_mode',
+        'moderator:manage:shield_mode',
+        'moderator:read:shoutouts',
+        'moderator:manage:shoutouts',
+        'moderator:manage:warnings',
+        'chat:edit',
+        'user:write:chat',
+        'chat:read',
         'user:read:moderated_channels',
     ];
 
     public array $rendogScopes = [
-        "moderation:read",
-        "bits:read",
-        "channel:read:charity",
-        "channel:read:polls",
-        "channel:manage:polls",
-        "channel:read:predictions",
-        "channel:manage:predictions",
-        "channel:read:redemptions",
-        "channel:manage:redemptions",
-        "channel:read:editors",
-        "channel:read:hype_train",
-        "channel:read:subscriptions",
-        "channel:read:vips",
-        "channel:moderate",
-        "channel:manage:schedule",
+        'moderation:read',
+        'bits:read',
+        'channel:read:charity',
+        'channel:read:polls',
+        'channel:manage:polls',
+        'channel:read:predictions',
+        'channel:manage:predictions',
+        'channel:read:redemptions',
+        'channel:manage:redemptions',
+        'channel:read:editors',
+        'channel:read:hype_train',
+        'channel:read:subscriptions',
+        'channel:read:vips',
+        'channel:moderate',
+        'channel:manage:schedule',
     ];
 
     public function login(Request $request)
     {
-        if (!auth()->check()) {
-            return Inertia::render("Login");
+        if (! auth()->check()) {
+            return Inertia::render('Login');
         }
 
-        if (Gate::allows("moderate")) {
-            return redirect()->route("commands.index");
+        if (Gate::allows('moderate')) {
+            return redirect()->route('commands.index');
         }
 
-        return redirect()->route("home");
+        return redirect()->route('home');
     }
 
     public function redirect(Request $request)
@@ -96,7 +96,7 @@ class LoginController extends Controller
 
     public function callback()
     {
-        $user = Socialite::driver("twitch")->user();
+        $user = Socialite::driver('twitch')->user();
 
         $accessExpriesAt = now()->addSeconds($user->expiresIn);
 
@@ -115,24 +115,24 @@ class LoginController extends Controller
 
         if ($user->disabled_at) {
             return redirect()
-                ->route("login")
-                ->with("error", "Your account is unfortunately deactivated, contact Bjornar97 if this is a mistake");
+                ->route('login')
+                ->with('error', 'Your account is unfortunately deactivated, contact Bjornar97 if this is a mistake');
         }
 
         Auth::login($user);
 
-        $route = "rules";
+        $route = 'rules';
 
-        if (Gate::allows("moderate")) {
-            $route = "commands.index";
+        if (Gate::allows('moderate')) {
+            $route = 'commands.index';
         }
 
-        return redirect()->intended(route($route))->with("success", "You successfully logged in!");
+        return redirect()->intended(route($route))->with('success', 'You successfully logged in!');
     }
 
     private function getType(ContractsUser $user)
     {
-        $twitch = new Twitch();
+        $twitch = new Twitch;
 
         $twitch->withToken($user->token);
 
@@ -143,14 +143,14 @@ class LoginController extends Controller
 
         $channels = collect($result->data());
 
-        $type = "viewer";
+        $type = 'viewer';
 
         if ($channels->where('broadcaster_id', config('services.twitch.channel_id'))->isNotEmpty()) {
-            $type = "moderator";
+            $type = 'moderator';
         }
 
-        if (strtolower($user->name) === "rendogtv") {
-            $type = "rendog";
+        if (strtolower($user->name) === 'rendogtv') {
+            $type = 'rendog';
         }
 
         return $type;
@@ -160,6 +160,6 @@ class LoginController extends Controller
     {
         Auth::logout();
 
-        return redirect("/")->with("success", "You successfully logged out");
+        return redirect('/')->with('success', 'You successfully logged out');
     }
 }

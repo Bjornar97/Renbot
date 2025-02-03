@@ -33,7 +33,7 @@ class UserFactory extends Factory
     public function moderator()
     {
         return $this->state(fn (array $attributes) => [
-            'type' => "moderator",
+            'type' => 'moderator',
         ]);
     }
 
@@ -45,7 +45,7 @@ class UserFactory extends Factory
     public function rendog()
     {
         return $this->state(fn (array $attributes) => [
-            'type' => "rendog",
+            'type' => 'rendog',
         ]);
     }
 
@@ -57,7 +57,7 @@ class UserFactory extends Factory
     public function viewer()
     {
         return $this->state(fn (array $attributes) => [
-            'type' => "viewer",
+            'type' => 'viewer',
         ]);
     }
 }

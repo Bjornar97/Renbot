@@ -6,19 +6,18 @@ use App\Http\Requests\StoreCommandRequest;
 use App\Models\AutoPost;
 use App\Models\Command;
 use App\Services\SpecialCommandService;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SpecialCommandController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response
     {
-        return Inertia::render("Commands/Index", [
+        return Inertia::render('Commands/Index', [
             'commands' => Command::special()->where('parent_id', null)->with('children')->orderBy('command')->get(),
             'type' => 'special',
         ]);
@@ -26,12 +25,10 @@ class SpecialCommandController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): Response
     {
-        return Inertia::render("Commands/Create", [
+        return Inertia::render('Commands/Create', [
             'type' => 'special',
             'actions' => array_values(SpecialCommandService::$functions),
             'autoPosts' => AutoPost::all(),
@@ -40,11 +37,8 @@ class SpecialCommandController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(StoreCommandRequest $request)
+    public function store(StoreCommandRequest $request): RedirectResponse
     {
         $data = $request->validated();
         $aliases = $request->validated('aliases');
@@ -63,51 +57,6 @@ class SpecialCommandController extends Controller
             ]);
         }
 
-        return redirect()->route("special-commands.index")->with("success", "The punishable command was successfully created!");
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Command $command)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Command $command)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Command $command)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Command  $command
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Command $command)
-    {
-        //
+        return redirect()->route('special-commands.index')->with('success', 'The punishable command was successfully created!');
     }
 }

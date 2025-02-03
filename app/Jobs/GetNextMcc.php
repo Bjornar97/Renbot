@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Creator;
 use App\Models\Event;
+use App\Models\EventTeam;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -47,7 +48,7 @@ class GetNextMcc implements ShouldQueue
         $mcc = (object) $mcc['data'];
         $teams = collect($teams['data']);
 
-        if (!$teams->flatten(1)->contains('username', 'Renthedog')) {
+        if (! $teams->flatten(1)->contains('username', 'Renthedog')) {
             return;
         }
 
@@ -60,11 +61,11 @@ class GetNextMcc implements ShouldQueue
 
         $title = "MC Championship - {$mcc->event}";
 
-        if (!$event) {
+        if (! $event) {
             $event = Event::query()->create([
                 'type' => 'mcc',
                 'title' => $title,
-                'description' => "MC Championship is a Minecraft event that brings together 40 contestants to compete in a series of mini-games that test the core Minecraft skills!",
+                'description' => 'MC Championship is a Minecraft event that brings together 40 contestants to compete in a series of mini-games that test the core Minecraft skills!',
                 'event_url' => 'https://mcc.live',
                 'start' => $start,
                 'end' => $start->clone()->endOfDay(),
@@ -78,8 +79,9 @@ class GetNextMcc implements ShouldQueue
                 continue;
             }
 
-            $imageUrl = asset(Storage::url("mcc-teams/" . strtolower($teamName) . ".webp"));
+            $imageUrl = asset(Storage::url('mcc-teams/'.strtolower($teamName).'.webp'));
 
+            /** @var EventTeam $team */
             $team = $event->teams()->updateOrCreate(
                 [
                     'name' => $this->teamNameMap[$teamName] ?? $teamName,

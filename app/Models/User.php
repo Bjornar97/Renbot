@@ -65,11 +65,14 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function ($value) {
-                if ((!$this->twitch_access_token_expipres_at) || now()->addSeconds(30)->isAfter($this->twitch_access_token_expires_at)) {
+                if ((! $this->twitch_access_token_expires_at) || now()->addSeconds(30)->isAfter($this->twitch_access_token_expires_at)) {
                     $value = $this->renewAccessToken();
                 }
 
                 return $value;
+            },
+            set: function ($value) {
+                $this->attributes['twitch_access_token'] = $value;
             }
         );
     }
@@ -77,22 +80,23 @@ class User extends Authenticatable
     public function renewAccessToken()
     {
         try {
-            $response = Http::post("https://id.twitch.tv/oauth2/token", [
-                'client_id' => config("services.twitch.client_id"),
-                'client_secret' => config("services.twitch.client_secret"),
+            $response = Http::post('https://id.twitch.tv/oauth2/token', [
+                'client_id' => config('services.twitch.client_id'),
+                'client_secret' => config('services.twitch.client_secret'),
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $this->twitch_refresh_token,
             ]);
 
-            $token = $response->json("access_token");
+            $token = $response->json('access_token');
 
-            $this->twitch_access_token_expires_at = now()->addSeconds($response->json("expires_in"));
-            $this->twitch_access_token = $token;
+            $this->twitch_access_token_expires_at = now()->addSeconds($response->json('expires_in'));
+            $this->attributes['twitch_access_token'] = $token;
             $this->save();
 
             return $token;
         } catch (Throwable $th) {
             Log::error($th->getMessage());
+
             return null;
         }
     }

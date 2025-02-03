@@ -5,12 +5,10 @@ namespace App\Jobs;
 use App\Models\User;
 use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use romanzipp\Twitch\Twitch;
 
 class BanTwitchUserJob implements ShouldQueue
@@ -32,17 +30,17 @@ class BanTwitchUserJob implements ShouldQueue
     {
         $moderator = $this->getModerator();
 
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->setToken($moderator->twitch_access_token);
 
         $twitch->banUser([
-            'broadcaster_id' => config("services.twitch.channel_id"),
+            'broadcaster_id' => config('services.twitch.channel_id'),
             'moderator_id' => $moderator->twitch_id,
         ], [
             'data' => [
                 'user_id' => $this->twitchUserId,
                 'reason' => $this->reason,
-            ]
+            ],
         ]);
     }
 
@@ -50,10 +48,10 @@ class BanTwitchUserJob implements ShouldQueue
     {
         $moderator = $this->moderator;
 
-        if (!$moderator) {
-            $moderator = User::where('username', config("services.twitch.username"))->first();
-            if (!$moderator) {
-                throw new Exception("RenTheBot is not registered!");
+        if (! $moderator) {
+            $moderator = User::where('username', config('services.twitch.username'))->first();
+            if (! $moderator) {
+                throw new Exception('RenTheBot is not registered!');
             }
         }
 

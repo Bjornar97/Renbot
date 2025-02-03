@@ -2,8 +2,6 @@
 
 use App\Models\Command;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,13 +10,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Command::query()->withTrashed()->where("auto_post_id", 0)->update(['auto_post_id' => null]);
+        Command::query()->withTrashed()->where('auto_post_id', 0)->update(['auto_post_id' => null]);
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 };

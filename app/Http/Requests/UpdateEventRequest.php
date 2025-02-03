@@ -3,9 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\EventType;
-use App\Models\Event;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateEventRequest extends FormRequest

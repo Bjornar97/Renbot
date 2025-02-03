@@ -23,9 +23,10 @@ class AnalyzeEmotesJob implements ShouldQueue
     private int $maxEmotes = self::MAX_EMOTES_DEFAULT;
 
     public string $string;
+
     private MessageService $messageService;
 
-    private Command|null $command;
+    private ?Command $command;
 
     /**
      * Create a new job instance.
@@ -36,12 +37,12 @@ class AnalyzeEmotesJob implements ShouldQueue
         $this->string = $this->messageService->getMessageWithoutEmotes();
         $this->string = trim($this->string);
 
-        // Remove :ACTION from start of string, since its not part of the message, but added when using /me 
-        $this->string = preg_replace("/^ACTION /", "", $this->string);
+        // Remove :ACTION from start of string, since its not part of the message, but added when using /me
+        $this->string = preg_replace('/^ACTION /', '', $this->string);
 
-        $this->maxEmotes = Setting::key("punishment.maxEmotes")->first()?->value ?? self::MAX_EMOTES_DEFAULT;
+        $this->maxEmotes = Setting::key('punishment.maxEmotes')->first()?->value ?? self::MAX_EMOTES_DEFAULT;
 
-        $this->command = Command::find(Setting::key("punishment.maxEmotesCommand")->first()?->value);
+        $this->command = Command::find(Setting::key('punishment.maxEmotesCommand')->first()?->value);
     }
 
     /**
@@ -49,11 +50,11 @@ class AnalyzeEmotesJob implements ShouldQueue
      */
     public function handle(): void
     {
-        if (!$this->isPunishable()) {
+        if (! $this->isPunishable()) {
             return;
         }
 
-        if (!$this->command) {
+        if (! $this->command) {
             return;
         }
 
@@ -68,7 +69,7 @@ class AnalyzeEmotesJob implements ShouldQueue
             ->punish();
 
         if ($response) {
-            SingleChatMessageJob::dispatch("chat", $response);
+            SingleChatMessageJob::dispatch('chat', $response);
         }
     }
 
@@ -85,11 +86,11 @@ class AnalyzeEmotesJob implements ShouldQueue
     {
         $emotes = $this->message->tags['emotes'] ?? null;
 
-        if (!$emotes) {
+        if (! $emotes) {
             return false;
         }
 
-        $emotes = explode("/", $emotes);
+        $emotes = explode('/', $emotes);
         $emotesCount = 0;
 
         foreach ($emotes as $emote) {

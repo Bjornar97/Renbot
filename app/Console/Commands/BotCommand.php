@@ -37,11 +37,10 @@ class BotCommand extends Command
     protected $description = 'Runs the bot';
 
     private Client $client;
+
     private string $channel;
 
     private Carbon $lastFeatureFlush;
-
-
 
     public function __construct()
     {
@@ -57,7 +56,7 @@ class BotCommand extends Command
      */
     public function handle()
     {
-        $this->channel = config("services.twitch.channel");
+        $this->channel = config('services.twitch.channel');
 
         $this->client = BotService::bot();
 
@@ -67,7 +66,9 @@ class BotCommand extends Command
         $this->trap(SIGINT, $this->handleExit(...));
 
         $this->client->on(MessageEvent::class, function (MessageEvent $message) {
-            if ($message->self) return;
+            if ($message->self) {
+                return;
+            }
 
             $this->onMessage($message);
         });
@@ -83,30 +84,30 @@ class BotCommand extends Command
     {
         $this->maybeFlushFeatures();
 
-        if (Feature::active("announce-restart")) {
-            $this->client->say($this->channel, "Restarting. Dont use any commands right now!");
+        if (Feature::active('announce-restart')) {
+            $this->client->say($this->channel, 'Restarting. Dont use any commands right now!');
         }
 
-        Cache::set("bot-shutdown-time", now()->timestamp, now()->addHours(6));
+        Cache::set('bot-shutdown-time', now()->timestamp, now()->addHours(6));
 
         $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
     }
 
     private function afterStartup()
     {
-        $lastShutdown = Cache::get("bot-shutdown-time");
+        $lastShutdown = Cache::get('bot-shutdown-time');
 
-        if (!$lastShutdown) {
+        if (! $lastShutdown) {
             return;
         }
 
-        Cache::delete("bot-shutdown-time");
+        Cache::delete('bot-shutdown-time');
 
         $lastShutdown = Carbon::createFromTimestamp($lastShutdown);
 
         $interval = CarbonInterval::seconds($lastShutdown->diffInSeconds())->cascade();
 
-        if (Feature::active("announce-restart")) {
+        if (Feature::active('announce-restart')) {
             $this->client->say($this->channel, "Im back after restart! I was gone for {$interval->forHumans()}");
         }
     }
@@ -114,7 +115,7 @@ class BotCommand extends Command
     private function maybeFlushFeatures()
     {
         if ($this->lastFeatureFlush->diffInSeconds(now()) > 10) {
-            Log::info("Flushing features");
+            Log::info('Flushing features');
             Feature::flushCache();
             $this->lastFeatureFlush = now();
         }
@@ -134,7 +135,7 @@ class BotCommand extends Command
 
             $this->checkAutoPost($message);
 
-            if (!$messageService->isModerator() && !$messageService->isVIP()) {
+            if (! $messageService->isModerator() && ! $messageService->isVIP()) {
                 $this->analyzeForPunishment($message);
             }
         } catch (\Throwable $th) {
@@ -148,6 +149,7 @@ class BotCommand extends Command
             $this->client->say($this->channel, $response);
         } catch (Throwable $th) {
             Log::error($th->getMessage());
+
             return;
         }
     }
@@ -160,12 +162,12 @@ class BotCommand extends Command
     private function analyzeForPunishment(MessageEvent $message)
     {
         Feature::when(
-            "auto-caps-punishment",
+            'auto-caps-punishment',
             whenActive: fn () => AnalyzeCapsJob::dispatch($message),
         );
 
         Feature::when(
-            "auto-max-emotes-punishment",
+            'auto-max-emotes-punishment',
             whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
         );
     }

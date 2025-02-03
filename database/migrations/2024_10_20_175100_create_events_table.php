@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
 
             $table->enum('type', array_column(EventType::cases(), 'value'));
-            $table->string("title")->index();
+            $table->string('title')->index();
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->text('event_url')->nullable();

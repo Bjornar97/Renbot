@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\BotStatus;
 use App\Events\MakeNoiseEvent;
 use App\Models\Command;
 use App\Models\Punish;
@@ -16,15 +15,15 @@ class SpecialCommandService
     public static $functions = [
         'resetPunishment' => [
             'action' => 'resetPunishment',
-            'title' => "Reset punishment for user"
+            'title' => 'Reset punishment for user',
         ],
         'restartBot' => [
-            'action' => "restartBot",
-            'title' => "Restart the bot",
+            'action' => 'restartBot',
+            'title' => 'Restart the bot',
         ],
         'stopBot' => [
-            'action' => "stopBot",
-            'title' => "Stop the bot",
+            'action' => 'stopBot',
+            'title' => 'Stop the bot',
         ],
         'makeSoundForRendog' => [
             'action' => 'makeSoundForRendog',
@@ -37,14 +36,16 @@ class SpecialCommandService
     ];
 
     public MessageEvent $message;
-    public int|null $targetUserId = null;
-    public string|null $targetUsername = null;
 
-    public string $channel = "rendogtv";
+    public ?int $targetUserId = null;
+
+    public ?string $targetUsername = null;
+
+    public string $channel = 'rendogtv';
 
     public function __construct(public Command $command, public ?Client $bot = null)
     {
-        $this->channel = config("services.twitch.channel", "rendogtv");
+        $this->channel = config('services.twitch.channel', 'rendogtv');
     }
 
     public static function command(Command $command, ?Client $bot = null): self
@@ -63,16 +64,17 @@ class SpecialCommandService
     {
         $this->targetUserId = $targetUserId;
         $this->targetUsername = $targetUsername;
+
         return $this;
     }
 
     public function run()
     {
-        if (!$this->command->action) {
-            throw new Exception("This special command does not have an action");
+        if (! $this->command->action) {
+            throw new Exception('This special command does not have an action');
         }
 
-        if (!isset(self::$functions[$this->command->action])) {
+        if (! isset(self::$functions[$this->command->action])) {
             throw new Exception("The action {$this->command->action} does not exist");
         }
 
@@ -81,7 +83,7 @@ class SpecialCommandService
 
     public function resetPunishment(): void
     {
-        if (!$this->targetUserId) {
+        if (! $this->targetUserId) {
             throw new Exception("You need to specify a username to reset. Example: !{$this->command->command} @username");
         }
 
@@ -93,17 +95,17 @@ class SpecialCommandService
         try {
             BotManagerService::restart();
         } catch (\Throwable $th) {
-            throw new Exception("Failed to restart bot. Moderators, check the dashboard.");
+            throw new Exception('Failed to restart bot. Moderators, check the dashboard.');
         }
     }
 
     public function stopBot(): void
     {
         try {
-            $this->bot?->say($this->channel, "Stopping bot");
+            $this->bot?->say($this->channel, 'Stopping bot');
             BotManagerService::stop();
         } catch (\Throwable $th) {
-            throw new Exception("Failed to stop bot. Moderators, check the dashboard.");
+            throw new Exception('Failed to stop bot. Moderators, check the dashboard.');
         }
     }
 
@@ -112,7 +114,7 @@ class SpecialCommandService
         try {
             MakeNoiseEvent::dispatch();
         } catch (\Throwable $th) {
-            throw new Exception("Something went wrong while making noise for Rendog");
+            throw new Exception('Something went wrong while making noise for Rendog');
         }
     }
 

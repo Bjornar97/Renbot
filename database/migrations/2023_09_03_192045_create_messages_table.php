@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger("twitch_user_id")->index();
-            $table->text("message");
+            $table->bigInteger('twitch_user_id')->index();
+            $table->text('message');
 
             $table->timestamps();
 
-            $table->index("created_at");
+            $table->index('created_at');
         });
     }
 

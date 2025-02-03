@@ -17,6 +17,7 @@ class SingleChatMessageJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private User $renbotUser;
+
     private Twitch $twitch;
 
     /**
@@ -41,7 +42,7 @@ class SingleChatMessageJob implements ShouldQueue
 
         $this->renbotUser = User::query()->where('username', config('services.twitch.username'))->first();
 
-        $this->twitch = new Twitch();
+        $this->twitch = new Twitch;
         $this->twitch->setToken($this->renbotUser->twitch_access_token);
 
         foreach ($messages as $message) {
@@ -56,20 +57,20 @@ class SingleChatMessageJob implements ShouldQueue
     private function sendChatMessage(string $message): void
     {
         $response = $this->twitch->post('chat/messages', [
-            'broadcaster_id' => config("services.twitch.channel_id"),
+            'broadcaster_id' => config('services.twitch.channel_id'),
             'sender_id' => $this->renbotUser->twitch_id,
             'message' => $message,
         ]);
 
         if ($response->getStatus() !== 200) {
-            throw new Exception("Something went wrong sending message to chat. ", $response->getStatus());
+            throw new Exception('Something went wrong sending message to chat. ', $response->getStatus());
         }
     }
 
     private function sendAnnouncement(string $message, string $color): void
     {
         $response = $this->twitch->post('chat/announcements', [
-            'broadcaster_id' => config("services.twitch.channel_id"),
+            'broadcaster_id' => config('services.twitch.channel_id'),
             'message' => $message,
             'moderator_id' => $this->renbotUser->twitch_id,
             'color' => $color,
@@ -77,7 +78,7 @@ class SingleChatMessageJob implements ShouldQueue
 
         if ($response->getStatus() !== 204) {
             Log::error($response->getStatus());
-            throw new Exception("Something went wrong sending announcement to chat. ", $response->getStatus());
+            throw new Exception('Something went wrong sending announcement to chat. ', $response->getStatus());
         }
     }
 }

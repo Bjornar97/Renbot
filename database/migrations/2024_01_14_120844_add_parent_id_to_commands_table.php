@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->foreignIdFor(Command::class, "parent_id")->nullable();
+            $table->foreignIdFor(Command::class, 'parent_id')->nullable();
         });
     }
 
@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->removeColumn("parent_id");
+            $table->removeColumn('parent_id');
         });
     }
 };

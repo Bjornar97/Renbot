@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\AutoPost;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class AutoPostPolicy
 {
@@ -13,7 +12,7 @@ class AutoPostPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can("moderate");
+        return $user->can('moderate');
     }
 
     /**
@@ -21,7 +20,7 @@ class AutoPostPolicy
      */
     public function view(User $user, AutoPost $autoPost): bool
     {
-        return $user->can("moderate");
+        return $user->can('moderate');
     }
 
     /**
@@ -29,7 +28,7 @@ class AutoPostPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can("moderate");
+        return $user->can('moderate');
     }
 
     /**
@@ -37,7 +36,7 @@ class AutoPostPolicy
      */
     public function update(User $user, AutoPost $autoPost): bool
     {
-        return $user->can("moderate");
+        return $user->can('moderate');
     }
 
     /**
@@ -45,7 +44,7 @@ class AutoPostPolicy
      */
     public function delete(User $user, AutoPost $autoPost): bool
     {
-        return $user->can("moderate");
+        return $user->can('moderate');
     }
 
     /**
@@ -53,7 +52,7 @@ class AutoPostPolicy
      */
     public function restore(User $user, AutoPost $autoPost): bool
     {
-        return $user->can("moderate");
+        return $user->can('moderate');
     }
 
     /**
@@ -61,6 +60,6 @@ class AutoPostPolicy
      */
     public function forceDelete(User $user, AutoPost $autoPost): bool
     {
-        return $user->can("moderate");
+        return $user->can('moderate');
     }
 }

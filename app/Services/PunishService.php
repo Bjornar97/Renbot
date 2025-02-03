@@ -29,21 +29,21 @@ class PunishService
         10 => 30000, // insta-ban
     ];
 
-    public string $channel = "rendogtv";
+    public string $channel = 'rendogtv';
 
     private Command $command;
 
-    private string|null $basicResponse = null;
+    private ?string $basicResponse = null;
 
-    private User|null $moderator = null;
+    private ?User $moderator = null;
 
     private Client $bot;
 
-    private string|null $messageId = null;
+    private ?string $messageId = null;
 
     public function __construct(protected int $targetUserId, protected $targetUsername)
     {
-        $this->channel = config("services.twitch.channel", "rendogtv");
+        $this->channel = config('services.twitch.channel', 'rendogtv');
     }
 
     public static function user(int $targetUserId, string $targetUsername): self
@@ -56,53 +56,58 @@ class PunishService
      */
     public function command(Command $command): self
     {
-        if ($command->type !== "punishable") {
-            throw new Exception("Cannot punish with non-punishable command!");
+        if ($command->type !== 'punishable') {
+            throw new Exception('Cannot punish with non-punishable command!');
         }
 
         $this->command = $command;
+
         return $this;
     }
 
     public function basicResponse(string $response): self
     {
         $this->basicResponse = $response;
+
         return $this;
     }
 
     public function moderator(User $moderator): self
     {
         $this->moderator = $moderator;
+
         return $this;
     }
 
     public function bot(Client $bot): self
     {
         $this->bot = $bot;
+
         return $this;
     }
 
     public function messageId(string $messageId): self
     {
         $this->messageId = $messageId;
+
         return $this;
     }
 
-    public function punish(): string|null
+    public function punish(): ?string
     {
         if ($this->isJustPunished($this->targetUserId)) {
-            return "";
+            return '';
         }
 
-        if (!$this->command) {
-            throw new Exception("Command not set");
+        if (! $this->command) {
+            throw new Exception('Command not set');
         }
 
-        if (!$this->moderator) {
-            $this->moderator = User::where("username", "renthebot")->first();
+        if (! $this->moderator) {
+            $this->moderator = User::where('username', 'renthebot')->first();
 
-            if (!$this->moderator) {
-                throw new Exception("RenTheBot not found");
+            if (! $this->moderator) {
+                throw new Exception('RenTheBot not found');
             }
         }
 
@@ -110,7 +115,7 @@ class PunishService
 
         $response = $this->basicResponse ?? "@{$this->targetUsername} {$this->command->response}";
 
-        if (Feature::active("bans") && $seconds >= 30000) {
+        if (Feature::active('bans') && $seconds >= 30000) {
             return $this->ban($this->targetUserId, $response, $this->moderator);
         }
 
@@ -118,77 +123,77 @@ class PunishService
             return $this->warn($this->targetUserId, $seconds, $response, $this->moderator);
         }
 
-        if (Feature::active("timeouts")) {
+        if (Feature::active('timeouts')) {
             return $this->timeout($this->targetUserId, $seconds, $response, $this->moderator);
         }
 
         return $response;
     }
 
-    private function ban(int $twitchId, string $response, User|null $moderator)
+    private function ban(int $twitchId, string $response, ?User $moderator)
     {
-        $response .= " [Ban]";
+        $response .= ' [Ban]';
 
         $punish = $this->command->punishes()->create([
             'twitch_user_id' => $twitchId,
-            'type' => "ban",
+            'type' => 'ban',
             'seconds' => -1,
         ]);
 
-        activity()->on($punish)->by($moderator)->log("created");
+        activity()->on($punish)->by($moderator)->log('created');
 
         Feature::when(
-            "punish-debug",
-            whenActive: fn() => $this->say("Would ban @{$this->targetUsername}"),
-            whenInactive: fn() => BanTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
+            'punish-debug',
+            whenActive: fn () => $this->say("Would ban @{$this->targetUsername}"),
+            whenInactive: fn () => BanTwitchUserJob::dispatch($twitchId, $this->command->punish_reason, $moderator),
         );
 
         return $response;
     }
 
-    private function timeout(int $twitchId, int $seconds, string $response, User|null $moderator)
+    private function timeout(int $twitchId, int $seconds, string $response, ?User $moderator)
     {
         $timeString = CarbonInterval::seconds($seconds)->cascade()->forHumans();
 
         $response .= " [Timeout $timeString]";
 
         Feature::when(
-            "punish-debug",
-            whenActive: fn() => $this->say("Would timeout @{$this->targetUsername} with {$seconds} seconds"),
-            whenInactive: fn() => TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator),
+            'punish-debug',
+            whenActive: fn () => $this->say("Would timeout @{$this->targetUsername} with {$seconds} seconds"),
+            whenInactive: fn () => TimeoutTwitchUserJob::dispatch($twitchId, $seconds, $this->command->punish_reason, $moderator),
         );
 
         $punish = $this->command->punishes()->create([
             'twitch_user_id' => $twitchId,
-            'type' => "timeout",
+            'type' => 'timeout',
             'seconds' => $seconds,
         ]);
 
-        activity()->on($punish)->by($moderator)->log("created");
+        activity()->on($punish)->by($moderator)->log('created');
 
         return $response;
     }
 
-    private function warn(int $twitchId, int $wouldBeSeconds, string $response,  User|null $moderator)
+    private function warn(int $twitchId, int $wouldBeSeconds, string $response, ?User $moderator)
     {
         Feature::when(
-            "punish-debug",
-            whenActive: fn() => $this->say("Would warn @{$this->targetUsername}"),
-            whenInactive: fn() => WarnTwitchUserJob::dispatch($twitchId, $this->command->response, $moderator, $this->messageId),
+            'punish-debug',
+            whenActive: fn () => $this->say("Would warn @{$this->targetUsername}"),
+            whenInactive: fn () => WarnTwitchUserJob::dispatch($twitchId, $this->command->response, $moderator, $this->messageId),
         );
 
         $punish = $this->command->punishes()->create([
             'twitch_user_id' => $twitchId,
-            'type' => "warning",
+            'type' => 'warning',
             'seconds' => $wouldBeSeconds,
         ]);
 
-        activity()->on($punish)->by($moderator)->log("created");
+        activity()->on($punish)->by($moderator)->log('created');
     }
 
     private function isFirstTimeOffense(int $twitchId): bool
     {
-        return !Punish::where('twitch_user_id', $twitchId)->exists();
+        return ! Punish::where('twitch_user_id', $twitchId)->exists();
     }
 
     private function isJustPunished(int $twitchId): bool
@@ -223,8 +228,9 @@ class PunishService
 
     private function say(string $message)
     {
-        if (!isset($this->bot)) {
-            SingleChatMessageJob::dispatch("chat", $message);
+        if (! isset($this->bot)) {
+            SingleChatMessageJob::dispatch('chat', $message);
+
             return;
         }
 

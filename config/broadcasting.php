@@ -36,7 +36,7 @@ return [
             'secret' => env('VITE_BROADCASTING_APP_SECRET'),
             'app_id' => env('VITE_BROADCASTING_APP_ID'),
             'options' => [
-                'host' => env('VITE_BROADCASTING_HOST') ?: 'api-' . env('VITE_BROADCASTING_APP_CLUSTER', 'mt1') . '.pusher.com',
+                'host' => env('VITE_BROADCASTING_HOST') ?: 'api-'.env('VITE_BROADCASTING_APP_CLUSTER', 'mt1').'.pusher.com',
                 'port' => env('VITE_BROADCASTING_PORT', 443),
                 'scheme' => env('VITE_BROADCASTING_SCHEME', 'https'),
                 'encrypted' => true,

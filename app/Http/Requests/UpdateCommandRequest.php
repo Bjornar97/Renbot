@@ -25,10 +25,10 @@ class UpdateCommandRequest extends FormRequest
      */
     public function rules()
     {
-        $command = $this->route("command");
+        $command = $this->route('command');
 
         return [
-            'command' => ['string', 'alpha_num', 'max:50', Rule::unique(Command::class, "command")->whereNull("deleted_at")->ignore($command->id)],
+            'command' => ['string', 'alpha_num', 'max:50', Rule::unique(Command::class, 'command')->whereNull('deleted_at')->ignore($command->id)],
             'aliases' => ['array', 'nullable'],
             'aliases.*' => ['string'],
             'response' => ['string', 'max:500'],
