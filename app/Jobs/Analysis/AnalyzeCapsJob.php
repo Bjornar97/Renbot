@@ -62,7 +62,7 @@ class AnalyzeCapsJob implements ShouldQueue
         $this->totalLengthThreshold = Setting::query()->key('punishment.totalLengthThreshold')->first()?->value ?? self::TOTAL_LENGTH_THRESHOLD_DEFAULT;
         $this->wordLengthThreshold = Setting::query()->key('punishment.wordLengthThreshold')->first()?->value ?? self::WORD_LENGTH_THRESHOLD_DEFAULT;
 
-        $this->command = Command::find(Setting::key('punishment.autoCapsCommand')->first()?->value);
+        $this->command = Command::find(Setting::query()->key('punishment.autoCapsCommand')->first()?->value);
     }
 
     /**
