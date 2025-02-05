@@ -8,5 +8,6 @@ parameters:
     # Level 10 is the highest level
     level: 6
     ignoreErrors:
+        - '#Using nullsafe property access \"\?->.* on left side of \?\? is unnecessary\. Use -> instead\.#'
     excludePaths:
         - ./vendor/**

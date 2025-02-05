@@ -56,13 +56,13 @@ class AnalyzeCapsJob implements ShouldQueue
         // Remove :ACTION from start of string, since its not part of the message, but added when using /me
         $this->string = preg_replace('/^ACTION /', '', $this->string);
 
-        $this->totalCapsThreshold = Setting::key('punishment.totalCapsThreshold')->first()->value ?? self::TOTAL_CAPS_THRESHOLD_DEFAULT;
-        $this->wordCapsThreshold = Setting::key('punishment.wordCapsThreshold')->first()->value ?? self::WORD_CAPS_THRESHOLD_DEFAULT;
+        $this->totalCapsThreshold = Setting::query()->key('punishment.totalCapsThreshold')->first()?->value ?? self::TOTAL_CAPS_THRESHOLD_DEFAULT;
+        $this->wordCapsThreshold = Setting::query()->key('punishment.wordCapsThreshold')->first()?->value ?? self::WORD_CAPS_THRESHOLD_DEFAULT;
 
-        $this->totalLengthThreshold = Setting::key('punishment.totalLengthThreshold')->first()->value ?? self::TOTAL_LENGTH_THRESHOLD_DEFAULT;
-        $this->wordLengthThreshold = Setting::key('punishment.wordLengthThreshold')->first()->value ?? self::WORD_LENGTH_THRESHOLD_DEFAULT;
+        $this->totalLengthThreshold = Setting::query()->key('punishment.totalLengthThreshold')->first()?->value ?? self::TOTAL_LENGTH_THRESHOLD_DEFAULT;
+        $this->wordLengthThreshold = Setting::query()->key('punishment.wordLengthThreshold')->first()?->value ?? self::WORD_LENGTH_THRESHOLD_DEFAULT;
 
-        $this->command = Command::find(Setting::key('punishment.autoCapsCommand')->first()->value);
+        $this->command = Command::find(Setting::key('punishment.autoCapsCommand')->first()?->value);
     }
 
     /**
