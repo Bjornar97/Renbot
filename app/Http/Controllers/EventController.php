@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class EventController extends Controller
 {
@@ -19,13 +21,13 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $events = Event::select(DB::raw('DATE(start) as date'), 'id', 'title', 'slug', 'start', 'end', 'description', 'type')
             ->upcoming()
             ->orderBy('start')
             ->get()
-            ->groupBy(function ($event) {
+            ->groupBy(function ($event): string {
                 // @phpstan-ignore-next-line
                 return $event->date; // Group by the extracted date
             });
@@ -47,7 +49,7 @@ class EventController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Response
     {
         return Inertia::render('Events/Create');
     }
@@ -55,7 +57,7 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEventRequest $request)
+    public function store(StoreEventRequest $request): RedirectResponse
     {
         $event = Event::query()->create($request->validated());
 
@@ -65,7 +67,7 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, Event $event)
+    public function show(Request $request, Event $event): Response
     {
         return Inertia::render('Events/Show', [
             'event' => $event->load('participants', 'teams'),
@@ -76,7 +78,7 @@ class EventController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Event $event)
+    public function edit(Event $event): Response
     {
         return Inertia::render('Events/Edit', [
             'event' => $event,
@@ -86,7 +88,7 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEventRequest $request, Event $event)
+    public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
         $event->update($request->validated());
 
@@ -96,7 +98,7 @@ class EventController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Event $event)
+    public function destroy(Event $event): RedirectResponse
     {
         $event->delete();
 

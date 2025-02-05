@@ -29,6 +29,8 @@ class HandleInertiaRequests extends Middleware
     /**
      * Defines the props that are shared by default.
      *
+     * @return array<string, mixed>
+     *
      * @see https://inertiajs.com/shared-data
      */
     public function share(Request $request): array

@@ -81,7 +81,7 @@ class AnalyzeCapsJob implements ShouldQueue
         $this->punish();
     }
 
-    protected function punish()
+    protected function punish(): void
     {
         $response = PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
             ->messageId($this->messageService->getMessageId())
@@ -154,7 +154,7 @@ class AnalyzeCapsJob implements ShouldQueue
         return strlen($this->string) > $this->totalLengthThreshold;
     }
 
-    protected function hasPunishableWord()
+    protected function hasPunishableWord(): bool
     {
         $words = explode(' ', $this->string);
 

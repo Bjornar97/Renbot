@@ -36,11 +36,11 @@ class BanBotsFromBotList implements ShouldQueue
     public function handle(): void
     {
         if (Feature::inactive('auto-ban-bots')) {
-            return;
+            // return;
         }
 
-        $response = Http::get('https://api.twitchinsights.net/v1/bots/online');
-        $response = $response->json();
+        /** @var array<string, array<int, array<string|int>>> $response */
+        $response = Http::get('https://api.twitchinsights.net/v1/bots/online')->json();
 
         $bots = collect($response['bots'] ?? []);
         $bots = $bots->pluck(0);

@@ -80,7 +80,7 @@ class BotCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function handleExit()
+    private function handleExit(): void
     {
         $this->maybeFlushFeatures();
 
@@ -93,7 +93,7 @@ class BotCommand extends Command
         $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
     }
 
-    private function afterStartup()
+    private function afterStartup(): void
     {
         $lastShutdown = Cache::get('bot-shutdown-time');
 
@@ -112,7 +112,7 @@ class BotCommand extends Command
         }
     }
 
-    private function maybeFlushFeatures()
+    private function maybeFlushFeatures(): void
     {
         if ($this->lastFeatureFlush->diffInSeconds(now()) > 10) {
             Log::info('Flushing features');
@@ -121,7 +121,7 @@ class BotCommand extends Command
         }
     }
 
-    public function onMessage(MessageEvent $message)
+    public function onMessage(MessageEvent $message): void
     {
         $this->maybeFlushFeatures();
 
@@ -154,12 +154,12 @@ class BotCommand extends Command
         }
     }
 
-    private function checkAutoPost(MessageEvent $message)
+    private function checkAutoPost(MessageEvent $message): void
     {
         AutoPostCheckJob::dispatch($message);
     }
 
-    private function analyzeForPunishment(MessageEvent $message)
+    private function analyzeForPunishment(MessageEvent $message): void
     {
         Feature::when(
             'auto-caps-punishment',

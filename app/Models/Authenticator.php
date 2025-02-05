@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Authenticator extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'credential_id',
         'public_key',
@@ -18,7 +16,12 @@ class Authenticator extends Model
         'public_key' => 'encrypted:json',
     ];
 
-    public function user()
+    /**
+     * Get the user that owns the Authenticator
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

@@ -8,6 +8,7 @@ use App\Models\EventTeam;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -24,7 +25,10 @@ class GetNextMcc implements ShouldQueue
         //
     }
 
-    public $teamNameMap = [
+    /**
+     * @var array<string, string>
+     */
+    public array $teamNameMap = [
         'RED' => 'Red Rabbits',
         'ORANGE' => 'Orange Ocelots',
         'YELLOW' => 'Yellow Yaks',
@@ -43,10 +47,12 @@ class GetNextMcc implements ShouldQueue
     public function handle(): void
     {
         $mcc = Http::get('https://api.mcchampionship.com/v1/event')->json();
-        $teams = Http::get('https://api.mcchampionship.com/v1/participants')->json();
+
+        /** @var Collection<string, int|array<string, array<int, array<string, string>>>> */
+        $teamsResponse = Http::get('https://api.mcchampionship.com/v1/participants')->json();
 
         $mcc = (object) $mcc['data'];
-        $teams = collect($teams['data']);
+        $teams = collect($teamsResponse['data']);
 
         if (! $teams->flatten(1)->contains('username', 'Renthedog')) {
             return;

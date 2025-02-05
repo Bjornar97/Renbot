@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class AutoPost extends Model
 {
     use BroadcastsEvents;
-    use HasFactory;
 
     public $fillable = [
         'title',
@@ -44,11 +42,21 @@ class AutoPost extends Model
         return $this->hasMany(Command::class);
     }
 
+    /**
+     * Get the last command that executed the
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Command, $this>
+     */
     public function lastCommand(): BelongsTo
     {
         return $this->belongsTo(Command::class, 'last_command_id');
     }
 
+    /**
+     * Get the chats to next attribute.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute<int, null>
+     */
     protected function chatsToNext(): Attribute
     {
         return Attribute::get(function () {

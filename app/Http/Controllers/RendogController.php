@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class RendogController extends Controller
 {
-    public function thankyou()
+    public function thankyou(): Response
     {
         Gate::authorize('rendog');
 

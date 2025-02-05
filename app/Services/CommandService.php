@@ -79,7 +79,7 @@ class CommandService
         };
     }
 
-    private function isAuthorized()
+    private function isAuthorized(): bool
     {
         $isModerator = $this->messageService->isModerator();
         $isVIP = $this->messageService->isVIP();
@@ -112,7 +112,7 @@ class CommandService
         return false;
     }
 
-    private function isGlobalCooldown()
+    private function isGlobalCooldown(): bool
     {
         $isGlobalCooldown = $this->command
             ->commandMetadata()
@@ -128,7 +128,7 @@ class CommandService
         return $isGlobalCooldown;
     }
 
-    private function isUserCooldown()
+    private function isUserCooldown(): bool
     {
         $isUserCooldown = $this->command
             ->commandMetadata()
@@ -144,7 +144,7 @@ class CommandService
         return $isUserCooldown;
     }
 
-    private function shouldCalloutCooldown()
+    private function shouldCalloutCooldown(): bool
     {
         /** @var CommandMetadata|null $lastCalloutData */
         $lastCalloutData = $this->command
@@ -175,7 +175,7 @@ class CommandService
         return true;
     }
 
-    private function setCooldownData()
+    private function setCooldownData(): void
     {
         $this->command->commandMetadata()
             ->updateOrCreate(

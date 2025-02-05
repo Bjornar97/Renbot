@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ApiTokenController extends Controller
 {
-    public function showToken(Request $request)
+    public function showToken(Request $request): Response
     {
         Gate::authorize('moderate');
 
@@ -18,7 +20,7 @@ class ApiTokenController extends Controller
         ]);
     }
 
-    public function createToken(Request $request)
+    public function createToken(Request $request): RedirectResponse
     {
         Gate::authorize('moderate');
 

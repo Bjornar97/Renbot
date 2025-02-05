@@ -15,7 +15,7 @@ class UpdateCommandRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()?->can('update', $this->command) ?? false;
+        return $this->user()?->can('update', $this->route('command')) ?? false;
     }
 
     /**
@@ -25,7 +25,8 @@ class UpdateCommandRequest extends FormRequest
      */
     public function rules()
     {
-        $command = $this->command;
+        /** @var Command $command */
+        $command = $this->route('command');
 
         return [
             'command' => ['string', 'alpha_num', 'max:50', Rule::unique(Command::class, 'command')->whereNull('deleted_at')->ignore($command->id)],

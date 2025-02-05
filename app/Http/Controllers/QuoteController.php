@@ -6,16 +6,18 @@ use App\Http\Requests\StoreQuoteRequest;
 use App\Http\Requests\UpdateQuoteRequest;
 use App\Jobs\SingleChatMessageJob;
 use App\Models\Quote;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class QuoteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
         Gate::authorize('moderate');
 
@@ -27,7 +29,7 @@ class QuoteController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Response
     {
         Gate::authorize('moderate');
 
@@ -37,7 +39,7 @@ class QuoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreQuoteRequest $request)
+    public function store(StoreQuoteRequest $request): RedirectResponse
     {
         Gate::authorize('moderate');
 
@@ -47,17 +49,9 @@ class QuoteController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Quote $quote)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Quote $quote)
+    public function edit(Quote $quote): Response
     {
         Gate::authorize('moderate');
 
@@ -69,7 +63,7 @@ class QuoteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateQuoteRequest $request, Quote $quote)
+    public function update(UpdateQuoteRequest $request, Quote $quote): RedirectResponse
     {
         Gate::authorize('moderate');
 
@@ -78,7 +72,7 @@ class QuoteController extends Controller
         return redirect(route('quotes.index'));
     }
 
-    public function chat(Request $request, Quote $quote)
+    public function chat(Request $request, Quote $quote): RedirectResponse
     {
         Gate::authorize('moderate');
 
@@ -92,7 +86,7 @@ class QuoteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Quote $quote)
+    public function destroy(Quote $quote): RedirectResponse
     {
         $quote->delete();
 

@@ -6,15 +6,17 @@ use App\Http\Requests\StoreStreamdayRequest;
 use App\Http\Requests\UpdateStreamdayRequest;
 use App\Models\Creator;
 use App\Models\Streamday;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class StreamdayController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
         Gate::authorize('moderate');
 
@@ -26,7 +28,7 @@ class StreamdayController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Response
     {
         Gate::authorize('moderate');
 
@@ -36,7 +38,7 @@ class StreamdayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStreamdayRequest $request)
+    public function store(StoreStreamdayRequest $request): RedirectResponse
     {
         $streamday = Streamday::query()->create($request->validated());
 
@@ -47,7 +49,7 @@ class StreamdayController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function show(): Response
     {
         $currentStreamday = Streamday::query()
             ->whereRelation('streamdaySlots', 'end_at', '>', now())
@@ -62,7 +64,7 @@ class StreamdayController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Streamday $streamday)
+    public function edit(Streamday $streamday): Response
     {
         return Inertia::render('Streamdays/Edit', [
             'streamday' => $streamday->load('streamdaySlots'),
@@ -73,7 +75,7 @@ class StreamdayController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStreamdayRequest $request, Streamday $streamday)
+    public function update(UpdateStreamdayRequest $request, Streamday $streamday): RedirectResponse
     {
         $streamday->update($request->validated());
 
@@ -83,7 +85,7 @@ class StreamdayController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Streamday $streamday)
+    public function destroy(Streamday $streamday): RedirectResponse
     {
         $streamday->delete();
 

@@ -43,7 +43,7 @@ class Event extends Model
         });
     }
 
-    public static function generateUniqueSlug($title)
+    public static function generateUniqueSlug(string $title): string
     {
         $slug = Str::slug($title);
         $originalSlug = $slug;
@@ -57,6 +57,11 @@ class Event extends Model
         return $slug;
     }
 
+    /**
+     * Get the participants associated with the Event.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Creator, $this>
+     */
     public function participants(): BelongsToMany
     {
         return $this->belongsToMany(Creator::class, 'event_participants')
@@ -65,6 +70,11 @@ class Event extends Model
             ->withPivot('event_team_id');
     }
 
+    /**
+     * Get the teams associated with the Event.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EventTeam, $this>
+     */
     public function teams(): HasMany
     {
         return $this->hasMany(EventTeam::class)
@@ -83,6 +93,12 @@ class Event extends Model
             ->orderBy('name');
     }
 
+    /**
+     * Scope a query to only include upcoming events.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     */
     public function scopeUpcoming(Builder $query)
     {
         return $query->where('end', '>', now()->subDay());

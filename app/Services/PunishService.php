@@ -16,6 +16,7 @@ use Laravel\Pennant\Feature;
 
 class PunishService
 {
+    /** @var array<int, int> */
     public array $punishTable = [
         1 => 10,
         2 => 20,
@@ -41,7 +42,7 @@ class PunishService
 
     private ?string $messageId = null;
 
-    public function __construct(protected int $targetUserId, protected $targetUsername)
+    public function __construct(protected int $targetUserId, protected string $targetUsername)
     {
         $this->channel = config('services.twitch.channel', 'rendogtv');
     }
@@ -116,7 +117,9 @@ class PunishService
         }
 
         if ($this->isFirstTimeOffense($this->targetUserId)) {
-            return $this->warn($this->targetUserId, $seconds, $response, $this->moderator);
+            $this->warn($this->targetUserId, $seconds, $this->moderator);
+
+            return null;
         }
 
         if (Feature::active('timeouts')) {
@@ -126,7 +129,7 @@ class PunishService
         return $response;
     }
 
-    private function ban(int $twitchId, string $response, ?User $moderator)
+    private function ban(int $twitchId, string $response, ?User $moderator): string
     {
         $response .= ' [Ban]';
 
@@ -147,7 +150,7 @@ class PunishService
         return $response;
     }
 
-    private function timeout(int $twitchId, int $seconds, string $response, ?User $moderator)
+    private function timeout(int $twitchId, int $seconds, string $response, ?User $moderator): string
     {
         $timeString = CarbonInterval::seconds($seconds)->cascade()->forHumans();
 
@@ -170,7 +173,7 @@ class PunishService
         return $response;
     }
 
-    private function warn(int $twitchId, int $wouldBeSeconds, string $response, ?User $moderator)
+    private function warn(int $twitchId, int $wouldBeSeconds, ?User $moderator): void
     {
         Feature::when(
             'punish-debug',
@@ -222,7 +225,7 @@ class PunishService
         return $seconds;
     }
 
-    private function say(string $message)
+    private function say(string $message): void
     {
         if (! isset($this->bot)) {
             SingleChatMessageJob::dispatch('chat', $message);

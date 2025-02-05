@@ -61,7 +61,7 @@ class AnalyzeEmotesJob implements ShouldQueue
         $this->punish();
     }
 
-    protected function punish()
+    protected function punish(): void
     {
         $response = PunishService::user($this->messageService->getSenderTwitchId(), $this->messageService->getSenderDisplayName())
             ->messageId($this->messageService->getMessageId())

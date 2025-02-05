@@ -6,11 +6,13 @@ use App\Http\Requests\StoreBlockedTermRequest;
 use App\Http\Requests\UpdateBlockedTermRequest;
 use App\Models\BlockedTerm;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Inertia\Response;
 use romanzipp\Twitch\Twitch;
 
 class BlockedTermController extends Controller
@@ -18,7 +20,7 @@ class BlockedTermController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $this->authorize('moderate');
 
@@ -78,7 +80,7 @@ class BlockedTermController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBlockedTermRequest $request)
+    public function store(StoreBlockedTermRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
@@ -122,7 +124,7 @@ class BlockedTermController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBlockedTermRequest $request, string $blockedTerm)
+    public function update(UpdateBlockedTermRequest $request, string $blockedTerm): RedirectResponse
     {
         $data = $request->validated();
 
@@ -136,7 +138,7 @@ class BlockedTermController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $blockedTerm, Request $request)
+    public function destroy(string $blockedTerm, Request $request): RedirectResponse
     {
         Gate::authorize('moderate');
 
