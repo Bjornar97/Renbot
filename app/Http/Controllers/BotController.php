@@ -39,14 +39,14 @@ class BotController extends Controller
             'punishableCommands' => Command::punishable()->select(['id', 'command', 'response'])->get(),
 
             'autoCapsCommand' => $autoCapsCommand ? ((int) $autoCapsCommand->value) : null,
-            'autoCapsTotalCapsThreshold' => (float) (Setting::key('punishment.totalCapsThreshold')->first()?->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT),
-            'autoCapsTotalLengthThreshold' => (int) (Setting::key('punishment.totalLengthThreshold')->first()?->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT),
-            'autoCapsWordCapsThreshold' => (float) (Setting::key('punishment.wordCapsThreshold')->first()?->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT),
-            'autoCapsWordLengthThreshold' => (int) (Setting::key('punishment.wordLengthThreshold')->first()?->value ?? AnalyzeCapsJob::WORD_LENGTH_THRESHOLD_DEFAULT),
+            'autoCapsTotalCapsThreshold' => (float) (Setting::key('punishment.totalCapsThreshold')->first()->value ?? AnalyzeCapsJob::TOTAL_CAPS_THRESHOLD_DEFAULT),
+            'autoCapsTotalLengthThreshold' => (int) (Setting::key('punishment.totalLengthThreshold')->first()->value ?? AnalyzeCapsJob::TOTAL_LENGTH_THRESHOLD_DEFAULT),
+            'autoCapsWordCapsThreshold' => (float) (Setting::key('punishment.wordCapsThreshold')->first()->value ?? AnalyzeCapsJob::WORD_CAPS_THRESHOLD_DEFAULT),
+            'autoCapsWordLengthThreshold' => (int) (Setting::key('punishment.wordLengthThreshold')->first()->value ?? AnalyzeCapsJob::WORD_LENGTH_THRESHOLD_DEFAULT),
 
             'autoMaxEmotesEnabled' => Feature::active('auto-max-emotes-punishment'),
             'autoMaxEmotesCommand' => $autoMaxEmotesCommand ? ((int) $autoMaxEmotesCommand->value) : null,
-            'autoMaxEmotes' => (int) (Setting::key('punishment.maxEmotes')->first()?->value ?? AnalyzeEmotesJob::MAX_EMOTES_DEFAULT),
+            'autoMaxEmotes' => (int) (Setting::key('punishment.maxEmotes')->first()->value ?? AnalyzeEmotesJob::MAX_EMOTES_DEFAULT),
         ]);
     }
 

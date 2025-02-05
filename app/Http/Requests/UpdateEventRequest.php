@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\EventType;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,7 @@ class UpdateEventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->allows('update', $this->event);
+        return $this->user()?->can('update', $this->event) ?? false;
     }
 
     /**

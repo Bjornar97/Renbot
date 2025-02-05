@@ -19,6 +19,11 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * Class Command
  *
  * @property Command|null $parent
+ * @property Command[] $children
+ * @property Punish[] $punishes
+ * @property AutoPost|null $autoPost
+ * @property CommandMetadata[] $commandMetadata
+ * @property string $general_response
  */
 class Command extends Model
 {

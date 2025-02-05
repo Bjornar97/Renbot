@@ -146,7 +146,7 @@ class CommandService
 
     private function shouldCalloutCooldown()
     {
-        /** @var CommandMetadata $lastCalloutData */
+        /** @var CommandMetadata|null $lastCalloutData */
         $lastCalloutData = $this->command
             ->commandMetadata()
             ->where('type', 'data')
@@ -284,7 +284,7 @@ class CommandService
 
         $words = explode(' ', $message);
 
-        $command = $words[0] ?? null;
+        $command = $words[0];
 
         if (! str_starts_with($command, '!')) {
             return null;

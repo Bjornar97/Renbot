@@ -68,16 +68,16 @@ class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
                 }
 
                 $command = $queue->commands()
-                    ->active()
                     ->where('auto_post_enabled', true)
+                    ->active()
                     ->where('id', '>', $queue->last_command_id ?? 0)
                     ->orderBy('id')
                     ->first();
 
                 if (! $command) {
                     $command = $queue->commands()
-                        ->active()
                         ->where('auto_post_enabled', true)
+                        ->active()
                         ->orderBy('id')
                         ->first();
                 }

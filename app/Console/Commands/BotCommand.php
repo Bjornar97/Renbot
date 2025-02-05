@@ -88,7 +88,7 @@ class BotCommand extends Command
             $this->client->say($this->channel, 'Restarting. Dont use any commands right now!');
         }
 
-        Cache::set('bot-shutdown-time', now()->timestamp, now()->addHours(6));
+        Cache::set('bot-shutdown-time', now()->timestamp, 6 * 60 * 60);
 
         $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
     }

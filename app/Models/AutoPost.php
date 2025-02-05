@@ -34,6 +34,11 @@ class AutoPost extends Model
         'chats_to_next',
     ];
 
+    /**
+     * Get the commands associated with the AutoPost.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Command, $this>
+     */
     public function commands(): HasMany
     {
         return $this->hasMany(Command::class);

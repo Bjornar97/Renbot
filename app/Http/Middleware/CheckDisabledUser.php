@@ -15,7 +15,7 @@ class CheckDisabledUser
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = auth()?->user();
+        $user = auth()->user();
 
         if (auth()->check() && $user?->disabled_at) {
             auth()->guard('web')->logout();

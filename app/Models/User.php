@@ -21,7 +21,7 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'username',
@@ -36,7 +36,7 @@ class User extends Authenticatable
     /**
      * The attributes that should be visible for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $visible = [
         'id',

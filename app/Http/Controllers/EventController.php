@@ -26,6 +26,7 @@ class EventController extends Controller
             ->orderBy('start')
             ->get()
             ->groupBy(function ($event) {
+                // @phpstan-ignore-next-line
                 return $event->date; // Group by the extracted date
             });
 
@@ -39,7 +40,7 @@ class EventController extends Controller
 
         return Inertia::render('Events/Index', [
             'days' => $days,
-            'userType' => $request->user()?->type ?? 'viewer',
+            'userType' => $request->user()->type ?? 'viewer',
         ]);
     }
 
@@ -68,7 +69,7 @@ class EventController extends Controller
     {
         return Inertia::render('Events/Show', [
             'event' => $event->load('participants', 'teams'),
-            'userType' => $request->user()?->type ?? 'viewer',
+            'userType' => $request->user()->type ?? 'viewer',
         ]);
     }
 

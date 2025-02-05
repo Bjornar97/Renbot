@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
-use Laravel\Socialite\Contracts\User as ContractsUser;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\User as TwoUser;
 use romanzipp\Twitch\Twitch;
+use SocialiteProviders\Twitch\Provider;
 
 class LoginController extends Controller
 {
@@ -89,13 +90,17 @@ class LoginController extends Controller
             $scopes = $this->rendogScopes;
         }
 
-        return Socialite::driver('twitch')
+        /** @var Provider $twitch */
+        $twitch = Socialite::driver('twitch');
+
+        return $twitch
             ->scopes($scopes)
             ->redirect();
     }
 
     public function callback()
     {
+        /** @var TwoUser $user */
         $user = Socialite::driver('twitch')->user();
 
         $accessExpriesAt = now()->addSeconds($user->expiresIn);
@@ -130,7 +135,7 @@ class LoginController extends Controller
         return redirect()->intended(route($route))->with('success', 'You successfully logged in!');
     }
 
-    private function getType(ContractsUser $user)
+    private function getType(TwoUser $user)
     {
         $twitch = new Twitch;
 

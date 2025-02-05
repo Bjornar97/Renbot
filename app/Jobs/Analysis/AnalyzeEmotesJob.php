@@ -40,7 +40,7 @@ class AnalyzeEmotesJob implements ShouldQueue
         // Remove :ACTION from start of string, since its not part of the message, but added when using /me
         $this->string = preg_replace('/^ACTION /', '', $this->string);
 
-        $this->maxEmotes = Setting::key('punishment.maxEmotes')->first()?->value ?? self::MAX_EMOTES_DEFAULT;
+        $this->maxEmotes = Setting::key('punishment.maxEmotes')->first()->value ?? self::MAX_EMOTES_DEFAULT;
 
         $this->command = Command::find(Setting::key('punishment.maxEmotesCommand')->first()?->value);
     }

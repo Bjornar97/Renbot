@@ -99,10 +99,6 @@ class PunishService
             return '';
         }
 
-        if (! $this->command) {
-            throw new Exception('Command not set');
-        }
-
         if (! $this->moderator) {
             $this->moderator = User::where('username', 'renthebot')->first();
 
@@ -234,6 +230,6 @@ class PunishService
             return;
         }
 
-        $this->bot?->say($this->channel, $message);
+        $this->bot->say($this->channel, $message);
     }
 }
