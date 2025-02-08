@@ -31,6 +31,9 @@ class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
         ];
     }
 
+    /**
+     * @return array<string, \App\Models\AutoPost>
+     */
     public function broadcastWith(): array
     {
         return [

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreAutoPostRequest extends FormRequest
 {
@@ -11,13 +12,13 @@ class StoreAutoPostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('moderate');
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {

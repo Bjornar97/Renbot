@@ -46,9 +46,9 @@ class MessageService
         return $this->message->tags['display-name'];
     }
 
-    public function getSenderTwitchId(): string
+    public function getSenderTwitchId(): int
     {
-        return $this->message->tags['user-id'];
+        return (int) $this->message->tags['user-id'];
     }
 
     public function isModerator(): bool
@@ -88,10 +88,10 @@ class MessageService
 
             foreach ($emotePositions as $emotePosition) {
                 $emotePosition = explode('-', $emotePosition);
-                $start = $emotePosition[0];
-                $end = $emotePosition[1];
+                $start = (int) $emotePosition[0];
+                $end = (int) $emotePosition[1];
 
-                $length = (int) $end - (int) $start + 1;
+                $length = $end - $start + 1;
 
                 $string = substr_replace($string, str_repeat(' ', $length), $start, $length);
             }

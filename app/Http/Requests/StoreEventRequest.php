@@ -14,7 +14,7 @@ class StoreEventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->allows('create', Event::class);
+        return $this->user()?->can('create', Event::class);
     }
 
     /**

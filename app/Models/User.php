@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,12 +17,13 @@ use Throwable;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'username',
@@ -36,7 +38,7 @@ class User extends Authenticatable
     /**
      * The attributes that should be visible for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $visible = [
         'id',
@@ -56,11 +58,17 @@ class User extends Authenticatable
         'twitch_access_token_expires_at' => 'datetime',
     ];
 
+    /**
+     * @return HasMany<Authenticator, $this>
+     */
     public function authenticators(): HasMany
     {
         return $this->hasMany(Authenticator::class);
     }
 
+    /**
+     * @return Attribute<string, string>
+     */
     public function twitchAccessToken(): Attribute
     {
         return Attribute::make(
@@ -77,7 +85,7 @@ class User extends Authenticatable
         );
     }
 
-    public function renewAccessToken()
+    public function renewAccessToken(): ?string
     {
         try {
             $response = Http::post('https://id.twitch.tv/oauth2/token', [

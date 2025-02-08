@@ -3,21 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
-use Laravel\Socialite\Contracts\User as ContractsUser;
+use Inertia\Response;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\User as TwoUser;
 use romanzipp\Twitch\Twitch;
+use SocialiteProviders\Twitch\Provider;
 
 class LoginController extends Controller
 {
+    /** @var list<string> */
     public array $regularScopes = [
         'user:read:follows',
         'user:read:subscriptions',
     ];
 
+    /** @var list<string> */
     public array $moderatorScopes = [
         'moderator:manage:announcements',
         'moderator:manage:automod',
@@ -40,6 +45,7 @@ class LoginController extends Controller
         'user:read:moderated_channels',
     ];
 
+    /** @var list<string> */
     public array $rendogScopes = [
         'moderation:read',
         'bits:read',
@@ -58,7 +64,7 @@ class LoginController extends Controller
         'channel:manage:schedule',
     ];
 
-    public function login(Request $request)
+    public function login(Request $request): Response|RedirectResponse
     {
         if (! auth()->check()) {
             return Inertia::render('Login');
@@ -71,7 +77,7 @@ class LoginController extends Controller
         return redirect()->route('home');
     }
 
-    public function redirect(Request $request)
+    public function redirect(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'role' => ['required', 'string'],
@@ -89,13 +95,17 @@ class LoginController extends Controller
             $scopes = $this->rendogScopes;
         }
 
-        return Socialite::driver('twitch')
+        /** @var Provider $twitch */
+        $twitch = Socialite::driver('twitch');
+
+        return $twitch
             ->scopes($scopes)
             ->redirect();
     }
 
-    public function callback()
+    public function callback(): RedirectResponse
     {
+        /** @var TwoUser $user */
         $user = Socialite::driver('twitch')->user();
 
         $accessExpriesAt = now()->addSeconds($user->expiresIn);
@@ -130,7 +140,7 @@ class LoginController extends Controller
         return redirect()->intended(route($route))->with('success', 'You successfully logged in!');
     }
 
-    private function getType(ContractsUser $user)
+    private function getType(TwoUser $user): string
     {
         $twitch = new Twitch;
 
@@ -156,7 +166,7 @@ class LoginController extends Controller
         return $type;
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
 

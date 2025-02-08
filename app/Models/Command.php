@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\SpecialCommandService;
+use Database\Factories\CommandFactory;
 use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,11 +20,19 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * Class Command
  *
  * @property Command|null $parent
+ * @property Command[] $children
+ * @property Punish[] $punishes
+ * @property AutoPost|null $autoPost
+ * @property CommandMetadata[] $commandMetadata
+ * @property string|null $general_response
  */
 class Command extends Model
 {
     use BroadcastsEvents;
+
+    /** @use HasFactory<CommandFactory> */
     use HasFactory;
+
     use LogsActivity;
     use SoftDeletes;
 
@@ -55,31 +64,62 @@ class Command extends Model
         ];
     }
 
+    /**
+     * Get the parent command
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Command, $this>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
+    /**
+     * Get the children commands
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Command, $this>
+     */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    /**
+     * Get the punishes associated with the Command
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Punish, $this>
+     */
     public function punishes(): HasMany
     {
         return $this->hasMany(Punish::class);
     }
 
+    /**
+     * Get the auto post associated with the Command
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<AutoPost, $this>
+     */
     public function autoPost(): BelongsTo
     {
         return $this->belongsTo(AutoPost::class);
     }
 
+    /**
+     * Get the command metadata associated with the Command
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CommandMetadata, $this>
+     */
     public function commandMetadata(): HasMany
     {
         return $this->hasMany(CommandMetadata::class);
     }
 
+    /**
+     * Scope a query to only include active commands
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     */
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('enabled', true)->whereDoesntHave('parent', function (Builder $query) {
@@ -87,32 +127,53 @@ class Command extends Model
         });
     }
 
+    /**
+     * Scope a query to only include regular commands
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     */
     public function scopeRegular(Builder $query): Builder
     {
         return $query->where('type', 'regular');
     }
 
+    /**
+     * Scope a query to only include punishable commands
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     */
     public function scopePunishable(Builder $query): Builder
     {
         return $query->where('type', 'punishable');
     }
 
+    /**
+     * Scope a query to only include special commands
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     */
     public function scopeSpecial(Builder $query): Builder
     {
         return $query->where('type', 'special');
     }
 
-    public function getSubscriberCanUseAttribute()
+    public function getSubscriberCanUseAttribute(): bool
     {
         return $this->usable_by === 'subscribers'
             || $this->usable_by === 'everyone';
     }
 
-    public function getEveryoneCanUseAttribute()
+    public function getEveryoneCanUseAttribute(): bool
     {
         return $this->usable_by === 'everyone';
     }
 
+    /**
+     * @return Attribute<bool, null>
+     */
     public function enabled(): Attribute
     {
         return Attribute::make(
@@ -126,6 +187,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<string|null, null>
+     */
     public function response(): Attribute
     {
         return Attribute::make(
@@ -139,6 +203,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<string|null, null>
+     */
     public function usableBy(): Attribute
     {
         return Attribute::make(
@@ -152,6 +219,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<int|null, null>
+     */
     public function cooldown(): Attribute
     {
         return Attribute::make(
@@ -165,6 +235,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<int|null, null>
+     */
     public function globalCooldown(): Attribute
     {
         return Attribute::make(
@@ -178,6 +251,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<int|null, null>
+     */
     public function severity(): Attribute
     {
         return Attribute::make(
@@ -191,6 +267,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<string|null, null>
+     */
     public function punishReason(): Attribute
     {
         return Attribute::make(
@@ -204,6 +283,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<string|null, null>
+     */
     public function action(): Attribute
     {
         return Attribute::make(
@@ -217,6 +299,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<bool, null>
+     */
     public function prependSender(): Attribute
     {
         return Attribute::make(
@@ -230,6 +315,9 @@ class Command extends Model
         );
     }
 
+    /**
+     * @return Attribute<string|null, null>
+     */
     public function generalResponse(): Attribute
     {
         return Attribute::make(

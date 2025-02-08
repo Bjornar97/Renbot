@@ -60,6 +60,7 @@ class SingleChatMessageJob implements ShouldQueue
             'broadcaster_id' => config('services.twitch.channel_id'),
             'sender_id' => $this->renbotUser->twitch_id,
             'message' => $message,
+            'reply_parent_message_id' => $this->replyToId,
         ]);
 
         if ($response->getStatus() !== 200) {
@@ -77,7 +78,7 @@ class SingleChatMessageJob implements ShouldQueue
         ]);
 
         if ($response->getStatus() !== 204) {
-            Log::error($response->getStatus());
+            Log::error((string) $response->getStatus());
             throw new Exception('Something went wrong sending announcement to chat. ', $response->getStatus());
         }
     }

@@ -50,7 +50,7 @@ class WarnTwitchUserJob implements ShouldQueue
             Log::error($th);
         }
 
-        if ($error || $result?->getStatus() !== 200) {
+        if ($error || $result->getStatus() !== 200) {
             $moderator = User::where('username', config('services.twitch.username'))->first();
             $this->warn($moderator);
         }

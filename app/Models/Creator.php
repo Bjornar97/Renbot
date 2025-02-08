@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\CreatorFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,9 @@ use Illuminate\Support\Facades\Storage;
 
 class Creator extends Model
 {
+    /** @use HasFactory<CreatorFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = [
@@ -26,6 +29,11 @@ class Creator extends Model
         'image_url',
     ];
 
+    /**
+     * Get the image url attribute.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute<string, null>
+     */
     protected function imageUrl(): Attribute
     {
         return Attribute::get(function () {
@@ -41,6 +49,11 @@ class Creator extends Model
         });
     }
 
+    /**
+     * Get the events associated with the Creator.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Event, $this>
+     */
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'event_participants');

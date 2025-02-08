@@ -12,7 +12,8 @@ use GhostZero\Tmi\Events\Twitch\MessageEvent;
 
 class SpecialCommandService
 {
-    public static $functions = [
+    /** @var array<string, array<string, string>> */
+    public static array $functions = [
         'resetPunishment' => [
             'action' => 'resetPunishment',
             'title' => 'Reset punishment for user',
@@ -68,7 +69,7 @@ class SpecialCommandService
         return $this;
     }
 
-    public function run()
+    public function run(): ?string
     {
         if (! $this->command->action) {
             throw new Exception('This special command does not have an action');

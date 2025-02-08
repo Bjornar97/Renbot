@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\StreamdayFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StreamdaySlot extends Model
 {
+    /** @use HasFactory<StreamdayFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -25,11 +27,21 @@ class StreamdaySlot extends Model
         'creator',
     ];
 
+    /**
+     * Get the streamday that owns the StreamdaySlot
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Streamday, $this>
+     */
     public function streamday(): BelongsTo
     {
         return $this->belongsTo(Streamday::class);
     }
 
+    /**
+     * Get the creator that owns the StreamdaySlot
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Creator, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Creator::class);

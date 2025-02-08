@@ -6,18 +6,20 @@ use App\Events\AutoPostUpdated;
 use App\Http\Requests\StoreAutoPostRequest;
 use App\Http\Requests\UpdateAutoPostRequest;
 use App\Models\AutoPost;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class AutoPostController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         return Inertia::render('AutoPosts/Index', [
             'autoPosts' => AutoPost::with('commands')->get(),
         ]);
     }
 
-    public function store(StoreAutoPostRequest $request)
+    public function store(StoreAutoPostRequest $request): RedirectResponse
     {
         $this->authorize('create', AutoPost::class);
 
@@ -28,7 +30,7 @@ class AutoPostController extends Controller
         return back()->with('success', 'Queue created');
     }
 
-    public function update(UpdateAutoPostRequest $request, AutoPost $autoPost)
+    public function update(UpdateAutoPostRequest $request, AutoPost $autoPost): RedirectResponse
     {
         $autoPost->update($request->validated());
 
@@ -37,7 +39,7 @@ class AutoPostController extends Controller
         return back()->with('success', 'Successfully updated auto post queue');
     }
 
-    public function destroy(AutoPost $autoPost)
+    public function destroy(AutoPost $autoPost): RedirectResponse
     {
         $this->authorize('delete', $autoPost);
 

@@ -7,19 +7,20 @@ use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
 use App\Services\PunishService;
 use App\Services\TwitchService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class PunishController extends Controller
 {
-    public function punishableCommands(Request $request)
+    public function punishableCommands(Request $request): JsonResponse
     {
         Gate::authorize('moderate');
 
         return response()->json(Command::punishable()->active()->orderBy('command')->get());
     }
 
-    public function punish(Request $request)
+    public function punish(Request $request): JsonResponse
     {
         Gate::authorize('moderate');
 

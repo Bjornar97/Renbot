@@ -15,7 +15,7 @@ class UpdateCommandRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()?->can('update', $this->route('command')) ?? false;
     }
 
     /**
@@ -25,6 +25,7 @@ class UpdateCommandRequest extends FormRequest
      */
     public function rules()
     {
+        /** @var Command $command */
         $command = $this->route('command');
 
         return [
