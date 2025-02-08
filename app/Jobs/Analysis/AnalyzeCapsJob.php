@@ -119,6 +119,10 @@ class AnalyzeCapsJob implements ShouldQueue
         $caps = preg_match_all('/[A-Z]/', $this->string);
         $total = strlen(preg_replace('/[^a-zA-Z]/', '', $this->string));
 
+        if ($total === 0) {
+            return false;
+        }
+
         $ratio = $caps / $total;
 
         if ($ratio > $this->totalCapsThreshold && $caps > $this->totalLengthThreshold) {
@@ -179,6 +183,11 @@ class AnalyzeCapsJob implements ShouldQueue
 
         $caps = preg_match_all('/[A-Z]/', $word);
         $total = strlen($word);
+
+        if ($total === 0) {
+            return false;
+        }
+
         $ratio = $caps / $total;
 
         if ($ratio > $this->wordCapsThreshold && $caps > $this->wordLengthThreshold) {
