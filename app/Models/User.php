@@ -80,7 +80,7 @@ class User extends Authenticatable
                 return $value;
             },
             set: function ($value) {
-                $this->attributes['twitch_access_token'] = $value;
+                return $value;
             }
         );
     }
@@ -98,7 +98,7 @@ class User extends Authenticatable
             $token = $response->json('access_token');
 
             $this->twitch_access_token_expires_at = now()->addSeconds($response->json('expires_in'));
-            $this->attributes['twitch_access_token'] = $token;
+            $this->twitch_access_token = $token;
             $this->save();
 
             return $token;
