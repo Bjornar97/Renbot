@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-// Route::webhooks('/webhooks/twitch/stream-online');
+Route::webhooks('/webhooks/twitch', 'twitch');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/punishable-commands', [PunishController::class, 'punishableCommands']);

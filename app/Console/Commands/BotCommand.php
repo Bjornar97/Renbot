@@ -16,6 +16,7 @@ use GhostZero\Tmi\Events\Irc\WelcomeEvent;
 use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
 use Throwable;
@@ -90,7 +91,7 @@ class BotCommand extends Command
 
         Cache::set('bot-shutdown-time', now()->timestamp, 6 * 60 * 60);
 
-        $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
+        $this->client->getLoop()->addTimer(3, fn() => $this->client->close());
     }
 
     private function afterStartup(): void
@@ -125,13 +126,24 @@ class BotCommand extends Command
     {
         $this->maybeFlushFeatures();
 
+        Log::info("Message: {$message->message}");
+
         try {
             $messageService = MessageService::message($message);
 
-            Message::query()->create([
-                'twitch_user_id' => $messageService->getSenderTwitchId(),
-                'message' => $message->message,
-            ]);
+            DB::transaction(function () use ($messageService, $message) {
+                Message::updateOrCreate(
+                    [
+                        'twitch_user_id' => $messageService->getSenderTwitchId(),
+                        'message_id' => $messageService->getMessageId()
+                    ],
+                    [
+                        'message' => $message->message,
+
+                        'irc_recieved_at' => now(),
+                    ]
+                );
+            });
 
             $this->checkAutoPost($message);
 
@@ -163,12 +175,12 @@ class BotCommand extends Command
     {
         Feature::when(
             'auto-caps-punishment',
-            whenActive: fn () => AnalyzeCapsJob::dispatch($message),
+            whenActive: fn() => AnalyzeCapsJob::dispatch($message),
         );
 
         Feature::when(
             'auto-max-emotes-punishment',
-            whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
+            whenActive: fn() => AnalyzeEmotesJob::dispatch($message),
         );
     }
 }

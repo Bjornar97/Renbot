@@ -14,6 +14,7 @@ const loadingRole = ref();
 
 const props = defineProps<{
     passkeyOptions?: any;
+    isBot?: boolean;
 }>();
 
 const login = (role: string) => {
@@ -23,6 +24,7 @@ const login = (role: string) => {
 
     window.location.href = route("login.redirect", {
         role,
+        isBot: props.isBot,
     });
 };
 

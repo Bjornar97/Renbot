@@ -49,6 +49,7 @@ class LoginController extends Controller
     public array $rendogScopes = [
         'moderation:read',
         'bits:read',
+        'channel:bot',
         'channel:read:charity',
         'channel:read:polls',
         'channel:manage:polls',
@@ -67,7 +68,9 @@ class LoginController extends Controller
     public function login(Request $request): Response|RedirectResponse
     {
         if (! auth()->check()) {
-            return Inertia::render('Login');
+            return Inertia::render('Login', [
+                'isBot' => $request->query('is_bot'),
+            ]);
         }
 
         if (Gate::allows('moderate')) {
@@ -81,6 +84,7 @@ class LoginController extends Controller
     {
         $data = $request->validate([
             'role' => ['required', 'string'],
+            'isBot' => ['nullable', 'string'],
         ]);
 
         $role = $data['role'];
@@ -93,6 +97,11 @@ class LoginController extends Controller
 
         if ($role === 'rendog') {
             $scopes = $this->rendogScopes;
+        }
+
+        if ($data['isBot'] ?? false) {
+            $scopes[] = 'user:bot';
+            $scopes[] = 'user:read:chat';
         }
 
         /** @var Provider $twitch */
