@@ -12,6 +12,7 @@ use App\Services\SpecialCommandService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -130,17 +131,18 @@ class CommandController extends Controller
     {
         $data = $request->validated();
 
-        $isRecentlySent = Cache::has("command-{$command->id}-is-recently-sent");
+        $didAdd = Cache::add("command-{$command->id}-lock", true, 30);
 
-        if ($isRecentlySent) {
+        if (!$didAdd) {
+            Log::debug('Command already sent in the last 30 seconds', $command->toArray());
             return back()->with('warning', 'Command already sent in the last 30 seconds');
         }
+
+        Log::debug('Sending command as chat.', $command->toArray());
 
         try {
             $message = $command->general_response;
             SingleChatMessageJob::dispatch($data['type'] ?? 'chat', $message, null, $data['announcement_color'] ?? null);
-
-            Cache::put("command-{$command->id}-is-recently-sent", now()->timestamp, 30);
         } catch (\Throwable $th) {
             return back()->with('error', "Something went wrong: {$th->getMessage()}");
         }

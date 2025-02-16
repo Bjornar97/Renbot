@@ -43,7 +43,7 @@ const sendToken = () => {
     let extensionId = "aggckhjjebacnbchdepadpkioodiimha";
 
     if (props.env === "local") {
-        extensionId = "komdeaocjociimaeieplaehfieihgcoi";
+        extensionId = "hpcgmfbjfmgibnpfhencmldplmadiahj";
     }
 
     console.log("Sending token");
