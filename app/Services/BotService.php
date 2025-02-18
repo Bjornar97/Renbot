@@ -36,7 +36,7 @@ class BotService
         ]));
     }
 
-    private function getAccessToken(): string|null
+    private function getAccessToken(): ?string
     {
         $renbot = User::where('username', 'RenTheBot')->first();
 

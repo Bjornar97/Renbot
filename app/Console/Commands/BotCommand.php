@@ -91,7 +91,7 @@ class BotCommand extends Command
 
         Cache::set('bot-shutdown-time', now()->timestamp, 6 * 60 * 60);
 
-        $this->client->getLoop()->addTimer(3, fn() => $this->client->close());
+        $this->client->getLoop()->addTimer(3, fn () => $this->client->close());
     }
 
     private function afterStartup(): void
@@ -135,7 +135,7 @@ class BotCommand extends Command
                 Message::updateOrCreate(
                     [
                         'twitch_user_id' => $messageService->getSenderTwitchId(),
-                        'message_id' => $messageService->getMessageId()
+                        'message_id' => $messageService->getMessageId(),
                     ],
                     [
                         'message' => $message->message,
@@ -175,12 +175,12 @@ class BotCommand extends Command
     {
         Feature::when(
             'auto-caps-punishment',
-            whenActive: fn() => AnalyzeCapsJob::dispatch($message),
+            whenActive: fn () => AnalyzeCapsJob::dispatch($message),
         );
 
         Feature::when(
             'auto-max-emotes-punishment',
-            whenActive: fn() => AnalyzeEmotesJob::dispatch($message),
+            whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
         );
     }
 }

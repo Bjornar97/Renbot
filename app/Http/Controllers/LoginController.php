@@ -30,6 +30,7 @@ class LoginController extends Controller
         'moderator:manage:banned_users',
         'moderator:read:blocked_terms',
         'moderator:manage:blocked_terms',
+        'moderator:read:chat_messages',
         'moderator:manage:chat_messages',
         'moderator:manage:chat_settings',
         'moderator:read:chatters',
@@ -43,6 +44,10 @@ class LoginController extends Controller
         'user:write:chat',
         'chat:read',
         'user:read:moderated_channels',
+        'moderator:read:moderators',
+        'moderator:read:vips',
+        'moderator:manage:unban_requests',
+        'moderator:read:suspicious_users',
     ];
 
     /** @var list<string> */

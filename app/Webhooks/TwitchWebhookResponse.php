@@ -14,6 +14,7 @@ class TwitchWebhookResponse extends DefaultRespondsTo
     {
         if ($request->header('Twitch-Eventsub-Message-Type') === 'webhook_callback_verification') {
             Log::notice('Responding to webhook challenge');
+
             return response($request->input('challenge'), 200)
                 ->header('Content-Type', 'text/plain');
         }

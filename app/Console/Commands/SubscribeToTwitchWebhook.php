@@ -26,41 +26,125 @@ class SubscribeToTwitchWebhook extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(): int
     {
-        $twitch = new Twitch();
+        $twitch = new Twitch;
         $twitch->withClientId(config('services.twitch.client_id'))
             ->withClientSecret(config('services.twitch.client_secret'));
 
-        $result = $twitch->getOAuthToken(null, GrantType::CLIENT_CREDENTIALS, [
-            "user:read:chat",
-            "user:bot",
-        ]);
+        $result = $twitch->getOAuthToken(null, GrantType::CLIENT_CREDENTIALS);
 
         if (! $result->success()) {
-            dd($result->data());
+            $this->error('Failed to get twitch oauth token');
+
+            return Command::FAILURE;
         }
 
         $twitch->withToken($result->data()->access_token);
 
-        $response = $twitch->subscribeEventSub([], [
-            'type' => "channel.chat.notification",
-            'version' => "1",
-            'condition' => [
-                'broadcaster_user_id' => config('services.twitch.channel_id'),
-                'user_id' => config('services.twitch.bot_id'),
+        $channelSubsciptions = [
+            EventSubType::STREAM_ONLINE => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                ],
             ],
-            'transport' => [
-                'method' => 'webhook',
-                'callback' => config('services.twitch.webhook_callback_url'),
-                'secret' => config('services.twitch.webhook_secret'),
+            EventSubType::STREAM_OFFLINE => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                ],
             ],
-        ]);
+            'channel.chat.message' => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+            'channel.chat.clear' => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+            'channel.chat.clear_user_messages' => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+            'channel.chat.message_delete' => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+            'channel.chat.notification' => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+            'channel.warning.send' => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'moderator_user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+            'channel.warning.acknowledge' => [
+                'version' => '1',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'moderator_user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+            'channel.moderate' => [
+                'version' => '2',
+                'condition' => [
+                    'broadcaster_user_id' => config('services.twitch.channel_id'),
+                    'moderator_user_id' => config('services.twitch.bot_id'),
+                ],
+            ],
+        ];
 
-        // $response = $twitch->unsubscribeEventSub([
-        //     'id' => '39ac19b5-abd5-4615-a083-0c091e56006b',
-        // ]);
+        $unsuccesfulSubscriptions = [];
 
-        dd($response->data());
+        foreach ($channelSubsciptions as $type => $subscription) {
+            $response = $twitch->subscribeEventSub([], [
+                'type' => $type,
+                'version' => $subscription['version'],
+                'condition' => $subscription['condition'],
+                'transport' => [
+                    'method' => 'webhook',
+                    'callback' => config('services.twitch.webhook_callback_url'),
+                    'secret' => config('services.twitch.webhook_secret'),
+                ],
+            ]);
+
+            if ($response->getStatus() === 409) {
+                $this->info('Webhook already subscribed: '.$type);
+
+                continue;
+            }
+
+            if (! $response->success()) {
+                $unsuccesfulSubscriptions[] = ['type' => $type, 'subscription' => $subscription];
+            }
+        }
+
+        if (! empty($unsuccesfulSubscriptions)) {
+            $failedSubscriptions = array_map(fn ($sub) => $sub['type'], $unsuccesfulSubscriptions);
+            $this->error('Failed to subscribe to the following webhooks: '.implode(', ', $failedSubscriptions));
+        }
+
+        $this->info('Successfully subscribed to twitch webhooks');
+
+        return Command::SUCCESS;
     }
 }

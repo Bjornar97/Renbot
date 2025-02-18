@@ -133,8 +133,9 @@ class CommandController extends Controller
 
         $didAdd = Cache::add("command-{$command->id}-lock", true, 30);
 
-        if (!$didAdd) {
+        if (! $didAdd) {
             Log::debug('Command already sent in the last 30 seconds', $command->toArray());
+
             return back()->with('warning', 'Command already sent in the last 30 seconds');
         }
 

@@ -27,14 +27,14 @@ class UnsubscribeToAllTwitchWebhooks extends Command
      */
     public function handle(): void
     {
-        $twitch = new Twitch();
+        $twitch = new Twitch;
 
         $twitch->withClientId(config('services.twitch.client_id'))
             ->withClientSecret(config('services.twitch.client_secret'));
 
         $result = $twitch->getOAuthToken(null, GrantType::CLIENT_CREDENTIALS, [
-            "user:read:chat",
-            "user:bot",
+            'user:read:chat',
+            'user:bot',
         ]);
 
         $twitch->withToken($result->data()->access_token);

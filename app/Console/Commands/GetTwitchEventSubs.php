@@ -26,7 +26,7 @@ class GetTwitchEventSubs extends Command
      */
     public function handle(): void
     {
-        $twitch = new Twitch();
+        $twitch = new Twitch;
 
         $twitch->withClientId(config('services.twitch.client_id'))
             ->withClientSecret(config('services.twitch.client_secret'));
