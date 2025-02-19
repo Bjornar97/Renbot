@@ -8,6 +8,7 @@ use App\Models\BlockedTerm;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +25,7 @@ class BlockedTermController extends Controller
     {
         $this->authorize('moderate');
 
+        /** @var Collection<int, \stdClass> $terms */
         $terms = Cache::remember('blocked-terms', 30, function () use ($request) {
             $terms = collect();
 
@@ -54,7 +56,7 @@ class BlockedTermController extends Controller
                 // Continue until there are no results left
             } while ($result->hasMoreResults());
 
-            return $terms->filter(fn ($item) => $item->expires_at === null);
+            return $terms->filter(fn($item) => $item->expires_at === null);
         });
 
         $models = BlockedTerm::query()->whereIn('twitch_id', $terms->pluck('id'))->get();
@@ -73,7 +75,7 @@ class BlockedTermController extends Controller
         });
 
         return Inertia::render('BlockedTerms/Index', [
-            'terms' => $terms,
+            'terms' => $terms->values(),
         ]);
     }
 
