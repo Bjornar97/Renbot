@@ -56,7 +56,7 @@ class BlockedTermController extends Controller
                 // Continue until there are no results left
             } while ($result->hasMoreResults());
 
-            return $terms->filter(fn($item) => $item->expires_at === null);
+            return $terms->filter(fn ($item) => $item->expires_at === null);
         });
 
         $models = BlockedTerm::query()->whereIn('twitch_id', $terms->pluck('id'))->get();
