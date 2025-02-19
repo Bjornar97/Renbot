@@ -20,7 +20,8 @@
 				"esbenp.prettier-vscode",
 				"hbenl.vscode-test-explorer",
 				"Vue.volar",
-				"YoavBls.pretty-ts-errors"
+				"YoavBls.pretty-ts-errors",
+				"open-southeners.laravel-pint"
 			],
 			"settings": {}
 		}
