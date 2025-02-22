@@ -27,6 +27,12 @@ class TwitchWebhookJob extends ProcessWebhookJob
     {
         $eventType = $this->webhookCall->payload['subscription']['type'];
 
+        if (! isset($this->webhookCall->payload['event'])) {
+            Log::notice('No event supplied with webhook!');
+
+            return;
+        }
+
         match ($eventType) {
             'channel.chat.message' => $this->message($this->webhookCall->payload['event']),
             'stream.online' => $this->streamOnline($this->webhookCall->payload['event']),
