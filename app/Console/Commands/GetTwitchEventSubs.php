@@ -36,6 +36,7 @@ class GetTwitchEventSubs extends Command
         $response = $twitch->getEventSubs();
         $body = $response->getResponse()->getBody();
         $json = json_decode($body, true);
-        dd($json);
+
+        $this->info(json_encode($json, JSON_PRETTY_PRINT));
     }
 }
