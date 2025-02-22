@@ -6,7 +6,7 @@ import vuetify from "vite-plugin-vuetify";
 
 export default defineConfig({
     build: {
-        target: ["es2022", "chrome117", "firefox117", "safari16"],
+        target: ["esnext", "chrome130", "firefox132", "safari18"],
     },
     plugins: [
         laravel({

@@ -1,34 +1,38 @@
 // https://aka.ms/devcontainer.json
 {
-	"name": "Renbot",
-	"dockerComposeFile": [
-		"../docker-compose.yml"
-	],
-	"service": "renbot.test",
-	"workspaceFolder": "/var/www/html",
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"onecentlin.laravel5-snippets",
-				"tombonnike.vscode-status-bar-format-toggle",
-				"shufo.vscode-blade-formatter",
-				"amiralizadeh9480.laravel-extra-intellisense",
-				"codingyu.laravel-goto-view",
-				"mohamedbenhida.laravel-intellisense",
-				"bmewburn.vscode-intelephense-client",
-				"recca0120.vscode-phpunit",
-				"esbenp.prettier-vscode",
-				"hbenl.vscode-test-explorer",
-				"Vue.volar",
-				"YoavBls.pretty-ts-errors"
-			],
-			"settings": {}
-		}
-	},
-	"remoteUser": "sail",
-	"postCreateCommand": "chown -R 1000:1000 /var/www/html"
-	// "forwardPorts": [],
-	// "runServices": [],
-	// "shutdownAction": "none",
+    "name": "Renbot",
+    "dockerComposeFile": ["../docker-compose.yml"],
+    "service": "renbot.test",
+    "workspaceFolder": "/var/www/html",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "onecentlin.laravel5-snippets",
+                "tombonnike.vscode-status-bar-format-toggle",
+                "shufo.vscode-blade-formatter",
+                "amiralizadeh9480.laravel-extra-intellisense",
+                "codingyu.laravel-goto-view",
+                "mohamedbenhida.laravel-intellisense",
+                "bmewburn.vscode-intelephense-client",
+                "recca0120.vscode-phpunit",
+                "esbenp.prettier-vscode",
+                "hbenl.vscode-test-explorer",
+                "Vue.volar",
+                "YoavBls.pretty-ts-errors",
+                "SanderRonde.phpstan-vscode",
+                "ms-azuretools.vscode-docker",
+                "pflannery.vscode-versionlens",
+                "eamodio.gitlens",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "laravel.vscode-laravel"
+            ],
+            "settings": {}
+        }
+    },
+    "remoteUser": "sail",
+    "postCreateCommand": "chown -R 1000:1000 /var/www/html"
+    // "forwardPorts": [],
+    // "runServices": [],
+    // "shutdownAction": "none",
 }
- 

@@ -1,5 +1,8 @@
 <?php
 
+use App\Jobs\Webhooks\TwitchWebhookJob;
+use App\Webhooks\TwitchWebhookValidator;
+
 return [
     'configs' => [
         [
@@ -7,7 +10,7 @@ return [
              * This package supports multiple webhook receiving endpoints. If you only have
              * one endpoint receiving webhooks, you can use 'default'.
              */
-            'name' => 'default',
+            'name' => 'twitch',
 
             /*
              * We expect that every webhook call will be signed using a secret. This secret
@@ -18,14 +21,14 @@ return [
             /*
              * The name of the header containing the signature.
              */
-            'signature_header_name' => 'Signature',
+            'signature_header_name' => 'Twitch-Eventsub-Message-Signature',
 
             /*
              *  This class will verify that the content of the signature header is valid.
              *
              * It should implement \Spatie\WebhookClient\SignatureValidator\SignatureValidator
              */
-            'signature_validator' => \Spatie\WebhookClient\SignatureValidator\DefaultSignatureValidator::class,
+            'signature_validator' => TwitchWebhookValidator::class,
 
             /*
              * This class determines if the webhook call should be stored and processed.
@@ -35,7 +38,7 @@ return [
             /*
              * This class determines the response on a valid webhook call.
              */
-            'webhook_response' => \Spatie\WebhookClient\WebhookResponse\DefaultRespondsTo::class,
+            'webhook_response' => \App\Webhooks\TwitchWebhookResponse::class,
 
             /*
              * The classname of the model to be used to store webhook calls. The class should
@@ -49,16 +52,14 @@ return [
              *
              * To store all headers, set this value to `*`.
              */
-            'store_headers' => [
-
-            ],
+            'store_headers' => [],
 
             /*
              * The class name of the job that will process the webhook request.
              *
              * This should be set to a class that extends \Spatie\WebhookClient\Jobs\ProcessWebhookJob.
              */
-            'process_webhook_job' => '',
+            'process_webhook_job' => TwitchWebhookJob::class,
         ],
     ],
 

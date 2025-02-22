@@ -40,5 +40,8 @@ return [
         'channel_id' => env('CHANNEL_ID'),
         'username' => env('BOT_USERNAME', 'RenTheBot'),
         'bot_id' => env('BOT_ID'),
+
+        'webhook_callback_url' => env('TWITCH_WEBHOOK_CALLBACK_URL'),
+        'webhook_secret' => env('WEBHOOK_CLIENT_SECRET'),
     ],
 ];
