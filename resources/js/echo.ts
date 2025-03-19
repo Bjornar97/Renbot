@@ -6,12 +6,12 @@ import axios from "axios";
 window.Pusher = Pusher;
 
 export const websocket = new Echo({
-    broadcaster: "pusher",
-    key: import.meta.env.VITE_BROADCASTING_APP_KEY,
-    wsHost: import.meta.env.VITE_BROADCASTING_FRONTEND_HOST,
-    wsPort: import.meta.env.VITE_BROADCASTING_PORT,
-    wssPort: import.meta.env.VITE_BROADCASTING_PORT,
-    forceTLS: false,
+    broadcaster: "reverb",
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
     encrypted: true,
     disableStats: true,
     enabledTransports: ["ws", "wss"],
