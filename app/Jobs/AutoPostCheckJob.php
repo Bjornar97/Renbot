@@ -43,6 +43,7 @@ class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
 
         DB::transaction(function () {
             $queues = AutoPost::query()
+                ->where('enabled', true)
                 ->whereRelation('commands', 'auto_post_enabled', true)
                 ->orderBy('last_post', 'desc')
                 ->get();
