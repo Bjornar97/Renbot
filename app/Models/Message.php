@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Jobs\Analysis\AnalyzeCapsJob;
+use App\Jobs\Analysis\AnalyzeEmotesJob;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Pennant\Feature;
 
 /**
  * App\Models\Message
@@ -35,4 +38,19 @@ class Message extends Model
         'irc_recieved_at',
         'webhook_recieved_at',
     ];
+
+    protected static function booted()
+    {
+        static::created(function (Message $message) {
+            Feature::when(
+                'auto-caps-punishment',
+                whenActive: fn () => AnalyzeCapsJob::dispatch($message),
+            );
+
+            Feature::when(
+                'auto-max-emotes-punishment',
+                whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
+            );
+        });
+    }
 }

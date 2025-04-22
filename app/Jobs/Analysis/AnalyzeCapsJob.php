@@ -4,17 +4,16 @@ namespace App\Jobs\Analysis;
 
 use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
+use App\Models\Message;
 use App\Models\Setting;
 use App\Services\MessageService;
 use App\Services\PunishService;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class AnalyzeCapsJob implements ShouldQueue
+class AnalyzeCapsJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -47,7 +46,7 @@ class AnalyzeCapsJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(MessageEvent $message)
+    public function __construct(Message $message)
     {
         $this->messageService = MessageService::message($message);
         $this->string = $this->messageService->getMessageWithoutEmotes();

@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Events\MakeNoiseEvent;
 use App\Models\Command;
+use App\Models\Message;
 use App\Models\Punish;
 use App\Models\Quote;
 use Exception;
 use GhostZero\Tmi\Client;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
 
 class SpecialCommandService
 {
@@ -36,7 +36,7 @@ class SpecialCommandService
         ],
     ];
 
-    public MessageEvent $message;
+    public Message $message;
 
     public ?int $targetUserId = null;
 
@@ -54,7 +54,7 @@ class SpecialCommandService
         return new self($command, $bot);
     }
 
-    public function message(MessageEvent $message): self
+    public function message(Message $message): self
     {
         $this->message = $message;
 
