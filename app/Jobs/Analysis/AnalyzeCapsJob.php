@@ -67,10 +67,9 @@ class AnalyzeCapsJob
     /**
      * Extract text from message fragments.
      *
-     * @param array<array<string, string|null>>|null $fragments
-     * @return string
+     * @param  array<array<string, string|null>>|null  $fragments
      */
-    private function extractTextFromFragments(array|null $fragments): string
+    private function extractTextFromFragments(?array $fragments): string
     {
         if ($fragments === null) {
             return '';
@@ -80,7 +79,7 @@ class AnalyzeCapsJob
 
         foreach ($fragments as $fragment) {
             if ($fragment['type'] === 'text' && $fragment['text'] !== null) {
-                $text .= $fragment['text'] . ' ';
+                $text .= $fragment['text'].' ';
             }
         }
 

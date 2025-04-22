@@ -49,12 +49,12 @@ class Message extends Model
         static::created(function (Message $message) {
             Feature::when(
                 'auto-caps-punishment',
-                whenActive: fn() => AnalyzeCapsJob::dispatch($message),
+                whenActive: fn () => AnalyzeCapsJob::dispatch($message),
             );
 
             Feature::when(
                 'auto-max-emotes-punishment',
-                whenActive: fn() => AnalyzeEmotesJob::dispatch($message),
+                whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
             );
 
             // TODO Respond to command in chat

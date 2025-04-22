@@ -5,12 +5,12 @@ use App\Models\Message;
 
 it('is punishable for too many emotes', function () {
     $fragments = [
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
     ];
 
     $message = Message::create([
@@ -27,9 +27,9 @@ it('is punishable for too many emotes', function () {
 
 it('is not punishable for acceptable emotes count', function () {
     $fragments = [
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
-        ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "25"], "mention" => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
+        ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => '25'], 'mention' => null],
     ];
 
     $message = Message::create([
@@ -46,7 +46,7 @@ it('is not punishable for acceptable emotes count', function () {
 
 it('is not punishable when no emotes are present', function () {
     $fragments = [
-        ["type" => "text", "text" => "This is a normal message", "cheermote" => null, "emote" => null, "mention" => null]
+        ['type' => 'text', 'text' => 'This is a normal message', 'cheermote' => null, 'emote' => null, 'mention' => null],
     ];
 
     $message = Message::create([

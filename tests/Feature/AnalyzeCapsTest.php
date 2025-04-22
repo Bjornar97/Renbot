@@ -5,7 +5,7 @@ use App\Models\Message;
 
 it('is punishable caps', function (string $messageContent) {
     $fragments = [
-        ["type" => "text", "text" => $messageContent, "cheermote" => null, "emote" => null, "mention" => null]
+        ['type' => 'text', 'text' => $messageContent, 'cheermote' => null, 'emote' => null, 'mention' => null],
     ];
 
     $message = Message::create([
@@ -29,7 +29,7 @@ it('is punishable caps', function (string $messageContent) {
 
 it('is not punishable caps', function (string $messageContent) {
     $fragments = [
-        ["type" => "text", "text" => $messageContent, "cheermote" => null, "emote" => null, "mention" => null]
+        ['type' => 'text', 'text' => $messageContent, 'cheermote' => null, 'emote' => null, 'mention' => null],
     ];
 
     $message = Message::create([
@@ -56,11 +56,11 @@ test('emotes doesnt count', function () {
         'username' => 'testuser',
         'message' => 'LUL LUL LULULUL',
         'fragments' => [
-            ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "emotesv2_c4e36990dfa548e9baa10ac7084df6c8", "emote_set_id" => "16961", "owner_id" => "30600786", "format" => ["static"]], "mention" => null],
-            ["type" => "text", "text" => null, "cheermote" => null, "emote" => null, "mention" => null],
-            ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "emotesv2_c4e36990dfa548e9baa10ac7084df6c8", "emote_set_id" => "16961", "owner_id" => "30600786", "format" => ["static"]], "mention" => null],
-            ["type" => "text", "text" => null, "cheermote" => null, "emote" => null, "mention" => null],
-            ["type" => "emote", "text" => "LUL", "cheermote" => null, "emote" => ["id" => "emotesv2_c4e36990dfa548e9baa10ac7084df6c8", "emote_set_id" => "16961", "owner_id" => "30600786", "format" => ["static"]], "mention" => null]
+            ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => 'emotesv2_c4e36990dfa548e9baa10ac7084df6c8', 'emote_set_id' => '16961', 'owner_id' => '30600786', 'format' => ['static']], 'mention' => null],
+            ['type' => 'text', 'text' => null, 'cheermote' => null, 'emote' => null, 'mention' => null],
+            ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => 'emotesv2_c4e36990dfa548e9baa10ac7084df6c8', 'emote_set_id' => '16961', 'owner_id' => '30600786', 'format' => ['static']], 'mention' => null],
+            ['type' => 'text', 'text' => null, 'cheermote' => null, 'emote' => null, 'mention' => null],
+            ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => 'emotesv2_c4e36990dfa548e9baa10ac7084df6c8', 'emote_set_id' => '16961', 'owner_id' => '30600786', 'format' => ['static']], 'mention' => null],
         ],
     ]);
 
