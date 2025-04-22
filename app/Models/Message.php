@@ -17,7 +17,7 @@ use Laravel\Pennant\Feature;
  * @property string|null $user_color
  * @property string|null $message
  * @property string|null $message_id
- * @property array<string,string|null|array<string,string>>|null $fragments
+ * @property array<array<string,string|null|array<string,string>>>|null $fragments
  * @property array<string,string|null>|null $badges
  * @property string|null $reply_to_message_id
  * @property string|null $irc_recieved_at
@@ -39,18 +39,25 @@ class Message extends Model
         'webhook_recieved_at',
     ];
 
+    protected $casts = [
+        'fragments' => 'array',
+        'badges' => 'array',
+    ];
+
     protected static function booted()
     {
         static::created(function (Message $message) {
             Feature::when(
                 'auto-caps-punishment',
-                whenActive: fn () => AnalyzeCapsJob::dispatch($message),
+                whenActive: fn() => AnalyzeCapsJob::dispatch($message),
             );
 
             Feature::when(
                 'auto-max-emotes-punishment',
-                whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
+                whenActive: fn() => AnalyzeEmotesJob::dispatch($message),
             );
+
+            // TODO Respond to command in chat
         });
     }
 }

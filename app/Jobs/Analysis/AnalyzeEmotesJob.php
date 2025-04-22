@@ -83,23 +83,16 @@ class AnalyzeEmotesJob
 
     protected function hasTooManyEmotes(): bool
     {
-        $emotes = $this->message->tags['emotes'] ?? null;
+        $fragments = $this->message->fragments ?? [];
 
-        if (! $emotes) {
-            return false;
-        }
-
-        $emotes = explode('/', $emotes);
         $emotesCount = 0;
 
-        foreach ($emotes as $emote) {
-            $emotesCount += count(explode(',', $emote));
+        foreach ($fragments as $fragment) {
+            if ($fragment['type'] === 'emote' && isset($fragment['emote'])) {
+                $emotesCount++;
+            }
         }
 
-        if ($emotesCount > $this->maxEmotes) {
-            return true;
-        }
-
-        return false;
+        return $emotesCount > $this->maxEmotes;
     }
 }

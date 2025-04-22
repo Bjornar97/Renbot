@@ -49,7 +49,7 @@ class AnalyzeCapsJob
     public function __construct(Message $message)
     {
         $this->messageService = MessageService::message($message);
-        $this->string = $this->messageService->getMessageWithoutEmotes();
+        $this->string = $this->extractTextFromFragments($message->fragments);
         $this->string = trim($this->string);
 
         // Remove :ACTION from start of string, since its not part of the message, but added when using /me
@@ -62,6 +62,29 @@ class AnalyzeCapsJob
         $this->wordLengthThreshold = Setting::query()->key('punishment.wordLengthThreshold')->first()?->value ?? self::WORD_LENGTH_THRESHOLD_DEFAULT;
 
         $this->command = Command::find(Setting::query()->key('punishment.autoCapsCommand')->first()?->value);
+    }
+
+    /**
+     * Extract text from message fragments.
+     *
+     * @param array<array<string, string|null>>|null $fragments
+     * @return string
+     */
+    private function extractTextFromFragments(array|null $fragments): string
+    {
+        if ($fragments === null) {
+            return '';
+        }
+
+        $text = '';
+
+        foreach ($fragments as $fragment) {
+            if ($fragment['type'] === 'text' && $fragment['text'] !== null) {
+                $text .= $fragment['text'] . ' ';
+            }
+        }
+
+        return $text;
     }
 
     /**
