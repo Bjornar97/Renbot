@@ -7,7 +7,6 @@ use App\Services\BotService;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
 use Laravel\Pulse\Facades\Pulse;
-use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,8 +38,6 @@ class AppServiceProvider extends ServiceProvider
         Feature::define('punish-debug', fn () => config('app.features.punish_debug'));
 
         Feature::define('special-debug', fn () => config('app.features.special_debug'));
-
-        Feature::define('announce-restart', fn () => config('app.features.announce_restart'));
 
         Feature::define('auto-caps-punishment', fn () => config('app.features.auto_caps_punishment'));
 

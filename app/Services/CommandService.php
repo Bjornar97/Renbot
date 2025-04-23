@@ -8,7 +8,6 @@ use App\Models\CommandMetadata;
 use App\Models\Message;
 use Carbon\Carbon;
 use Exception;
-use GhostZero\Tmi\Client;
 use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
 use Throwable;
@@ -21,7 +20,7 @@ class CommandService
 
     public string $channel = 'rendogtv';
 
-    public function __construct(public Message $message, private Client $bot)
+    public function __construct(public Message $message)
     {
         $this->channel = config('services.twitch.channel', 'rendogtv');
 
@@ -36,9 +35,9 @@ class CommandService
         $this->command = $command;
     }
 
-    public static function message(Message $message, Client $bot): self
+    public static function message(Message $message): self
     {
-        return new self($message, $bot);
+        return new self($message);
     }
 
     public function getResponse(): string
@@ -241,7 +240,6 @@ class CommandService
         $response = PunishService::user($twitchId, $target)
             ->command($this->command)
             ->moderator($moderator)
-            ->bot($this->bot)
             ->basicResponse($this->generateBasicResponse())
             ->punish();
 
@@ -253,7 +251,7 @@ class CommandService
         $target = $this->messageService->getTarget();
 
         try {
-            $command = SpecialCommandService::command($this->command, $this->bot)
+            $command = SpecialCommandService::command($this->command)
                 ->message($this->message);
 
             if ($target) {

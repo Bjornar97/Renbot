@@ -8,7 +8,6 @@ use App\Models\Message;
 use App\Models\Punish;
 use App\Models\Quote;
 use Exception;
-use GhostZero\Tmi\Client;
 
 class SpecialCommandService
 {
@@ -17,14 +16,6 @@ class SpecialCommandService
         'resetPunishment' => [
             'action' => 'resetPunishment',
             'title' => 'Reset punishment for user',
-        ],
-        'restartBot' => [
-            'action' => 'restartBot',
-            'title' => 'Restart the bot',
-        ],
-        'stopBot' => [
-            'action' => 'stopBot',
-            'title' => 'Stop the bot',
         ],
         'makeSoundForRendog' => [
             'action' => 'makeSoundForRendog',
@@ -44,14 +35,14 @@ class SpecialCommandService
 
     public string $channel = 'rendogtv';
 
-    public function __construct(public Command $command, public ?Client $bot = null)
+    public function __construct(public Command $command)
     {
         $this->channel = config('services.twitch.channel', 'rendogtv');
     }
 
-    public static function command(Command $command, ?Client $bot = null): self
+    public static function command(Command $command): self
     {
-        return new self($command, $bot);
+        return new self($command);
     }
 
     public function message(Message $message): self
@@ -89,25 +80,6 @@ class SpecialCommandService
         }
 
         Punish::where('twitch_user_id', $this->targetUserId)->delete();
-    }
-
-    public function restartBot(): void
-    {
-        try {
-            BotManagerService::restart();
-        } catch (\Throwable $th) {
-            throw new Exception('Failed to restart bot. Moderators, check the dashboard.');
-        }
-    }
-
-    public function stopBot(): void
-    {
-        try {
-            $this->bot?->say($this->channel, 'Stopping bot');
-            BotManagerService::stop();
-        } catch (\Throwable $th) {
-            throw new Exception('Failed to stop bot. Moderators, check the dashboard.');
-        }
     }
 
     public function makeSoundForRendog(): void

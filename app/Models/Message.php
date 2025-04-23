@@ -4,7 +4,10 @@ namespace App\Models;
 
 use App\Jobs\Analysis\AnalyzeCapsJob;
 use App\Jobs\Analysis\AnalyzeEmotesJob;
+use App\Jobs\SingleChatMessageJob;
+use App\Services\CommandService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
 
 /**
@@ -39,14 +42,21 @@ class Message extends Model
         'webhook_recieved_at',
     ];
 
-    protected $casts = [
-        'fragments' => 'array',
-        'badges' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'fragments' => 'array',
+            'badges' => 'array',
+        ];
+    }
 
     protected static function booted()
     {
         static::created(function (Message $message) {
+            if ($message->twitch_user_id === config('services.twitch.bot_id')) {
+                return;
+            }
+
             Feature::when(
                 'auto-caps-punishment',
                 whenActive: fn () => AnalyzeCapsJob::dispatch($message),
@@ -57,7 +67,23 @@ class Message extends Model
                 whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
             );
 
-            // TODO Respond to command in chat
+            try {
+                $commandService = CommandService::message($message);
+
+                $response = $commandService->getResponse();
+
+                if ($response) {
+                    SingleChatMessageJob::dispatchSync(
+                        'chat',
+                        $response
+                    );
+                }
+            } catch (\Throwable $th) {
+                Log::error('Error in command service', [
+                    'message' => $message->message,
+                    'exception' => $th,
+                ]);
+            }
         });
     }
 }

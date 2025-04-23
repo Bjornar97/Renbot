@@ -220,7 +220,6 @@ return [
         'bans' => env('FEATURE_BANS', false),
         'punish_debug' => env('FEATURE_PUNISH_DEBUG', false),
         'special_debug' => env('FEATURE_SPECIAL_DEBUG', false),
-        'announce_restart' => env('FEATURE_ANNOUNCE_RESTART', false),
         'auto_caps_punishment' => env('FEATURE_AUTO_CAPS_PUNISHMENT', false),
         'auto_max_emotes_punishment' => env('FEATURE_AUTO_MAX_EMOTES_PUNISHMENT', false),
         'auto_ban_bots' => env('FEATURE_AUTO_BAN_BOTS', false),
