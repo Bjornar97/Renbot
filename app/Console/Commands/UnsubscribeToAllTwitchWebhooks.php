@@ -42,7 +42,7 @@ class UnsubscribeToAllTwitchWebhooks extends Command
         $response = $twitch->getEventSubs();
 
         foreach ($response->data() as $webhook) {
-            if (! str_starts_with($webhook->transport['callback'], config('app.url'))) {
+            if (! str_starts_with($webhook->transport->callback, config('app.url'))) {
                 continue;
             }
 
