@@ -1,22 +1,21 @@
 <?php
 
 use App\Jobs\Analysis\AnalyzeCapsJob;
-use GhostZero\Tmi\Channel;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
-use GhostZero\Tmi\Tags;
+use App\Models\Message;
 
-it('is punishable caps', function (string $message) {
-    $channel = new Channel('rendogtv');
-    $tags = new Tags([]);
-    $messageEvent = new MessageEvent(
-        $channel,
-        $tags,
-        'testuser',
-        $message,
-        false
-    );
+it('is punishable caps', function (string $messageContent) {
+    $fragments = [
+        ['type' => 'text', 'text' => $messageContent, 'cheermote' => null, 'emote' => null, 'mention' => null],
+    ];
 
-    $capsAnalyzer = new AnalyzeCapsJob($messageEvent);
+    $message = Message::create([
+        'twitch_user_id' => 1,
+        'username' => 'testuser',
+        'message' => $messageContent,
+        'fragments' => $fragments,
+    ]);
+
+    $capsAnalyzer = new AnalyzeCapsJob($message);
 
     expect($capsAnalyzer->isPunishable())->toBeTrue();
 })->with([
@@ -28,18 +27,19 @@ it('is punishable caps', function (string $message) {
     'this is mostly lower case BUT HAS SOME caps words',
 ]);
 
-it('is not punishable caps', function (string $message) {
-    $channel = new Channel('rendogtv');
-    $tags = new Tags([]);
-    $messageEvent = new MessageEvent(
-        $channel,
-        $tags,
-        'testuser',
-        $message,
-        false
-    );
+it('is not punishable caps', function (string $messageContent) {
+    $fragments = [
+        ['type' => 'text', 'text' => $messageContent, 'cheermote' => null, 'emote' => null, 'mention' => null],
+    ];
 
-    $capsAnalyzer = new AnalyzeCapsJob($messageEvent);
+    $message = Message::create([
+        'twitch_user_id' => 1,
+        'username' => 'testuser',
+        'message' => $messageContent,
+        'fragments' => $fragments,
+    ]);
+
+    $capsAnalyzer = new AnalyzeCapsJob($message);
 
     expect($capsAnalyzer->isPunishable())->toBeFalse();
 })->with([
@@ -51,21 +51,20 @@ it('is not punishable caps', function (string $message) {
 ]);
 
 test('emotes doesnt count', function () {
-    $channel = new Channel('rendogtv');
-
-    $tags = new Tags([
-        'emotes' => '425618:0-2,4-6/425618:8-14',
+    $message = Message::create([
+        'twitch_user_id' => 1,
+        'username' => 'testuser',
+        'message' => 'LUL LUL LULULUL',
+        'fragments' => [
+            ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => 'emotesv2_c4e36990dfa548e9baa10ac7084df6c8', 'emote_set_id' => '16961', 'owner_id' => '30600786', 'format' => ['static']], 'mention' => null],
+            ['type' => 'text', 'text' => null, 'cheermote' => null, 'emote' => null, 'mention' => null],
+            ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => 'emotesv2_c4e36990dfa548e9baa10ac7084df6c8', 'emote_set_id' => '16961', 'owner_id' => '30600786', 'format' => ['static']], 'mention' => null],
+            ['type' => 'text', 'text' => null, 'cheermote' => null, 'emote' => null, 'mention' => null],
+            ['type' => 'emote', 'text' => 'LUL', 'cheermote' => null, 'emote' => ['id' => 'emotesv2_c4e36990dfa548e9baa10ac7084df6c8', 'emote_set_id' => '16961', 'owner_id' => '30600786', 'format' => ['static']], 'mention' => null],
+        ],
     ]);
 
-    $messageEvent = new MessageEvent(
-        $channel,
-        $tags,
-        'testuser',
-        'LUL LUL LULULUL',
-        false
-    );
-
-    $capsAnalyzer = new AnalyzeCapsJob($messageEvent);
+    $capsAnalyzer = new AnalyzeCapsJob($message);
 
     expect($capsAnalyzer->isPunishable())->toBeFalse();
 });

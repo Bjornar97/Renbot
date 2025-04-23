@@ -4,17 +4,16 @@ namespace App\Jobs\Analysis;
 
 use App\Jobs\SingleChatMessageJob;
 use App\Models\Command;
+use App\Models\Message;
 use App\Models\Setting;
 use App\Services\MessageService;
 use App\Services\PunishService;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class AnalyzeCapsJob implements ShouldQueue
+class AnalyzeCapsJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -47,10 +46,10 @@ class AnalyzeCapsJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(MessageEvent $message)
+    public function __construct(Message $message)
     {
         $this->messageService = MessageService::message($message);
-        $this->string = $this->messageService->getMessageWithoutEmotes();
+        $this->string = $this->extractTextFromFragments($message->fragments);
         $this->string = trim($this->string);
 
         // Remove :ACTION from start of string, since its not part of the message, but added when using /me
@@ -63,6 +62,28 @@ class AnalyzeCapsJob implements ShouldQueue
         $this->wordLengthThreshold = Setting::query()->key('punishment.wordLengthThreshold')->first()?->value ?? self::WORD_LENGTH_THRESHOLD_DEFAULT;
 
         $this->command = Command::find(Setting::query()->key('punishment.autoCapsCommand')->first()?->value);
+    }
+
+    /**
+     * Extract text from message fragments.
+     *
+     * @param  array<array<string, string|null>>|null  $fragments
+     */
+    private function extractTextFromFragments(?array $fragments): string
+    {
+        if ($fragments === null) {
+            return '';
+        }
+
+        $text = '';
+
+        foreach ($fragments as $fragment) {
+            if ($fragment['type'] === 'text' && $fragment['text'] !== null) {
+                $text .= $fragment['text'].' ';
+            }
+        }
+
+        return $text;
     }
 
     /**
