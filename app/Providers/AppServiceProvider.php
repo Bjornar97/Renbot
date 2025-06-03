@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
 use Laravel\Pulse\Facades\Pulse;
@@ -46,5 +47,9 @@ class AppServiceProvider extends ServiceProvider
             'name' => $user->username,
             'avatar' => $user->avatar,
         ]);
+
+        if (app()->environment('local') && str_starts_with(config('app.url'), 'https')) {
+            URL::forceScheme('https');
+        }
     }
 }
