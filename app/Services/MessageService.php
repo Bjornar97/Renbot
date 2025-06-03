@@ -2,26 +2,26 @@
 
 namespace App\Services;
 
+use App\Models\Message;
 use App\Models\User;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
 
 class MessageService
 {
-    public function __construct(protected MessageEvent $message) {}
+    public function __construct(protected Message $message) {}
 
-    public static function message(MessageEvent $message): self
+    public static function message(Message $message): self
     {
         return new self($message);
     }
 
     public function getModerator(): ?User
     {
-        return User::where('twitch_id', $this->message->tags['user-id'])->first();
+        return User::where('twitch_id', $this->message->twitch_user_id)->first();
     }
 
     public function getMessageId(): string
     {
-        return $this->message->tags['id'];
+        return $this->message->message_id;
     }
 
     public function getTarget(): ?string
@@ -32,7 +32,7 @@ class MessageService
 
         $target = $words[1] ?? null;
 
-        if (! $target) {
+        if (! $target || ! str_starts_with($target, '@')) {
             return null;
         }
 
@@ -43,22 +43,34 @@ class MessageService
 
     public function getSenderDisplayName(): string
     {
-        return $this->message->tags['display-name'];
+        return $this->message->display_name;
     }
 
     public function getSenderTwitchId(): int
     {
-        return (int) $this->message->tags['user-id'];
+        return (int) $this->message->twitch_user_id;
+    }
+
+    public function hasBadge(string $badge): bool
+    {
+        $badges = collect($this->message->badges);
+
+        return $badges->where('set_id', $badge)->isNotEmpty();
     }
 
     public function isModerator(): bool
     {
-        return (bool) $this->message->tags['mod'];
+        return $this->hasBadge('moderator') || $this->hasBadge('broadcaster');
     }
 
     public function isVIP(): bool
     {
-        return (bool) $this->message->tags['vip'];
+        return $this->hasBadge('vip');
+    }
+
+    public function isSubscriber(): bool
+    {
+        return $this->hasBadge('subscriber');
     }
 
     public function isThisBot(): bool

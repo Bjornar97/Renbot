@@ -59,8 +59,8 @@ class TwitchWebhookJob extends ProcessWebhookJob
                 [
                     'message' => $event['message']['text'],
                     'webhook_recieved_at' => now(),
-                    'fragments' => json_encode($event['message']['fragments'] ?? null),
-                    'badges' => json_encode($event['badges'] ?? null),
+                    'fragments' => $event['message']['fragments'] ?? null,
+                    'badges' => $event['badges'] ?? null,
                     'reply_to_message_id' => $event['reply']['parent_message_id'] ?? null,
                     'username' => $event['chatter_user_login'],
                     'display_name' => $event['chatter_user_name'],

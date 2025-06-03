@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Services\TwitchWebhookService;
 use Illuminate\Console\Command;
-use romanzipp\Twitch\Enums\GrantType;
-use romanzipp\Twitch\Twitch;
 
 class UnsubscribeToAllTwitchWebhooks extends Command
 {
@@ -27,24 +26,10 @@ class UnsubscribeToAllTwitchWebhooks extends Command
      */
     public function handle(): void
     {
-        $twitch = new Twitch;
+        $webhookService = TwitchWebhookService::connect();
 
-        $twitch->withClientId(config('services.twitch.client_id'))
-            ->withClientSecret(config('services.twitch.client_secret'));
+        $webhookService->unsubscribeFromAllWebhooks();
 
-        $result = $twitch->getOAuthToken(null, GrantType::CLIENT_CREDENTIALS, [
-            'user:read:chat',
-            'user:bot',
-        ]);
-
-        $twitch->withToken($result->data()->access_token);
-
-        $response = $twitch->getEventSubs();
-
-        foreach ($response->data() as $webhook) {
-            $twitch->unsubscribeEventSub([
-                'id' => $webhook->id,
-            ]);
-        }
+        $this->info('Successfully unsubscribed from all Twitch webhooks');
     }
 }

@@ -11,7 +11,6 @@ use App\Models\Punish;
 use App\Models\User;
 use Carbon\CarbonInterval;
 use Exception;
-use GhostZero\Tmi\Client;
 use Laravel\Pennant\Feature;
 
 class PunishService
@@ -37,8 +36,6 @@ class PunishService
     private ?string $basicResponse = null;
 
     private ?User $moderator = null;
-
-    private Client $bot;
 
     private ?string $messageId = null;
 
@@ -76,13 +73,6 @@ class PunishService
     public function moderator(User $moderator): self
     {
         $this->moderator = $moderator;
-
-        return $this;
-    }
-
-    public function bot(Client $bot): self
-    {
-        $this->bot = $bot;
 
         return $this;
     }
@@ -227,12 +217,6 @@ class PunishService
 
     private function say(string $message): void
     {
-        if (! isset($this->bot)) {
-            SingleChatMessageJob::dispatch('chat', $message);
-
-            return;
-        }
-
-        $this->bot->say($this->channel, $message);
+        SingleChatMessageJob::dispatch('chat', $message);
     }
 }
