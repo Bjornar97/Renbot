@@ -59,16 +59,20 @@ class Message extends Model
 
             Feature::when(
                 'auto-caps-punishment',
-                whenActive: fn () => AnalyzeCapsJob::dispatch($message),
+                whenActive: fn () => AnalyzeCapsJob::dispatchSync($message),
             );
 
             Feature::when(
                 'auto-max-emotes-punishment',
-                whenActive: fn () => AnalyzeEmotesJob::dispatch($message),
+                whenActive: fn () => AnalyzeEmotesJob::dispatchSync($message),
             );
 
             try {
                 $commandService = CommandService::message($message);
+
+                if (! $commandService->hasValidCommand()) {
+                    return;
+                }
 
                 $response = $commandService->getResponse();
 

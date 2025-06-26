@@ -48,8 +48,6 @@ class TwitchWebhookJob extends ProcessWebhookJob
      */
     private function message(array $event): void
     {
-        Log::info('Twitch message webhook received', ['message' => $event['message']['text']]);
-
         DB::transaction(function () use ($event) {
             Message::query()->updateOrCreate(
                 [

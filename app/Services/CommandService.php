@@ -14,7 +14,7 @@ use Throwable;
 
 class CommandService
 {
-    public readonly Command $command;
+    public readonly ?Command $command;
 
     private MessageService $messageService;
 
@@ -26,10 +26,6 @@ class CommandService
 
         $command = $this->getCommandFromMessage($message->message);
 
-        if (! $command) {
-            throw new Exception('No command found');
-        }
-
         $this->messageService = MessageService::message($message);
 
         $this->command = $command;
@@ -38,6 +34,11 @@ class CommandService
     public static function message(Message $message): self
     {
         return new self($message);
+    }
+
+    public function hasValidCommand(): bool
+    {
+        return isset($this->command) && $this->command->exists;
     }
 
     public function getResponse(): string
