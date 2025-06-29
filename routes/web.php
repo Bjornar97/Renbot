@@ -18,7 +18,9 @@ use App\Http\Controllers\SpecialCommandController;
 use App\Http\Controllers\StreamdayController;
 use App\Http\Controllers\StreamdaySlotController;
 use App\Models\Event;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+use Laravel\Nightwatch\Http\Middleware\Sample;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,3 +96,7 @@ Route::name('streamday')->get('/streamday', [StreamdayController::class, 'show']
 
 Route::redirect('/l/brother', 'https://open.spotify.com/artist/42Ut8SaEEooPqrGubG1C3M');
 Route::redirect('/l/playlist', 'https://open.spotify.com/playlist/5d4vmTdLm9XN1hVaLe0EY9?si=d0820125401e434e');
+
+Broadcast::routes([
+    'middleware' => ['auth:sanctum', Sample::rate(0)],
+]);
