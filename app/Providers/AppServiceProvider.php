@@ -2,13 +2,17 @@
 
 namespace App\Providers;
 
+use App\Events\AutoPostUpdated;
+use App\Jobs\AutoPostCheckJob;
 use App\Models\Channel;
 use App\Models\User;
+use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Nightwatch\Records\Query;
+use Laravel\Nightwatch\Records\QueuedJob;
 use Laravel\Pennant\Feature;
 use Laravel\Pulse\Facades\Pulse;
 
@@ -28,6 +32,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Nightwatch::rejectQueries(function (Query $query) {
+            return str_contains($query->sql, 'into `jobs`');
+        });
+
+        Nightwatch::rejectQueuedJobs(function (QueuedJob $job) {
+            return in_array($job->name, [
+                BroadcastableModelEventOccurred::class,
+                AutoPostUpdated::class,
+                AutoPostCheckJob::class,
+            ]);
+        });
+
         if (! app()->environment('testing')) {
             $channel = Channel::where('twitch_channel_id', config('services.twitch.channel_id'))->first();
 
@@ -61,9 +77,5 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('local') && str_starts_with(config('app.url'), 'https')) {
             URL::forceScheme('https');
         }
-
-        Nightwatch::rejectQueries(function (Query $query) {
-            return str_contains($query->sql, 'into `jobs`');
-        });
     }
 }
