@@ -36,8 +36,6 @@ Route::name('login')->get('/login', [LoginController::class, 'login']);
 Route::middleware('guest')->group(function () {
     Route::name('login.redirect')->get('/auth/twitch/redirect', [LoginController::class, 'redirect']);
     Route::name('login.callback')->get('/auth/twitch/callback', [LoginController::class, 'callback']);
-
-    Route::name('passkeys.authenticate')->post('/passkey/authenticate', [LoginController::class, 'authenticatePasskey']);
 });
 
 Route::name('home')->get('/', HomeController::class);

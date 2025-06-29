@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $username
  * @property \Carbon\Carbon|null $live_at
  * @property \Carbon\Carbon|null $offline_at
- * @property-read bool $isLive
+ * @property-read bool $is_live
  */
 class Channel extends Model
 {
