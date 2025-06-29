@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\PunishController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Nightwatch\Http\Middleware\Sample;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +20,9 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::webhooks('/webhooks/twitch', 'twitch');
+Route::webhooks('/webhooks/twitch', 'twitch')->middleware([Sample::rate(0.1)]);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/punishable-commands', [PunishController::class, 'punishableCommands']);
 
     Route::post('/punish', [PunishController::class, 'punish']);

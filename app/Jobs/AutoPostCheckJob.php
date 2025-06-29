@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Laravel\Nightwatch\Facades\Nightwatch;
 
 class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
 {
@@ -23,7 +24,7 @@ class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
      */
     public function __construct()
     {
-        //
+        Nightwatch::dontSample();
     }
 
     /**

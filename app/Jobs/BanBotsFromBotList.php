@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Pennant\Feature;
 use romanzipp\Twitch\Twitch;
 
@@ -27,7 +28,7 @@ class BanBotsFromBotList implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        Nightwatch::dontSample();
     }
 
     /**

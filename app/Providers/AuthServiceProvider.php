@@ -19,6 +19,13 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
     ];
 
+    /** @var array<string> */
+    private array $pulseUsers = [
+        'Bjornar97',
+        'rendog',
+        'CraftyRedDragon',
+    ];
+
     /**
      * Register any authentication / authorization services.
      *
@@ -41,7 +48,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('viewPulse', function (User $user) {
-            return $user->can('admin');
+            return in_array($user->username, $this->pulseUsers);
         });
     }
 }

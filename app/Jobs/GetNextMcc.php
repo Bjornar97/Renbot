@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Laravel\Nightwatch\Facades\Nightwatch;
 
 class GetNextMcc implements ShouldQueue
 {
@@ -22,7 +23,7 @@ class GetNextMcc implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        Nightwatch::dontSample();
     }
 
     /**
