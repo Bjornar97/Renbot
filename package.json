@@ -24,7 +24,6 @@
         "@date-io/dayjs": "^3.2.0",
         "@inertiajs/vue3": "^2.0.11",
         "@mdi/js": "^7.4.47",
-        "@soketi/soketi": "^1.6.1",
         "@vitejs/plugin-vue": "^5.2.4",
         "dayjs": "^1.11.13",
         "lodash.debounce": "^4.0.8",
