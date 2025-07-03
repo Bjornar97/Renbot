@@ -9,6 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Laravel\Nightwatch\Facades\Nightwatch;
 
 class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
 {
@@ -17,7 +18,10 @@ class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
     /**
      * Create a new event instance.
      */
-    public function __construct(public AutoPost $autoPost) {}
+    public function __construct(public AutoPost $autoPost)
+    {
+        Nightwatch::dontSample();
+    }
 
     /**
      * Get the channels the event should broadcast on.
