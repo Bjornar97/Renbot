@@ -12,10 +12,7 @@ export const websocket = new Echo({
     wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
     wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
-    encrypted: true,
-    disableStats: true,
     enabledTransports: ["ws", "wss"],
-    cluster: import.meta.env.VITE_BROADCASTING_APP_CLUSTER, //added this line
 });
 
 axios.interceptors.request.use(function (config) {
