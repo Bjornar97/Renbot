@@ -20,7 +20,7 @@ use Laravel\Nightwatch\Http\Middleware\Sample;
 //     return $request->user();
 // });
 
-Route::webhooks('/webhooks/twitch', 'twitch')->middleware([Sample::rate(0.1)]);
+Route::webhooks('/webhooks/twitch', 'twitch')->middleware([Sample::rate(0.3)]);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/punishable-commands', [PunishController::class, 'punishableCommands']);

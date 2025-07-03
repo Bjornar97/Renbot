@@ -7,7 +7,6 @@ use App\Jobs\AutoPostCheckJob;
 use App\Models\Channel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
@@ -32,26 +31,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Nightwatch::rejectQueries(function (Query $query) {
-            return str_contains($query->sql, 'into `jobs`');
-        });
-
-        Nightwatch::rejectQueuedJobs(function (QueuedJob $job) {
-            return in_array($job->name, [
-                BroadcastableModelEventOccurred::class,
-                AutoPostUpdated::class,
-                AutoPostCheckJob::class,
-            ]);
-        });
-
-        if (! app()->environment('testing')) {
-            $channel = Channel::where('twitch_channel_id', config('services.twitch.channel_id'))->first();
-
-            if (! $channel || ! $channel->is_live) {
-                Log::debug('Dont sample nightwatch');
-                Nightwatch::dontSample();
-            }
-        }
+        $this->setNightwatchSampleRate();
 
         Feature::resolveScopeUsing(fn ($driver) => null);
 
@@ -77,5 +57,32 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('local') && str_starts_with(config('app.url'), 'https')) {
             URL::forceScheme('https');
         }
+    }
+
+    private function setNightwatchSampleRate(): void
+    {
+        if (app()->environment('testing')) {
+            return;
+        }
+
+        Nightwatch::rejectQueries(function (Query $query) {
+            return str_contains($query->sql, 'into `jobs`');
+        });
+
+        Nightwatch::rejectQueuedJobs(function (QueuedJob $job) {
+            return in_array($job->name, [
+                BroadcastableModelEventOccurred::class,
+                AutoPostUpdated::class,
+                AutoPostCheckJob::class,
+            ]);
+        });
+
+        $channel = Channel::where('twitch_channel_id', config('services.twitch.channel_id'))->first();
+
+        if ($channel && $channel->is_live) {
+            return;
+        }
+
+        Nightwatch::dontSample();
     }
 }
