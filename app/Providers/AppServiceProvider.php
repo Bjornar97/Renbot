@@ -2,12 +2,19 @@
 
 namespace App\Providers;
 
+use App\Events\AutoPostUpdated;
+use App\Jobs\AutoPostCheckJob;
+use App\Models\Channel;
 use App\Models\User;
-use App\Services\BotService;
+use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Nightwatch\Facades\Nightwatch;
+use Laravel\Nightwatch\Records\Query;
+use Laravel\Nightwatch\Records\QueuedJob;
 use Laravel\Pennant\Feature;
 use Laravel\Pulse\Facades\Pulse;
-use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,12 +23,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
-        // Sanctum::ignoreMigrations();
-
-        $this->app->bind(BotService::class, fn () => new BotService);
-    }
+    public function register() {}
 
     /**
      * Bootstrap any application services.
@@ -30,6 +32,27 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Nightwatch::rejectQueries(function (Query $query) {
+            return str_contains($query->sql, 'into `jobs`');
+        });
+
+        Nightwatch::rejectQueuedJobs(function (QueuedJob $job) {
+            return in_array($job->name, [
+                BroadcastableModelEventOccurred::class,
+                AutoPostUpdated::class,
+                AutoPostCheckJob::class,
+            ]);
+        });
+
+        if (! app()->environment('testing')) {
+            $channel = Channel::where('twitch_channel_id', config('services.twitch.channel_id'))->first();
+
+            if (! $channel || ! $channel->is_live) {
+                Log::debug('Dont sample nightwatch');
+                Nightwatch::dontSample();
+            }
+        }
+
         Feature::resolveScopeUsing(fn ($driver) => null);
 
         Feature::define('timeouts', fn () => config('app.features.timeouts'));
@@ -39,8 +62,6 @@ class AppServiceProvider extends ServiceProvider
         Feature::define('punish-debug', fn () => config('app.features.punish_debug'));
 
         Feature::define('special-debug', fn () => config('app.features.special_debug'));
-
-        Feature::define('announce-restart', fn () => config('app.features.announce_restart'));
 
         Feature::define('auto-caps-punishment', fn () => config('app.features.auto_caps_punishment'));
 
@@ -52,5 +73,9 @@ class AppServiceProvider extends ServiceProvider
             'name' => $user->username,
             'avatar' => $user->avatar,
         ]);
+
+        if (app()->environment('local') && str_starts_with(config('app.url'), 'https')) {
+            URL::forceScheme('https');
+        }
     }
 }

@@ -20,7 +20,6 @@ defineOptions({
 
 const props = defineProps<{
     botStatus: BotStatusType;
-    announceRestart: boolean;
     punishableBansEnabled: boolean;
     punishableTimeoutsEnabled: boolean;
     autoCapsEnabled: boolean;
@@ -38,7 +37,6 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    announceRestart: props.announceRestart,
     punishableBansEnabled: props.punishableBansEnabled,
     punishableTimeoutsEnabled: props.punishableTimeoutsEnabled,
     autoCapsEnabled: props.autoCapsEnabled,
@@ -161,16 +159,6 @@ const restartBot = () => {
                 <VExpansionPanels v-model="openPanels">
                     <VExpansionPanel title="General">
                         <template #text>
-                            <VSwitch
-                                v-model="form.announceRestart"
-                                class="mb-4"
-                                label="Announce restart"
-                                :disabled="form.processing"
-                                :error-messages="form.errors.announceRestart"
-                                color="primary"
-                                messages="If enabled, the bot will tell chat that it is restarting"
-                            ></VSwitch>
-
                             <VSwitch
                                 v-model="form.autoBanBots"
                                 class="mb-4"

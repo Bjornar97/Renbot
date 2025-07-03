@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Events\AutoPostUpdated;
 use App\Models\AutoPost;
 use App\Models\Message;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Laravel\Nightwatch\Facades\Nightwatch;
 
 class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
 {
@@ -22,9 +22,9 @@ class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public MessageEvent $message)
+    public function __construct()
     {
-        //
+        Nightwatch::dontSample();
     }
 
     /**
@@ -43,6 +43,7 @@ class AutoPostCheckJob implements ShouldBeUnique, ShouldQueue
 
         DB::transaction(function () {
             $queues = AutoPost::query()
+                ->where('enabled', true)
                 ->whereRelation('commands', 'auto_post_enabled', true)
                 ->orderBy('last_post', 'desc')
                 ->get();

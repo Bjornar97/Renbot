@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BotStatus;
 use App\Http\Requests\UpdateBotSettingsRequest;
 use App\Jobs\Analysis\AnalyzeCapsJob;
 use App\Jobs\Analysis\AnalyzeEmotesJob;
 use App\Models\Command;
 use App\Models\Setting;
-use App\Services\BotManagerService;
+use App\Services\TwitchWebhookService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -21,13 +22,13 @@ class BotController extends Controller
     {
         Gate::authorize('moderate');
 
-        $status = BotManagerService::getStatus();
-
         $autoCapsCommand = Setting::key('punishment.autoCapsCommand')->first();
         $autoMaxEmotesCommand = Setting::key('punishment.maxEmotesCommand')->first();
 
+        $isRunning = TwitchWebhookService::connect()->isSubscribedToWebhook('channel.chat.message');
+
         return Inertia::render('Bot/Settings', [
-            'botStatus' => $status,
+            'botStatus' => $isRunning ? BotStatus::RUNNING : BotStatus::STOPPED,
 
             'announceRestart' => Feature::active('announce-restart'),
             'punishableBansEnabled' => Feature::active('bans'),
@@ -134,7 +135,18 @@ class BotController extends Controller
         Gate::authorize('moderate');
 
         try {
-            BotManagerService::restart();
+            $webhookService = TwitchWebhookService::connect();
+
+            try {
+                $webhookService->unsubscribeFromWebhook('channel.chat.message');
+            } catch (Throwable $th) {
+                if ($th->getCode() !== 404) {
+                    return back()->with('error', "Something went wrong when trying to unsubscribe from the channel.chat.message webhook. Contact Bjornar97. Error: {$th->getMessage()}");
+                }
+            }
+
+            $webhookService->subscribeToWebhook('channel.chat.message');
+
             activity()->log('Restarted bot');
         } catch (Throwable $th) {
             return back()->with('error', "Something went wrong when trying to restart the bot. Contact Bjornar97. Error: {$th->getMessage()}");
@@ -148,7 +160,8 @@ class BotController extends Controller
         Gate::authorize('moderate');
 
         try {
-            BotManagerService::start();
+            TwitchWebhookService::connect()->subscribeToWebhook('channel.chat.message');
+
             activity()->log('Started bot');
         } catch (\Throwable $th) {
             return back()->with('error', "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
@@ -162,7 +175,8 @@ class BotController extends Controller
         Gate::authorize('moderate');
 
         try {
-            BotManagerService::stop();
+            TwitchWebhookService::connect()->unsubscribeFromWebhook('channel.chat.message');
+
             activity()->log('Stopped bot');
         } catch (\Throwable $th) {
             return back()->with('error', "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");

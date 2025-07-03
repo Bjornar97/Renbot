@@ -5,46 +5,46 @@ namespace App\Services;
 use App\Jobs\DeleteTwitchMessageJob;
 use App\Models\Command;
 use App\Models\CommandMetadata;
+use App\Models\Message;
 use Carbon\Carbon;
 use Exception;
-use GhostZero\Tmi\Client;
-use GhostZero\Tmi\Events\Twitch\MessageEvent;
 use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
 use Throwable;
 
 class CommandService
 {
-    public readonly Command $command;
+    public readonly ?Command $command;
 
     private MessageService $messageService;
 
     public string $channel = 'rendogtv';
 
-    public function __construct(public MessageEvent $message, private Client $bot)
+    public function __construct(public Message $message)
     {
         $this->channel = config('services.twitch.channel', 'rendogtv');
 
         $command = $this->getCommandFromMessage($message->message);
-
-        if (! $command) {
-            throw new Exception('No command found');
-        }
 
         $this->messageService = MessageService::message($message);
 
         $this->command = $command;
     }
 
-    public static function message(MessageEvent $message, Client $bot): self
+    public static function message(Message $message): self
     {
-        return new self($message, $bot);
+        return new self($message);
+    }
+
+    public function hasValidCommand(): bool
+    {
+        return isset($this->command) && $this->command->exists;
     }
 
     public function getResponse(): string
     {
         if (! $this->isAuthorized()) {
-            DeleteTwitchMessageJob::dispatch($this->message->tags['id']);
+            DeleteTwitchMessageJob::dispatch($this->message->message_id);
 
             throw new Exception('Unauthorized');
         }
@@ -92,7 +92,7 @@ class CommandService
             return true;
         }
 
-        $isSubscriber = (bool) $this->message->tags['subscriber'];
+        $isSubscriber = $this->messageService->isSubscriber();
         $isSubText = $isSubscriber ? 'Yes' : 'No';
 
         Log::debug("Subscriber: {$isSubText}");
@@ -241,7 +241,6 @@ class CommandService
         $response = PunishService::user($twitchId, $target)
             ->command($this->command)
             ->moderator($moderator)
-            ->bot($this->bot)
             ->basicResponse($this->generateBasicResponse())
             ->punish();
 
@@ -253,7 +252,7 @@ class CommandService
         $target = $this->messageService->getTarget();
 
         try {
-            $command = SpecialCommandService::command($this->command, $this->bot)
+            $command = SpecialCommandService::command($this->command)
                 ->message($this->message);
 
             if ($target) {
