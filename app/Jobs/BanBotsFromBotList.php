@@ -40,13 +40,12 @@ class BanBotsFromBotList implements ShouldQueue
             // return;
         }
 
-        /** @var array<string, array<int, array<string|int>>> $response */
+        /** @var array{bots: list<array{0: string, 1: int, 2: int}>} $response */
         $response = Http::get('https://api.twitchinsights.net/v1/bots/online')->json();
 
-        $bots = collect($response['bots'] ?? []);
-        $bots = $bots->pluck(0);
+        $bots = collect($response['bots'])->map(static fn($item) => $item[0]);
 
-        $renbotUser = User::query()->where('username', 'RenTheBot')->first();
+        $renbotUser = User::query()->where('username', config("services.twitch.username"))->first();
 
         $twitch = new Twitch;
         $twitch->setToken($renbotUser->twitch_access_token);
