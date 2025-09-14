@@ -73,19 +73,23 @@ class SpecialCommandService
         return $this->{self::$functions[$this->command->action]['action']}();
     }
 
-    public function resetPunishment(): void
+    public function resetPunishment(): string
     {
         if (! $this->targetUserId) {
             throw new Exception("You need to specify a username to reset. Example: !{$this->command->command} @username");
         }
 
         Punish::where('twitch_user_id', $this->targetUserId)->delete();
+
+        return "Successfully reset punishment for user {$this->targetUsername}";
     }
 
-    public function makeSoundForRendog(): void
+    public function makeSoundForRendog(): string
     {
         try {
             MakeNoiseEvent::dispatch();
+
+            return $this->command->response;
         } catch (\Throwable $th) {
             throw new Exception('Something went wrong while making noise for Rendog');
         }

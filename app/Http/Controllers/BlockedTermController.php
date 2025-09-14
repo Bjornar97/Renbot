@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Nightwatch\Facades\Nightwatch;
 use romanzipp\Twitch\Twitch;
 
 class BlockedTermController extends Controller
@@ -118,6 +119,7 @@ class BlockedTermController extends Controller
             return back()->with('success', 'Successfully added term to Twitch');
         } catch (\Throwable $th) {
             Log::error($th);
+            Nightwatch::unrecoverableExceptionOccurred($th);
 
             return back()->withErrors(['Something went wrong']);
         }
@@ -166,6 +168,7 @@ class BlockedTermController extends Controller
             Cache::forget('blocked-terms');
         } catch (\Throwable $th) {
             Log::error($th);
+            Nightwatch::unrecoverableExceptionOccurred($th);
 
             return back()->with('error', 'Something went wrong');
         }
