@@ -205,7 +205,6 @@ const deleteCommand = () => {
                             <VListItemTitle>Announce Primary</VListItemTitle>
                         </VListItem>
                         <VListItem
-                            color="blue"
                             base-color="blue"
                             :prepend-icon="mdiBullhornVariant"
                             @click="() => chatCommand('announcement', 'blue')"
@@ -213,7 +212,6 @@ const deleteCommand = () => {
                             <VListItemTitle>Announce Blue</VListItemTitle>
                         </VListItem>
                         <VListItem
-                            color="green"
                             base-color="green"
                             :prepend-icon="mdiBullhornVariant"
                             @click="() => chatCommand('announcement', 'green')"
@@ -221,7 +219,6 @@ const deleteCommand = () => {
                             <VListItemTitle>Announce Green</VListItemTitle>
                         </VListItem>
                         <VListItem
-                            color="orange"
                             base-color="orange"
                             :prepend-icon="mdiBullhornVariant"
                             @click="() => chatCommand('announcement', 'orange')"
@@ -229,7 +226,6 @@ const deleteCommand = () => {
                             <VListItemTitle>Announce Orange</VListItemTitle>
                         </VListItem>
                         <VListItem
-                            color="purple"
                             base-color="purple"
                             :prepend-icon="mdiBullhornVariant"
                             @click="() => chatCommand('announcement', 'purple')"

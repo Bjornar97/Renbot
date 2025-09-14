@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Pennant\Feature;
 use Throwable;
 
@@ -149,6 +150,8 @@ class BotController extends Controller
 
             activity()->log('Restarted bot');
         } catch (Throwable $th) {
+            Nightwatch::unrecoverableExceptionOccurred($th);
+
             return back()->with('error', "Something went wrong when trying to restart the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
 
@@ -164,6 +167,8 @@ class BotController extends Controller
 
             activity()->log('Started bot');
         } catch (\Throwable $th) {
+            Nightwatch::unrecoverableExceptionOccurred($th);
+
             return back()->with('error', "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
 
@@ -179,6 +184,8 @@ class BotController extends Controller
 
             activity()->log('Stopped bot');
         } catch (\Throwable $th) {
+            Nightwatch::unrecoverableExceptionOccurred($th);
+
             return back()->with('error', "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");
         }
 

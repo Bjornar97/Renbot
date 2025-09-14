@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Nightwatch\Facades\Nightwatch;
 
 class CommandController extends Controller
 {
@@ -143,8 +144,11 @@ class CommandController extends Controller
 
         try {
             $message = $command->general_response;
+
             SingleChatMessageJob::dispatch($data['type'] ?? 'chat', $message, null, $data['announcement_color'] ?? null);
         } catch (\Throwable $th) {
+            Nightwatch::unrecoverableExceptionOccurred($th);
+
             return back()->with('error', "Something went wrong: {$th->getMessage()}");
         }
 
