@@ -17,7 +17,7 @@
         "lodash": "^4.17.21",
         "pusher-js": "^8.4.0",
         "typescript": "^5.8.3",
-        "vite": "^6.3.5",
+        "vite": "^6.4.1",
         "ziggy-js": "^2.5.3"
     },
     "dependencies": {
