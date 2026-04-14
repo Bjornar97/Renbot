@@ -16,7 +16,7 @@ class EventTeam extends Model
     /**
      * Get the team that owns the EventTeam
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Event, $this>
+     * @return BelongsTo<Event, $this>
      */
     public function team(): BelongsTo
     {

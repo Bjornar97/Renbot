@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Twitch\TwitchExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -19,9 +21,9 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
 
-        \SocialiteProviders\Manager\SocialiteWasCalled::class => [
+        SocialiteWasCalled::class => [
             // ... other providers
-            \SocialiteProviders\Twitch\TwitchExtendSocialite::class.'@handle',
+            TwitchExtendSocialite::class.'@handle',
         ],
     ];
 

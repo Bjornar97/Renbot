@@ -15,8 +15,8 @@ class Setting extends Model
     /**
      * Scope a query to filter by key.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
      */
     public function scopeKey(Builder $query, string $key): Builder
     {

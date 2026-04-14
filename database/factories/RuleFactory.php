@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Rule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Rule>
+ * @extends Factory<Rule>
  */
 class RuleFactory extends Factory
 {

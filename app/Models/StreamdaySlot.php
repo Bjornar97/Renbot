@@ -30,7 +30,7 @@ class StreamdaySlot extends Model
     /**
      * Get the streamday that owns the StreamdaySlot
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Streamday, $this>
+     * @return BelongsTo<Streamday, $this>
      */
     public function streamday(): BelongsTo
     {
@@ -40,7 +40,7 @@ class StreamdaySlot extends Model
     /**
      * Get the creator that owns the StreamdaySlot
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Creator, $this>
+     * @return BelongsTo<Creator, $this>
      */
     public function creator(): BelongsTo
     {

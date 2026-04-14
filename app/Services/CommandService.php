@@ -234,7 +234,7 @@ class CommandService
 
         try {
             $twitchId = TwitchService::getTwitchId($target, $moderator);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return "@{$this->messageService->getSenderDisplayName()} {$th->getMessage()}";
         }
 

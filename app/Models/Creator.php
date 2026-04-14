@@ -32,7 +32,7 @@ class Creator extends Model
     /**
      * Get the image url attribute.
      *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute<string, null>
+     * @return Attribute<string, null>
      */
     protected function imageUrl(): Attribute
     {
@@ -52,7 +52,7 @@ class Creator extends Model
     /**
      * Get the events associated with the Creator.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Event, $this>
+     * @return BelongsToMany<Event, $this>
      */
     public function events(): BelongsToMany
     {

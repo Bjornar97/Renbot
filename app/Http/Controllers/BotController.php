@@ -166,7 +166,7 @@ class BotController extends Controller
             TwitchWebhookService::connect()->subscribeToWebhook('channel.chat.message');
 
             activity()->log('Started bot');
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             Nightwatch::unrecoverableExceptionOccurred($th);
 
             return back()->with('error', "Something went wrong when trying to start the bot. Contact Bjornar97. Error: {$th->getMessage()}");
@@ -183,7 +183,7 @@ class BotController extends Controller
             TwitchWebhookService::connect()->unsubscribeFromWebhook('channel.chat.message');
 
             activity()->log('Stopped bot');
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             Nightwatch::unrecoverableExceptionOccurred($th);
 
             return back()->with('error', "Something went wrong when trying to stop the bot. Contact Bjornar97. Error: {$th->getMessage()}");
