@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Command;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Command>
+ * @extends Factory<Command>
  */
 class CommandFactory extends Factory
 {

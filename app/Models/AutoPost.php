@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -35,7 +36,7 @@ class AutoPost extends Model
     /**
      * Get the commands associated with the AutoPost.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Command, $this>
+     * @return HasMany<Command, $this>
      */
     public function commands(): HasMany
     {
@@ -45,7 +46,7 @@ class AutoPost extends Model
     /**
      * Get the last command that executed the
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Command, $this>
+     * @return BelongsTo<Command, $this>
      */
     public function lastCommand(): BelongsTo
     {
@@ -55,7 +56,7 @@ class AutoPost extends Model
     /**
      * Get the chats to next attribute.
      *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute<int, null>
+     * @return Attribute<int, null>
      */
     protected function chatsToNext(): Attribute
     {
@@ -69,7 +70,7 @@ class AutoPost extends Model
     /**
      * Get the channels that model events should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel|\Illuminate\Database\Eloquent\Model>
+     * @return array<int, Channel|Model>
      */
     public function broadcastOn(string $event): array
     {

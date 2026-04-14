@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Event extends Model
 {
-    /** @use HasFactory<\Database\Factories\EventFactory> */
+    /** @use HasFactory<EventFactory> */
     use HasFactory;
 
     use LogsActivity;
@@ -60,7 +61,7 @@ class Event extends Model
     /**
      * Get the participants associated with the Event.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Creator, $this>
+     * @return BelongsToMany<Creator, $this>
      */
     public function participants(): BelongsToMany
     {
@@ -73,7 +74,7 @@ class Event extends Model
     /**
      * Get the teams associated with the Event.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EventTeam, $this>
+     * @return HasMany<EventTeam, $this>
      */
     public function teams(): HasMany
     {
@@ -96,8 +97,8 @@ class Event extends Model
     /**
      * Scope a query to only include upcoming events.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
      */
     public function scopeUpcoming(Builder $query)
     {

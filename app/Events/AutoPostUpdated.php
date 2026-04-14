@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\AutoPost;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -26,7 +27,7 @@ class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
@@ -36,7 +37,7 @@ class AutoPostUpdated implements ShouldBroadcast, ShouldQueue
     }
 
     /**
-     * @return array<string, \App\Models\AutoPost>
+     * @return array<string, AutoPost>
      */
     public function broadcastWith(): array
     {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,8 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property string $twitch_channel_id
  * @property string $username
- * @property \Carbon\Carbon|null $live_at
- * @property \Carbon\Carbon|null $offline_at
+ * @property Carbon|null $live_at
+ * @property Carbon|null $offline_at
  * @property-read bool $is_live
  */
 class Channel extends Model

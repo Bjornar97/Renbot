@@ -25,7 +25,7 @@ class Streamday extends Model
     /**
      * Get all of the slots for the Streamday
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<StreamdaySlot, $this>
+     * @return HasMany<StreamdaySlot, $this>
      */
     public function streamdaySlots(): HasMany
     {

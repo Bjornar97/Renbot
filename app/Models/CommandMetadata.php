@@ -17,7 +17,7 @@ class CommandMetadata extends Model
     /**
      * Get the command that owns the CommandMetadata
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Command, $this>
+     * @return BelongsTo<Command, $this>
      */
     public function command(): BelongsTo
     {
@@ -27,8 +27,8 @@ class CommandMetadata extends Model
     /**
      * Scope a query to only include metadata that is a field.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
      */
     public function scopeField(Builder $query): Builder
     {

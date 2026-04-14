@@ -16,7 +16,7 @@ class Punish extends Model
     /**
      * Get the command that owns the Punish
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Command, $this>
+     * @return BelongsTo<Command, $this>
      */
     public function command(): BelongsTo
     {

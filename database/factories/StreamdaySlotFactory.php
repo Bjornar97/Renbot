@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\StreamdaySlot;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StreamdaySlot>
+ * @extends Factory<StreamdaySlot>
  */
 class StreamdaySlotFactory extends Factory
 {

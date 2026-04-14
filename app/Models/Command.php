@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\SpecialCommandService;
 use Database\Factories\CommandFactory;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
@@ -67,7 +68,7 @@ class Command extends Model
     /**
      * Get the parent command
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Command, $this>
+     * @return BelongsTo<Command, $this>
      */
     public function parent(): BelongsTo
     {
@@ -77,7 +78,7 @@ class Command extends Model
     /**
      * Get the children commands
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Command, $this>
+     * @return HasMany<Command, $this>
      */
     public function children(): HasMany
     {
@@ -87,7 +88,7 @@ class Command extends Model
     /**
      * Get the punishes associated with the Command
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Punish, $this>
+     * @return HasMany<Punish, $this>
      */
     public function punishes(): HasMany
     {
@@ -97,7 +98,7 @@ class Command extends Model
     /**
      * Get the auto post associated with the Command
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<AutoPost, $this>
+     * @return BelongsTo<AutoPost, $this>
      */
     public function autoPost(): BelongsTo
     {
@@ -107,7 +108,7 @@ class Command extends Model
     /**
      * Get the command metadata associated with the Command
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CommandMetadata, $this>
+     * @return HasMany<CommandMetadata, $this>
      */
     public function commandMetadata(): HasMany
     {
@@ -117,8 +118,8 @@ class Command extends Model
     /**
      * Scope a query to only include active commands
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
      */
     public function scopeActive(Builder $query): Builder
     {
@@ -130,8 +131,8 @@ class Command extends Model
     /**
      * Scope a query to only include regular commands
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
      */
     public function scopeRegular(Builder $query): Builder
     {
@@ -141,8 +142,8 @@ class Command extends Model
     /**
      * Scope a query to only include punishable commands
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
      */
     public function scopePunishable(Builder $query): Builder
     {
@@ -152,8 +153,8 @@ class Command extends Model
     /**
      * Scope a query to only include special commands
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<$this>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
      */
     public function scopeSpecial(Builder $query): Builder
     {
@@ -342,7 +343,7 @@ class Command extends Model
     /**
      * Get the channels that model events should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel|\Illuminate\Database\Eloquent\Model>
+     * @return array<int, Channel|Model>
      */
     public function broadcastOn(string $event): array
     {

@@ -19,7 +19,7 @@ class Authenticator extends Model
     /**
      * Get the user that owns the Authenticator
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
