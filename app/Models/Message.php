@@ -6,6 +6,7 @@ use App\Jobs\Analysis\AnalyzeCapsJob;
 use App\Jobs\Analysis\AnalyzeEmotesJob;
 use App\Jobs\SingleChatMessageJob;
 use App\Services\CommandService;
+use App\Services\MessageService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Feature;
@@ -57,15 +58,19 @@ class Message extends Model
                 return;
             }
 
-            Feature::when(
-                'auto-caps-punishment',
-                whenActive: fn () => AnalyzeCapsJob::dispatchSync($message),
-            );
+            $messageService = MessageService::message($message);
 
-            Feature::when(
-                'auto-max-emotes-punishment',
-                whenActive: fn () => AnalyzeEmotesJob::dispatchSync($message),
-            );
+            if (! $messageService->isModerator()) {
+                Feature::when(
+                    'auto-caps-punishment',
+                    whenActive: fn () => AnalyzeCapsJob::dispatchSync($message),
+                );
+
+                Feature::when(
+                    'auto-max-emotes-punishment',
+                    whenActive: fn () => AnalyzeEmotesJob::dispatchSync($message),
+                );
+            }
 
             try {
                 $commandService = CommandService::message($message);

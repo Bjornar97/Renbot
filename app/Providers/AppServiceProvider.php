@@ -7,6 +7,7 @@ use App\Jobs\AutoPostCheckJob;
 use App\Models\Channel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
@@ -14,6 +15,7 @@ use Laravel\Nightwatch\Records\Query;
 use Laravel\Nightwatch\Records\QueuedJob;
 use Laravel\Pennant\Feature;
 use Laravel\Pulse\Facades\Pulse;
+use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -77,7 +79,13 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        $channel = Channel::where('twitch_channel_id', config('services.twitch.channel_id'))->first();
+        try {
+            $channel = Channel::where('twitch_channel_id', config('services.twitch.channel_id'))->first();
+        } catch (Throwable $e) {
+            Log::error('Failed to get channel for bot from database', ['error' => $e->getMessage()]);
+
+            return;
+        }
 
         if ($channel && $channel->is_live) {
             return;
