@@ -11,7 +11,7 @@
         "@types/lodash.debounce": "^4.0.9",
         "@types/node": "^24.12.2",
         "@types/ziggy-js": "^1.8.0",
-        "axios": "^1.15.0",
+        "axios": "^1.16.0",
         "laravel-echo": "^2.3.4",
         "laravel-vite-plugin": "^3.0.1",
         "lodash": "^4.18.1",
