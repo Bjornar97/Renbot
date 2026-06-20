@@ -1,71 +1,107 @@
-x-laravel-app: &laravel-app
-  build:
-    context: .
-    dockerfile: ./docker/production/Dockerfile
-  env_file:
-    - stack.env
-  volumes:
-    - laravel-storage-production:/app/storage
-  networks:
-    - laravel-production
-  restart: unless-stopped
-  depends_on:
-    mariadb:
-      condition: service_healthy
-
 services:
   app:
-    <<: *laravel-app
     container_name: renbot-prod-app
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
     ports:
       - "${APP_PORT:-8001}:80"
+    env_file:
+      - stack.env
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
   reverb:
-    <<: *laravel-app
     container_name: renbot-prod-reverb
-    command: php artisan reverb:start --host=0.0.0.0 --port="${REVERB_SERVER_PORT:-8080}"
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    env_file:
+      - stack.env
+    volumes:
+      - laravel-storage-production:/app/storage
     ports:
       - "${REVERB_PORT_FORWARD:-8080}:8080"
-    stop_signal: SIGTERM
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
   queue-worker:
-    <<: *laravel-app
     container_name: renbot-prod-queue-worker
-    command: php artisan queue:work database --sleep=3 --tries=3 --timeout=90 --max-time=3600
-    stop_signal: SIGTERM
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
+    command: php artisan queue:work database --sleep=3 --tries=3 --timeout=90
+    env_file:
+      - stack.env
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
   pulse:
-    <<: *laravel-app
     container_name: renbot-prod-pulse
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
     command: php artisan pulse:check
-    stop_signal: SIGTERM
+    env_file:
+      - stack.env
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
   scheduler:
-    <<: *laravel-app
     container_name: renbot-prod-scheduler
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
     command: php artisan schedule:work
-    stop_signal: SIGTERM
+    env_file:
+      - stack.env
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
   nightwatch-agent:
     image: laravelphp/nightwatch-agent:latest
     container_name: renbot-prod-nightwatch-agent
+    restart: unless-stopped
     environment:
       NIGHTWATCH_TOKEN: "${NIGHTWATCH_TOKEN}"
       NIGHTWATCH_REQUEST_SAMPLE_RATE: "${NIGHTWATCH_REQUEST_SAMPLE_RATE:-0.4}"
       NIGHTWATCH_IGNORE_CACHE_EVENTS: "true"
-    healthcheck:
-      test: ["CMD", "php", "nightwatch-status"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-    restart: unless-stopped
     networks:
       - laravel-production
 
   mariadb:
-    image: mariadb:10
+    image: mariadb:10.11
     container_name: renbot-prod-mariadb
+    restart: unless-stopped
     ports:
       - "${FORWARD_DB_PORT:-3306}:3306"
     environment:
@@ -78,16 +114,19 @@ services:
     volumes:
       - mariadb-data-production:/var/lib/mysql
     networks:
-      - laravel-production
+      laravel-production:
+        aliases:
+          - mariadb
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
-      retries: 5
-    restart: unless-stopped
+      retries: 10
+      start_period: 30s
 
 networks:
   laravel-production:
+    name: renbot-prod-network
 
 volumes:
   mariadb-data-production:
