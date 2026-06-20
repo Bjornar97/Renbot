@@ -1,0 +1,94 @@
+x-laravel-app: &laravel-app
+  build:
+    context: .
+    dockerfile: ./docker/production/Dockerfile
+  env_file:
+    - stack.env
+  volumes:
+    - laravel-storage-production:/app/storage
+  networks:
+    - laravel-production
+  restart: unless-stopped
+  depends_on:
+    mariadb:
+      condition: service_healthy
+
+services:
+  app:
+    <<: *laravel-app
+    container_name: renbot-prod-app
+    ports:
+      - "${APP_PORT:-8001}:80"
+
+  reverb:
+    <<: *laravel-app
+    container_name: renbot-prod-reverb
+    command: php artisan reverb:start --host=0.0.0.0 --port="${REVERB_SERVER_PORT:-8080}"
+    ports:
+      - "${REVERB_PORT_FORWARD:-8080}:8080"
+    stop_signal: SIGTERM
+
+  queue-worker:
+    <<: *laravel-app
+    container_name: renbot-prod-queue-worker
+    command: php artisan queue:work database --sleep=3 --tries=3 --timeout=90 --max-time=3600
+    stop_signal: SIGTERM
+
+  pulse:
+    <<: *laravel-app
+    container_name: renbot-prod-pulse
+    command: php artisan pulse:check
+    stop_signal: SIGTERM
+
+  scheduler:
+    <<: *laravel-app
+    container_name: renbot-prod-scheduler
+    command: php artisan schedule:work
+    stop_signal: SIGTERM
+
+  nightwatch-agent:
+    image: laravelphp/nightwatch-agent:latest
+    container_name: renbot-prod-nightwatch-agent
+    environment:
+      NIGHTWATCH_TOKEN: "${NIGHTWATCH_TOKEN}"
+      NIGHTWATCH_REQUEST_SAMPLE_RATE: "${NIGHTWATCH_REQUEST_SAMPLE_RATE:-0.4}"
+      NIGHTWATCH_IGNORE_CACHE_EVENTS: "true"
+    healthcheck:
+      test: ["CMD", "php", "nightwatch-status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - laravel-production
+
+  mariadb:
+    image: mariadb:10
+    container_name: renbot-prod-mariadb
+    ports:
+      - "${FORWARD_DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    volumes:
+      - mariadb-data-production:/var/lib/mysql
+    networks:
+      - laravel-production
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+networks:
+  laravel-production:
+
+volumes:
+  mariadb-data-production:
+  laravel-storage-production:
