@@ -1,3 +1,5 @@
+name: renbot-dev
+
 services:
     renbot.test:
         build:
