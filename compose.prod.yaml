@@ -13,6 +13,7 @@ services:
       - laravel-storage-production:/app/storage
     networks:
       - laravel-production
+      - proxy
     depends_on:
       mariadb:
         condition: service_healthy
@@ -117,6 +118,8 @@ services:
       start_period: 30s
 
 networks:
+  proxy:
+    external: true
   laravel-production:
     name: renbot-prod-network
 
