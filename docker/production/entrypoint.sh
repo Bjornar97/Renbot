@@ -17,6 +17,7 @@ mkdir -p /app/storage/framework/cache/data \
 chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 # Run migrations and cache config
+php artisan optimize:clear
 php artisan migrate --force
 php artisan optimize
 
