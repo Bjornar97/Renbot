@@ -35,6 +35,7 @@ services:
       - "${REVERB_PORT_FORWARD:-8080}:8080"
     networks:
       - laravel-production
+      - proxy
     depends_on:
       mariadb:
         condition: service_healthy
