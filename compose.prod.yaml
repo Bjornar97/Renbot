@@ -105,7 +105,7 @@ services:
       - laravel-production
 
   mariadb:
-    image: mariadb:10.11
+    image: mariadb:11.4
     container_name: renbot-prod-mariadb
     restart: unless-stopped
     ports:
