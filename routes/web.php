@@ -100,3 +100,16 @@ Route::redirect('/l/playlist', 'https://open.spotify.com/playlist/5d4vmTdLm9XN1h
 Broadcast::routes([
     'middleware' => ['auth:sanctum', Sample::rate(0)],
 ]);
+
+Route::get('/debug', function (Illuminate\Http\Request $request) {
+    return [
+        'secure' => $request->isSecure(),
+        'scheme' => $request->getScheme(),
+        'host' => $request->getHost(),
+        'headers' => [
+            'x-forwarded-proto' => $request->header('x-forwarded-proto'),
+            'x-forwarded-host' => $request->header('x-forwarded-host'),
+            'x-forwarded-for' => $request->header('x-forwarded-for'),
+        ],
+    ];
+});
