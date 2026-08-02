@@ -1,0 +1,141 @@
+name: renbot-prod
+
+services:
+  app:
+    container_name: renbot-prod-app
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-8001}:80"
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+      - proxy
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  reverb:
+    container_name: renbot-prod-reverb
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    volumes:
+      - laravel-storage-production:/app/storage
+    ports:
+      - "${REVERB_PORT_FORWARD:-8080}:8080"
+    networks:
+      - laravel-production
+      - proxy
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  queue-worker:
+    container_name: renbot-prod-queue-worker
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: php artisan queue:work database --sleep=3 --tries=3 --timeout=90
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  pulse:
+    container_name: renbot-prod-pulse
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: php artisan pulse:check
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  scheduler:
+    container_name: renbot-prod-scheduler
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: php artisan schedule:work
+    volumes:
+      - laravel-storage-production:/app/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  nightwatch-agent:
+    image: laravelphp/nightwatch-agent:latest
+    container_name: renbot-prod-nightwatch-agent
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NIGHTWATCH_TOKEN: "${NIGHTWATCH_TOKEN}"
+      NIGHTWATCH_REQUEST_SAMPLE_RATE: "${NIGHTWATCH_REQUEST_SAMPLE_RATE:-0.4}"
+      NIGHTWATCH_IGNORE_CACHE_EVENTS: "true"
+    networks:
+      - laravel-production
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: renbot-prod-mariadb
+    restart: unless-stopped
+    ports:
+      - "${FORWARD_DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    volumes:
+      - mariadb-data-production:/var/lib/mysql
+    networks:
+      laravel-production:
+        aliases:
+          - mariadb
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+networks:
+  proxy:
+    external: true
+  laravel-production:
+    name: renbot-prod-network
+
+volumes:
+  mariadb-data-production:
+  laravel-storage-production:
