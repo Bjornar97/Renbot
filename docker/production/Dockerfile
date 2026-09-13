@@ -75,6 +75,10 @@ WORKDIR /app
 # Enable PHP production settings
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# FrankenPHP runs as www-data, so Caddy must own its certificate and config state.
+RUN mkdir -p /data/caddy /config/caddy \
+    && chown -R www-data:www-data /data /config
+
 # Copy application from builder
 # We copy the entire directory to ensure we have everything, 
 # then remove node_modules which isn't needed in prod.
