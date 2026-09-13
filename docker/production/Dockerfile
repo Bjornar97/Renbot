@@ -1,16 +1,15 @@
 # Builder Stage
 FROM dunglas/frankenphp:php8.4 AS builder
 
-# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
-    postgresql-client \
     git \
     unzip \
+    curl \
+    gnupg \
+    postgresql-client \
     libzip-dev \
     libicu-dev \
     libpq-dev \
-    curl \
-    gnupg \
     && install-php-extensions \
     pdo_mysql \
     pdo_pgsql \
@@ -29,25 +28,29 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
 
 WORKDIR /app
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy application files
 COPY . .
 
 # Install PHP dependencies
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
-# Build frontend assets
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction
+
 RUN npm ci
 RUN npm run build
+
 
 # Final Stage
 FROM dunglas/frankenphp:php8.4
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
+    gosu \
     postgresql-client \
     unzip \
     libzip-dev \
@@ -76,20 +79,22 @@ RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # We copy the entire directory to ensure we have everything, 
 # then remove node_modules which isn't needed in prod.
 COPY --from=builder --chown=www-data:www-data /app /app
-RUN rm -rf /app/node_modules
 
-# Prepare storage
-RUN cp -r storage storage-init
+RUN rm -rf node_modules
 
-# Setup permissions
-RUN chmod -R 775 storage bootstrap/cache
+# Storage template used when the Docker volume is empty
+RUN cp -a storage storage-init
+
+RUN chmod -R ug+rwX storage storage-init bootstrap/cache
 
 # Entrypoint setup
 COPY docker/production/entrypoint.sh /usr/local/bin/entrypoint.sh
+
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Environment variables
 ENV SERVER_NAME=:80
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

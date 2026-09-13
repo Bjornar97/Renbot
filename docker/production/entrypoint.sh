@@ -1,25 +1,31 @@
 #!/bin/sh
-set -e
+set -eu
 
-# Copy the initial storage structure if needed
-if [ ! -d "/app/storage/framework" ]; then
-    echo "Initializing storage structure..."
-    cp -r /app/storage-init/* /app/storage/
+# Initialize an empty storage volume
+if [ ! -d /app/storage/framework ]; then
+    echo "Initializing storage volume..."
+
+    cp -a /app/storage-init/. /app/storage/
+
+    chown -R www-data:www-data /app/storage
 fi
 
-# Ensure directories exist and have permissions
-mkdir -p /app/storage/framework/cache/data \
-         /app/storage/framework/sessions \
-         /app/storage/framework/views \
-         /app/storage/logs
+mkdir -p \
+    /app/storage/framework/cache/data \
+    /app/storage/framework/sessions \
+    /app/storage/framework/views \
+    /app/storage/logs
 
-# Fix permissions
-chown -R www-data:www-data /app/storage /app/bootstrap/cache
+chown -R www-data:www-data \
+    /app/storage/framework \
+    /app/storage/logs \
+    /app/bootstrap/cache
 
-# Run migrations and cache config
-php artisan optimize:clear
-php artisan migrate --force
-php artisan optimize
+# Run Laravel commands as www-data
+gosu www-data php artisan optimize:clear
+gosu www-data php artisan migrate --force
+gosu www-data php artisan optimize
 
 echo "Starting FrankenPHP..."
-exec "$@"
+
+exec gosu www-data "$@"
