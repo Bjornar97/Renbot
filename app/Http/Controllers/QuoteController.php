@@ -88,6 +88,8 @@ class QuoteController extends Controller
      */
     public function destroy(Quote $quote): RedirectResponse
     {
+        Gate::authorize('moderate');
+
         $quote->delete();
 
         return back()->with('success', 'Successfully deleted quote');

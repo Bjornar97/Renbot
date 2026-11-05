@@ -66,6 +66,8 @@ class StreamdayController extends Controller
      */
     public function edit(Streamday $streamday): Response
     {
+        Gate::authorize('moderate');
+
         return Inertia::render('Streamdays/Edit', [
             'streamday' => $streamday->load('streamdaySlots'),
             'creators' => Creator::all(),
@@ -87,6 +89,8 @@ class StreamdayController extends Controller
      */
     public function destroy(Streamday $streamday): RedirectResponse
     {
+        Gate::authorize('moderate');
+
         $streamday->delete();
 
         return back()->with('success', 'Successfully deleted streamday');
