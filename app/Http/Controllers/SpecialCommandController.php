@@ -12,6 +12,11 @@ use Inertia\Response;
 
 class SpecialCommandController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Command::class);
+    }
+
     /**
      * Display a listing of the resource.
      */

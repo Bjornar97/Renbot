@@ -11,6 +11,11 @@ use Inertia\Response;
 
 class PunishableCommandController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Command::class);
+    }
+
     /**
      * Display a listing of the resource.
      */
